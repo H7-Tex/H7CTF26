@@ -1,0 +1,32 @@
+name: Perp Guard
+author: h7
+category: blockchain
+difficulty: insane
+description: |
+  PerpGuard is a lending market on Solana. Post collateral, open positions, borrow against
+  them — and if a position ever goes underwater, anyone can liquidate it and make the market
+  whole again. That last part is the whole safety model: every position must always be
+  liquidatable.
+
+  You are a borrower. The oracle is about to mark your collateral down. Take a loan you have
+  no intention of ever making good on, and make sure the keepers can never take it back.
+
+  Read the program, launch an instance, and connect over the provided endpoint.
+sub_description: "a lending market whose one safety rule is that every position stays liquidatable. break that rule."
+points: 1000
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+provide:
+  - path: challenge/program/src/lib.rs
+  - path: challenge/program/Cargo.toml
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/perp_guard
+  cpu_limit: "1"
+  memory_limit: 1Gi
+  exposed_ports:
+    - { port: 1337, protocol: tcp }
+  instance_timeout: 1800
+  max_extensions: 2
