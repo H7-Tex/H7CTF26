@@ -1,22 +1,42 @@
 # Genesis — writeup
 
-**Class:** ERC-4626 first-depositor / donation inflation, hidden behind a disguised "safe-looking" guard.
+`erc-4626 inflation, but you have to re-arm it first`
 
-## The disguise
+#### the trap
 
-`GenesisVault` reads like a standard, inflation-protected ERC-4626 vault — it has `_decimalsOffset()` and even uses `10 ** _decimalsOffset()` inside `convertToShares`. But the offset returns **0**, so `10**0 = 1`: the "virtual shares" multiplier does nothing, and it only ever applies to the very first deposit. The ongoing share math is the naive `assets * totalSupply / totalAssets()`, and `totalAssets()` reads `asset.balanceOf(address(this))` — which anyone can inflate with a raw `transfer`. There are no real virtual shares or virtual assets. A reviewer who pattern-matches "has `_decimalsOffset()` → OZ-protected" walks right past it.
+everyone's first instinct on a fresh vault: first-depositor inflation. deposit 1 wei, donate a pile of the asset straight to the vault, watch the next depositor's shares round to 0. try it here and it does nothing.
 
-## The exploit
+why: `totalAssets()` returns `reserve`, an internal counter — not `asset.balanceOf(this)`. a raw `transfer` to the vault bumps the real balance but not `reserve`, so `convertToShares` never sees your donation. the victim gets normal shares. dead end.
 
-1. Deposit 1 wei → mint 1 share (you now own ~100% of a near-empty vault).
-2. Donate a large amount directly to the vault (`token.transfer(vault, 100e18)`) → `totalAssets` is now huge while `totalSupply` is still 1.
-3. The anchor investor deposits `100e18`: `shares = 100e18 * 1 / (100e18 + 1) = 0` (floor). They receive **0 shares**; their funds are now sitting in the vault.
-4. Redeem your 1 share → `convertToAssets(1)` returns the entire vault balance, including the victim's deposit.
+```solidity
+uint256 public reserve;
+function totalAssets() public view returns (uint256) { return reserve; }
+function convertToShares(uint256 assets) public view returns (uint256) {
+    uint256 supply = totalSupply;
+    return supply == 0 ? assets : assets * supply / reserve;   // uses reserve, not balanceOf
+}
+```
 
-## Fix
+#### the real bug
 
-Wire real virtual shares/assets into the share math (OpenZeppelin's approach: `_decimalsOffset() >= 6` with a `+1` virtual asset in both directions), and track `totalAssets` from internal accounting rather than `balanceOf`, which is donatable.
+there's a `sync()`:
 
-## Reference solve
+```solidity
+function sync() external { reserve = asset.balanceOf(address(this)); }
+```
 
-`challenge/test/Solve.t.sol` — run `forge test` in `challenge/`. It deploys `Setup`, runs the exploit, and asserts `Setup.isSolved()`.
+it re-arms your donation. `sync()` slams `reserve` up to the real balance (donation included), no access control, callable by anyone. now the inflation is live.
+
+#### the play
+
+1. `deposit(1, you)` — supply 0 → 1 share, `reserve` = 1.
+2. `transfer(vault, 100 ether)` — real balance jumps, `reserve` still 1.
+3. `sync()` — `reserve` = 100e18 + 1. armed.
+4. `victimDeposit()` → `convertToShares(100e18) = 100e18 * 1 / (100e18+1) = 0`. anchor gets **0 shares**, their 100 ether lands in the vault anyway.
+5. `redeem(1)` → you own 100% of supply, you take the whole reserve.
+
+victim shares 0, vault drained → `isSolved()`. `forge test` proves both the solve and that step 2 alone (no sync) leaves the victim with real shares.
+
+#### the fix
+
+don't let anyone re-sync accounting to a manipulable balance. track `reserve` internally only (drop `sync()`, or restrict + validate it), or use virtual shares/offset so a lone donation can't round anyone to zero.

@@ -1,13 +1,18 @@
 # Genesis
 
-- **Category:** blockchain (EVM)
-- **Difficulty:** hard
-- **Author:** h7
+`blockchain` · `evm` · `hard`
 
-Genesis Vault is live — a fresh yield vault, ERC-4626 shaped, the kind you've seen audited a hundred times. It even carries the usual inflation-attack guard. A large anchor investor is about to make the first real deposit into it. You got there first.
+fresh erc-4626 vault, just went live. some anchor investor is about to drop a fat first deposit into it. you got there first.
 
-Make their deposit yours.
+make their deposit yours.
 
-**Files:** `Setup.sol`, `GenesisVault.sol`, `Token.sol`
+#### connect
+spin up an instance, point your rpc at the endpoint. you get the rpc url, your private key, and the setup address (`GET /`). solve it, then `GET /flag`.
 
-**Connect:** launch your instance and connect over the provided endpoint; the flag is revealed when `Setup.isSolved()` returns true.
+#### provided
+- `challenge/src/Setup.sol`
+- `challenge/src/GenesisVault.sol`
+- `challenge/src/Token.sol`
+
+#### notes
+the textbook inflation trick faceplants here — the vault doesn't price what it doesn't know it's holding. read how it decides what it holds. that's the whole game.

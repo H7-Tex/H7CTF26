@@ -3,11 +3,10 @@ author: h7
 category: blockchain
 difficulty: hard
 description: |
-  Genesis Vault just launched — a fresh yield vault, ERC-4626 shaped, the kind you've
-  seen audited a hundred times. It even carries the usual inflation-attack guard. A large
-  anchor investor is about to make the first real deposit into it. You got there first.
-  Make their deposit yours. Launch an instance and connect over the provided endpoint.
-sub_description: "a brand-new yield vault, one big depositor incoming, and you're first through the door."
+  genesis vault just went live — fresh erc-4626, the kind you've seen audited a hundred times.
+  a big anchor investor is about to make the first real deposit. you got there first.
+  make their deposit yours. spin up an instance and connect over the provided endpoint.
+sub_description: "fresh vault, one fat depositor incoming, and you're first through the door."
 points: 500
 flags:
   - type: dynamic
