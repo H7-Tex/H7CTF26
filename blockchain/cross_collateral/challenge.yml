@@ -1,0 +1,29 @@
+name: Cross Collateral
+author: h7
+category: blockchain
+difficulty: hard
+description: |
+  CrossCollateral is a multi-asset bank on Sui. Deposit any coin and you get a voucher for
+  what you put in; hand the voucher back and the bank returns your funds. It holds a real
+  reserve of SUI for its honest users.
+
+  You have a bag of a worthless token. Read what a voucher actually remembers about your
+  deposit, and leave with the SUI. Launch an instance and connect over the provided endpoint.
+sub_description: "a bank that hands you a voucher for what you deposit. the voucher remembers how much — but not what."
+points: 800
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+provide:
+  - path: challenge/sources/bank.move
+  - path: challenge/Move.toml
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/cross_collateral
+  cpu_limit: "1"
+  memory_limit: 1Gi
+  exposed_ports:
+    - { port: 1337, protocol: tcp }
+  instance_timeout: 1800
+  max_extensions: 2
