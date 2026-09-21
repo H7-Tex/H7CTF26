@@ -47,13 +47,21 @@ fn account_health(data: &[u8]) -> (u64, u128, u128) {
     (count, c, d)
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     let listener = TcpListener::bind("0.0.0.0:1337")?;
     loop {
         let (stream, _) = listener.accept()?;
-        tokio::spawn(async move {
-            if let Err(e) = handle(stream).await {
+        // handle()'s future holds non-Send framework types, so it can't ride
+        // tokio::spawn. One os thread + a current-thread runtime per connection.
+        std::thread::spawn(move || {
+            let rt = match tokio::runtime::Builder::new_current_thread().enable_all().build() {
+                Ok(rt) => rt,
+                Err(e) => {
+                    eprintln!("runtime: {e}");
+                    return;
+                }
+            };
+            if let Err(e) = rt.block_on(handle(stream)) {
                 eprintln!("handler error: {e}");
             }
         });

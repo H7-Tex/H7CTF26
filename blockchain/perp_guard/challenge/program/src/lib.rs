@@ -118,15 +118,17 @@ pub fn process(_program_id: &Pubkey, accounts: &[AccountInfo], input: &[u8]) -> 
             let obligation = next_account_info(it)?;
             let m = read_market(market)?;
             let mut data = obligation.data.borrow_mut();
+            let price = m.price as u128;
             let count = rd_u64(&data, COUNT_OFF) as usize;
-            let mut total_collateral: u128 = 0;
+            let mut allowed_debt: u128 = 0;
             let mut total_debt: u128 = 0;
             for i in 0..count {
                 let off = HEADER + i * POS_SIZE;
-                total_collateral = total_collateral.saturating_add(rd_u64(&data, off) as u128);
+                let value = (rd_u64(&data, off) as u128).saturating_mul(price) / PRICE_SCALE;
+                allowed_debt = allowed_debt.saturating_add(value.saturating_mul(LTV_NUM) / LTV_DEN);
                 total_debt = total_debt.saturating_add(rd_u64(&data, off + 8) as u128);
             }
-            if healthy(total_collateral, total_debt, m.price as u128) {
+            if total_debt <= allowed_debt {
                 return Err(ProgramError::InvalidArgument);
             }
             data[SEIZED_OFF] = 1;

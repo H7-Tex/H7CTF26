@@ -4,8 +4,8 @@ import os, socket, secrets, sys
 HOST = os.environ.get("HOST", "127.0.0.1")
 PORT = int(os.environ.get("PORT", "1337"))
 SOLVE_SO = os.environ.get("SOLVE_SO", "solve.so")
-COUNT = int(os.environ.get("COUNT", "300"))
-ROUNDS = int(os.environ.get("ROUNDS", "110"))
+COUNT = int(os.environ.get("COUNT", "55"))
+ROUNDS = int(os.environ.get("ROUNDS", "200"))
 
 B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
