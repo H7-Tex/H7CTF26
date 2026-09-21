@@ -61,10 +61,9 @@ def allowed(m):
     return isinstance(m, str) and m.split("_")[0] in ALLOWED_NS and m not in BLOCKED
 
 
-def sanitize(item):
-    if isinstance(item, dict) and not allowed(item.get("method", "")):
-        return {"jsonrpc": "2.0", "id": item.get("id"), "method": "web3_clientVersion", "params": []}
-    return item
+def err_resp(item):
+    return {"jsonrpc": "2.0", "id": item.get("id") if isinstance(item, dict) else None,
+            "error": {"code": -32601, "message": "method not allowed"}}
 
 
 def forward(body):
@@ -118,9 +117,20 @@ class H(BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(n) or b"{}")
         except Exception:
             return self._send(400, "bad json")
-        fwd = [sanitize(x) for x in body] if isinstance(body, list) else sanitize(body)
         try:
-            self._send(200, forward(fwd), "application/json")
+            if isinstance(body, list):
+                passthrough = [x for x in body if isinstance(x, dict) and allowed(x.get("method", ""))]
+                by_id = {}
+                if passthrough:
+                    r = json.loads(forward(passthrough))
+                    for resp in (r if isinstance(r, list) else [r]):
+                        by_id[resp.get("id")] = resp
+                out = [by_id.get(x.get("id"), err_resp(x)) if isinstance(x, dict) and allowed(x.get("method", "")) else err_resp(x) for x in body]
+                self._send(200, json.dumps(out).encode(), "application/json")
+            elif isinstance(body, dict) and allowed(body.get("method", "")):
+                self._send(200, forward(body), "application/json")
+            else:
+                self._send(200, json.dumps(err_resp(body)).encode(), "application/json")
         except Exception:
             self._send(502, "upstream error")
 
