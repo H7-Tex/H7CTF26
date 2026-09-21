@@ -1,32 +1,17 @@
 # Fee Swap
 
-**Category:** blockchain (Solana)
-**Difficulty:** hard
+`blockchain` · `solana` · `hard`
 
-FeeSwap is a 1:1 swap desk between two SPL tokens. Send `amount` of token A and it sends you
-`amount` of token B out of its reserve; send B and it sends you A. Nothing exotic — no curve,
-no slippage, just a pool that pays out exactly what you swap in.
+feeswap is a tiny two-asset pool. send it token A, get token B back — minus a small swap fee the pool skims for itself. clean 1:1 desk, healthy B reserve it's confident it can always cover.
 
-You hold token A. The pool has a reserve of token B. Take it.
+you're holding token A. leave with the pool's B reserve.
 
-## Goal
+#### connect
+spin up an instance, connect over the endpoint. you get the program id, the pool + vault + mint addresses, your funded token accounts + keypair, and a channel to send solve txs. drain B, grab the flag.
 
-Drain the pool's B reserve. When the pool can no longer honour its B side, the flag is yours.
-
-## Connect
-
-Launch an instance from the platform and connect to the endpoint. You are handed the program
-id, the pool and vault addresses, the two mints, and the keypair + funded token accounts you
-control, plus a channel to submit your solve transactions.
-
-## Provided
-
-- `challenge/program/src/lib.rs` — the FeeSwap program
+#### provided
+- `challenge/program/src/lib.rs`
 - `challenge/program/Cargo.toml`
 
-## Notes
-
-Every transfer here is a real `transfer_checked`; every account is validated; the pool only
-ever pays what it is told to. There is no missing check to find. The question is whether the
-number the pool *acts on* is the number that actually moved — and what your particular token
-does to that number in flight.
+#### notes
+the obvious holes are shut — the pool checks its own object's owner, inits once, derives its own signer, and takes a fee on every swap. the real question is whether the number it *pays out* is the number that actually *arrived* — and whether the cut it skims covers what your particular token does in transit.
