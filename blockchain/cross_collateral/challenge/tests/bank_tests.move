@@ -2,12 +2,11 @@
 module cross_collateral::bank_tests;
 
 use cross_collateral::bank;
+use cross_collateral::cheap::CHEAP;
 use sui::coin;
 use sui::sui::SUI;
 use sui::test_scenario as ts;
 use sui::test_utils;
-
-public struct CHEAP has drop {}
 
 #[test]
 fun cross_type_drain() {

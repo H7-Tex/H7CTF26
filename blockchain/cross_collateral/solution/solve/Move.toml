@@ -1,0 +1,6 @@
+[package]
+name = "solution"
+edition = "2024"
+
+[dependencies]
+cross_collateral = { local = "../../challenge" }

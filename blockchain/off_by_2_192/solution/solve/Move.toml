@@ -1,0 +1,6 @@
+[package]
+name = "solution"
+edition = "2024"
+
+[dependencies]
+off_by_2_192 = { local = "../../challenge" }
