@@ -25,6 +25,6 @@ deploy:
   cpu_limit: "0.5"
   memory_limit: 512Mi
   exposed_ports:
-    - { port: 1337, protocol: tcp }
+    - { port: 1337, protocol: http }
   instance_timeout: 1800
   max_extensions: 2
