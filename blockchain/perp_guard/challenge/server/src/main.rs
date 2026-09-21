@@ -132,8 +132,11 @@ async fn handle(mut socket: TcpStream) -> Result<(), Box<dyn Error>> {
     let underwater = !healthy(total_c, total_d, P1 as u128);
 
     let liq = challenge
-        .run_ix(enc(program, Ix::Liquidate,
-            vec![AccountMeta::new_readonly(market, false), AccountMeta::new(obligation, false)]))
+        .run_ixs(&[
+            compute_budget(1_400_000),
+            enc(program, Ix::Liquidate,
+                vec![AccountMeta::new_readonly(market, false), AccountMeta::new(obligation, false)]),
+        ])
         .await;
 
     let seized = challenge.ctx.banks_client.get_account(obligation).await?.unwrap().data[SEIZED_OFF] == 1;
