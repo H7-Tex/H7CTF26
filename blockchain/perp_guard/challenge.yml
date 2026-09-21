@@ -3,16 +3,13 @@ author: h7
 category: blockchain
 difficulty: insane
 description: |
-  PerpGuard is a lending market on Solana. Post collateral, open positions, borrow against
-  them — and if a position ever goes underwater, anyone can liquidate it and make the market
-  whole again. That last part is the whole safety model: every position must always be
-  liquidatable.
+  perpguard is a solana lending market. post collateral, open positions, borrow. if a position
+  goes underwater anyone can liquidate it and make the market whole — that's the safety model,
+  every position must stay liquidatable. obligations are capped so a keeper's loop can't run away.
 
-  You are a borrower. The oracle is about to mark your collateral down. Take a loan you have
-  no intention of ever making good on, and make sure the keepers can never take it back.
-
-  Read the program, launch an instance, and connect over the provided endpoint.
-sub_description: "a lending market whose one safety rule is that every position stays liquidatable. break that rule."
+  you're a borrower who plans to default. the oracle's about to mark your collateral down. take a
+  loan the keepers can never claw back. launch an instance and connect over the provided endpoint.
+sub_description: "a lending market where every position must stay liquidatable, and obligations are capped. break it anyway."
 points: 1000
 flags:
   - type: dynamic

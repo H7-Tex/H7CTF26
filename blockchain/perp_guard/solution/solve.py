@@ -4,7 +4,7 @@ import os, socket, secrets, sys
 HOST = os.environ.get("HOST", "127.0.0.1")
 PORT = int(os.environ.get("PORT", "1337"))
 SOLVE_SO = os.environ.get("SOLVE_SO", "solve.so")
-OPEN_COUNT = int(os.environ.get("COUNT", "20000"))
+OPEN_COUNT = int(os.environ.get("COUNT", "15000"))
 
 B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
