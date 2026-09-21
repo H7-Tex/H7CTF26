@@ -1,31 +1,17 @@
 # Tidepool
 
-**Category:** blockchain (Sui / Move)
-**Difficulty:** insane
+`blockchain` · `sui` · `insane`
 
-Tidepool is a liquidity pool on Sui. To mint `lp_amount` of liquidity you call `add_liquidity`
-and pay the token amount the pool computes you owe — an amount derived through a **checked**
-fixed-point conversion that is meant to abort rather than let a number wrap. Redeem your LP
-later and you get back your share of the reserve.
+a sui liquidity pool. mint liquidity, pay what it says you owe, redeem your share of the reserve later. the amount you owe runs through a *checked* fixed-point conversion that aborts on overflow, there's a hard cap on how much you can mint at once, and it won't hand out liquidity for free. looks locked down.
 
-You start with nothing. Walk away with the pool's entire reserve.
+walk out with the whole reserve.
 
-## Goal
+#### connect
+spin up an instance, connect to the endpoint. you get the package id, the shared `Pool` object, your keypair + gas, and a channel to send your solve tx. drain it, grab the flag.
 
-Drain the pool's reserve. When it can no longer pay out, the flag is yours.
-
-## Connect
-
-Launch an instance from the platform and connect to the endpoint. You get the published
-package id, the shared `Pool` object id, and the keypair + gas you control, plus a channel to
-submit your solve transaction.
-
-## Provided
-
-- `challenge/sources/pool.move` — the pool module
+#### provided
+- `challenge/sources/pool.move`
 - `challenge/Move.toml`
 
-## Notes
-
-Every account is validated and every arithmetic path is guarded. There is no missing check to
-find. Read the conversion the pool trusts, and the numbers it produces at the edges.
+#### notes
+every guard here actually holds — the cap, the overflow check, the no-free-liquidity check. that's the point. the conversion is where the numbers stop behaving; work out what it does right at the edge, and which inputs walk straight between all three guards.

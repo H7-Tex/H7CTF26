@@ -3,13 +3,12 @@ author: h7
 category: blockchain
 difficulty: insane
 description: |
-  Tidepool is a Sui liquidity pool. To mint liquidity you pay for it, and the amount you owe is
-  computed with a checked fixed-point conversion that refuses to proceed on overflow. The math
-  looks careful.
+  tidepool is a sui liquidity pool. mint liquidity, pay what it says you owe, redeem your share
+  later. the payout math runs through a checked fixed-point conversion, there's a cap on how much
+  you can mint at once, and it won't hand out liquidity for free. looks locked down.
 
-  Mint yourself the pool's whole reserve for nothing. Launch an instance and connect over the
-  provided endpoint.
-sub_description: "a sui pool that prices your deposits through a checked fixed-point conversion. the math looks careful."
+  walk out with the whole reserve. spin up an instance and connect over the provided endpoint.
+sub_description: "a sui pool with a cap, an overflow check, and a no-free-liquidity guard. all three hold. drain it anyway."
 points: 1000
 flags:
   - type: dynamic
