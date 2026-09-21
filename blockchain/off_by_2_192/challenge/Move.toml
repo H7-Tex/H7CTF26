@@ -1,0 +1,10 @@
+[package]
+name = "off_by_2_192"
+edition = "2024"
+# license = ""           # e.g., "MIT", "GPL", "Apache 2.0"
+# authors = ["..."]      # e.g., ["Joe Smith (joesmith@noemail.com)", "John Snow (johnsnow@noemail.com)"]
+
+[dependencies]
+
+# Read more about the package management system options:
+# https://docs.sui.io/guides/developer/packages/move-package-management

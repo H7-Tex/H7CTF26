@@ -1,0 +1,29 @@
+name: Off By 2^192
+author: h7
+category: blockchain
+difficulty: insane
+description: |
+  A Sui liquidity pool with the usual guardrails: to mint liquidity you must pay for it, and
+  the amount you owe is computed with a checked fixed-point shift that refuses to proceed on
+  overflow. The math looks careful. It is not careful enough.
+
+  Read `checked_shlw`. Mint yourself the pool's whole reserve for nothing. Launch an instance
+  and connect over the provided endpoint.
+sub_description: "a pool that computes what you owe with a checked shift. the overflow check is off by 2^192."
+points: 1000
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+provide:
+  - path: challenge/sources/pool.move
+  - path: challenge/Move.toml
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/off_by_2_192
+  cpu_limit: "1"
+  memory_limit: 1Gi
+  exposed_ports:
+    - { port: 1337, protocol: tcp }
+  instance_timeout: 1800
+  max_extensions: 2
