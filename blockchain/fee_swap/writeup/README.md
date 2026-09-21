@@ -1,57 +1,31 @@
 # Fee Swap — writeup
 
-## The vulnerability
+`token-2022 transfer-fee confusion, hiding behind a swap fee that doesn't cover it`
 
-`SwapAToB` moves the user's input in and pays the output out, and it uses the **same**
-`amount` for both legs:
+#### the shut doors
+
+the obvious holes are closed: `read_pool` checks `owner == program`, `InitPool` is one-time (`initialized` flag), the signer bump is derived in-program not read from the struct. and every swap skims a 1% swap fee. looks like the pool guards its reserve.
+
+#### the bug
+
+`SwapAToB` pays out on the `amount` you *asked* to swap, not the amount that actually *arrived*:
 
 ```rust
-// in: user -> pool vault (user signs)
-let in_ix = transfer_checked(token_program, user_src, mint_src, vault_src, user, &[], amount, DECIMALS)?;
+// in: user -> vault_src, `amount`  (token-2022 transfer_checked)
 invoke(&in_ix, ...)?;
-
-// out: pool vault -> user (pool PDA signs)
-let out_ix = transfer_checked(token_program, vault_dst, mint_dst, user_dst, authority, &[], amount, DECIMALS)?;
-invoke_signed(&out_ix, ..., &[&[AUTH_SEED, &[p.bump]]])?;
+let payout = amount - amount * SWAP_FEE_BPS / 10_000;   // amount * 99/100
+// out: vault_dst -> user, `payout`
+invoke_signed(&out_ix, ...)?;
 ```
 
-The pool pays out `amount` of the destination token, assuming it received `amount` of the
-source token. For a plain SPL token that holds. But **Token-2022 mints can carry a transfer
-fee** — with a `TransferFeeConfig` extension, a `transfer_checked` of `amount` credits the
-recipient only `amount − fee` (the fee is withheld in the destination account). So when the
-source token has a transfer fee, the pool receives `amount − fee` but still pays out the full
-`amount` of the other side.
+token A is a token-2022 mint with a **5% transfer fee**. send `amount` A and the pool's vault only receives `amount * 0.95` — but the payout is figured off the full `amount` (minus just the 1% swap fee). the pool hands you `amount * 0.99` B for `amount * 0.95` of A. it loses **4% of value on every swap.**
 
-Every `transfer_checked` here is correct and every account is validated. The bug is that the
-program **acts on the amount it was asked to move, not the amount that actually arrived** — a
-real, widely-hit Token-2022 integration mistake (AMMs and vaults had to switch to measuring
-`balance_after − balance_before` when fee-bearing mints appeared).
+that 1% swap fee is the whole trap: it *looks* like the pool takes a cut to stay solvent, but 1% < the 5% transfer fee, so it still bleeds. do the subtraction.
 
-## The exploit
+#### the play
 
-1. You hold token A, a Token-2022 mint with a transfer fee. The pool holds a reserve of
-   token B (no fee).
-2. Call `SwapAToB(amount)` repeatedly. Each call: the pool receives `amount·(1−fee)` of A
-   but sends you the full `amount` of B. It over-pays `amount·fee` of B every swap.
-3. Keep swapping until the pool's B vault is empty. You walk away holding its entire B
-   reserve, having only ever funded it with fee-discounted A. `solution/solve.py` drives it;
-   `solution/solve/` is the on-chain helper that issues the swap CPIs.
+one `SwapAToB(reserve_b)`: the pool pays out `0.99 * reserve_b` B and drops its reserve to ~1%. you fund it with `reserve_b` of A (5% withheld to the fee authority). reserve drained → flag. `drains_reserve_via_fee_mint` proves it, and `read_pool`/one-time-init close the earlier unintended path.
 
-The win check reads the pool's B vault balance server-side (native, authoritative) and
-releases the flag once it is drained.
+#### the fix
 
-## The fix
-
-Measure what actually arrived. Snapshot the destination vault's balance before the incoming
-`transfer_checked` and again after, and price/pay the output on the delta — never on the
-caller-supplied `amount`:
-
-```rust
-let before = token_balance(vault_src);
-invoke(&in_ix, ...)?;                 // amount in (fee may apply)
-let received = token_balance(vault_src) - before;
-// pay out based on `received`, not `amount`
-```
-
-For fee-bearing mints this is the only correct accounting; it also naturally handles any
-future transfer extension that changes the delivered amount.
+price the payout on the **received** amount, not the requested one: snapshot the vault balance before and after the incoming transfer and pay on the delta. never trust the caller's `amount` for a fee-bearing mint — and if you skim a fee, it has to actually cover what the asset does in transit.

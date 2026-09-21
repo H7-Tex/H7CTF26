@@ -148,7 +148,7 @@ async fn handle(mut socket: TcpStream) -> Result<(), Box<dyn Error>> {
     let remaining = StateWithExtensions::<TokenAccount>::unpack(&data)?.base.amount;
     writeln!(socket, "vault_b remaining: {}", remaining)?;
 
-    if remaining == 0 {
+    if remaining * 50 < RESERVE_B {
         let flag = std::env::var("FLAG")
             .or_else(|_| fs::read_to_string("flag.txt"))
             .unwrap_or_else(|_| "H7CTF{local_test_flag}".to_string());

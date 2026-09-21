@@ -9,6 +9,7 @@ use solana_program::{
 
 pub const DECIMALS: u8 = 6;
 pub const AUTH_SEED: &[u8] = b"authority";
+pub const SWAP_FEE_BPS: u64 = 100;
 
 #[derive(BorshSerialize, BorshDeserialize, Debug)]
 pub struct Pool {
@@ -110,8 +111,9 @@ fn swap<'a, 'b>(
     )?;
     invoke(&in_ix, &[user_src.clone(), mint_src.clone(), vault_src.clone(), user.clone(), token_program.clone()])?;
 
+    let payout = amount - amount * SWAP_FEE_BPS / 10_000;
     let out_ix = spl_token_2022::instruction::transfer_checked(
-        token_program.key, vault_dst.key, mint_dst.key, user_dst.key, authority.key, &[], amount, DECIMALS,
+        token_program.key, vault_dst.key, mint_dst.key, user_dst.key, authority.key, &[], payout, DECIMALS,
     )?;
     invoke_signed(
         &out_ix,
