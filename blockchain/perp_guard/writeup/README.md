@@ -11,9 +11,11 @@ Ix::Liquidate => {
     let count = rd_u64(&data, COUNT_OFF) as usize;
     for i in 0..count {                       // unbounded, attacker-controlled
         let off = HEADER + i * POS_SIZE;
-        total_collateral += rd_u64(&data, off) as u128;
-        total_debt       += rd_u64(&data, off + 8) as u128;
+        let value = (rd_u64(&data, off) as u128) * price / PRICE_SCALE;   // per-position valuation
+        allowed_debt += value * LTV_NUM / LTV_DEN;
+        total_debt   += rd_u64(&data, off + 8) as u128;
     }
+    if total_debt <= allowed_debt { return Err(...) }   // not liquidatable
     ...
 }
 ```
@@ -51,8 +53,11 @@ bug in the *design* of `Liquidate` against attacker-growable state — a real So
    per-position health check (`0 <= 0`) and add nothing to collateral or debt, so the
    obligation stays underwater once the price drops — but the position *count* explodes.
    Doing this one instruction at a time is far too slow, so the reference solve is a small
-   Solana program that CPIs `OpenPosition { 0, 0 }` in a loop, hundreds of times per
-   transaction (with the compute limit raised to 1.4M), across ~110 rounds.
+   Solana program that CPIs `OpenPosition { 0, 0 }` in a loop within one transaction. Note
+   Solana's per-transaction instruction-trace cap of 64 (top-level + all CPIs): each padding
+   tx can fit ~55 `OpenPosition` CPIs, so the solve runs many rounds (the compute limit is
+   raised to 1.4M per round). The exact `COUNT`/`ROUNDS`/`OBLIGATION_BYTES` are calibrated on
+   the real SBF runtime so that a fully padded obligation pushes `Liquidate` past 1.4M CU.
 3. The server drops the oracle price to 0.5. The real position is now underwater
    (debt 800_000 > collateral 1_000_000 · 0.5 · 0.8 = 400_000).
 4. The server confirms — in native code, with no compute limit — that the obligation is
