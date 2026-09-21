@@ -4,8 +4,7 @@ import os, socket, secrets, sys
 HOST = os.environ.get("HOST", "127.0.0.1")
 PORT = int(os.environ.get("PORT", "1337"))
 SOLVE_SO = os.environ.get("SOLVE_SO", "solve.so")
-COUNT = int(os.environ.get("COUNT", "55"))
-ROUNDS = int(os.environ.get("ROUNDS", "200"))
+OPEN_COUNT = int(os.environ.get("COUNT", "20000"))
 
 B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
@@ -52,10 +51,9 @@ def main():
         elif text.startswith("obligation:"):
             obligation = text.split()[1]
 
-    payload = f"4\nr {program}\nr {market}\nw {obligation}\ns {user}\n4\n".encode()
-    for _ in range(ROUNDS):
-        f.write(payload)
-        f.write(COUNT.to_bytes(4, "little"))
+    # one OpenMany round: the solve program cpi-opens OPEN_COUNT junk positions in a single tx
+    f.write(f"4\nr {program}\nr {market}\nw {obligation}\ns {user}\n4\n".encode())
+    f.write(OPEN_COUNT.to_bytes(4, "little"))
     f.flush()
 
     s.shutdown(socket.SHUT_WR)

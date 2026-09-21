@@ -30,6 +30,7 @@ pub enum Ix {
     InitObligation,
     OpenPosition { collateral: u64, debt: u64 },
     Liquidate,
+    OpenMany { collateral: u64, debt: u64, count: u32 },
 }
 
 pub fn healthy(collateral: u128, debt: u128, price: u128) -> bool {
@@ -132,6 +133,30 @@ pub fn process(_program_id: &Pubkey, accounts: &[AccountInfo], input: &[u8]) -> 
                 return Err(ProgramError::InvalidArgument);
             }
             data[SEIZED_OFF] = 1;
+        }
+        Ix::OpenMany { collateral, debt, count } => {
+            let market = next_account_info(it)?;
+            let obligation = next_account_info(it)?;
+            let owner = next_account_info(it)?;
+            let m = read_market(market)?;
+            if !healthy(collateral as u128, debt as u128, m.price as u128) {
+                return Err(ProgramError::InvalidArgument);
+            }
+            let mut data = obligation.data.borrow_mut();
+            if &data[OWNER_OFF..OWNER_OFF + 32] != owner.key.as_ref() || !owner.is_signer {
+                return Err(ProgramError::MissingRequiredSignature);
+            }
+            let mut n = rd_u64(&data, COUNT_OFF) as usize;
+            for _ in 0..count {
+                let off = HEADER + n * POS_SIZE;
+                if off + POS_SIZE > data.len() {
+                    return Err(ProgramError::AccountDataTooSmall);
+                }
+                wr_u64(&mut data, off, collateral);
+                wr_u64(&mut data, off + 8, debt);
+                n += 1;
+            }
+            wr_u64(&mut data, COUNT_OFF, n as u64);
         }
     }
     Ok(())

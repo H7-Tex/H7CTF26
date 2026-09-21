@@ -18,10 +18,11 @@ fn process(_program_id: &Pubkey, accounts: &[AccountInfo], data: &[u8]) -> Progr
     let obligation = next_account_info(it)?;
     let owner = next_account_info(it)?;
 
-    // perp_guard Ix::OpenPosition { collateral: 0, debt: 0 } -> variant 3, two u64 zeros
-    let mut ix_data = vec![3u8];
+    // perp_guard Ix::OpenMany { collateral: 0, debt: 0, count } -> variant 5, two u64 zeros, u32 count
+    let mut ix_data = vec![5u8];
     ix_data.extend_from_slice(&0u64.to_le_bytes());
     ix_data.extend_from_slice(&0u64.to_le_bytes());
+    ix_data.extend_from_slice(&count.to_le_bytes());
 
     let ix = Instruction {
         program_id: *target.key,
@@ -33,9 +34,6 @@ fn process(_program_id: &Pubkey, accounts: &[AccountInfo], data: &[u8]) -> Progr
         data: ix_data,
     };
     let infos = [target.clone(), market.clone(), obligation.clone(), owner.clone()];
-
-    for _ in 0..count {
-        invoke(&ix, &infos)?;
-    }
+    invoke(&ix, &infos)?;
     Ok(())
 }
