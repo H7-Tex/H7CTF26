@@ -1,4 +1,4 @@
-FROM rust:1.86-slim AS builder
+FROM rust:1.88-slim AS builder
 RUN apt-get update && apt-get install -y curl git build-essential libssl-dev pkg-config && rm -rf /var/lib/apt/lists/*
 RUN curl -L https://github.com/MystenLabs/sui/releases/download/devnet-v1.49.0/sui-devnet-v1.49.0-ubuntu-x86_64.tgz -o /tmp/sui.tgz \
     && mkdir -p /tmp/sui && tar xzf /tmp/sui.tgz -C /tmp/sui \
