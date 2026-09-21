@@ -54,7 +54,6 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
         Err(e) => handle_err!(stream, "init failed", e),
     };
 
-    // publish challenge modules bank + cheap (cheap's init mints a TreasuryCap<CHEAP> to challenger)
     let mut mncp = Vec::new();
     for m in ["bank", "cheap"] {
         let mod_bytes = match std::fs::read(format!("./chall/build/cross_collateral/bytecode_modules/{}.mv", m)) {
@@ -74,15 +73,12 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     };
     let _ = writeln!(stream, "[SERVER] challenge published at: {}", chall_addr);
 
-    // create + share the bank
     if let Err(e) = suitf.call_function(chall_addr, "bank", "create_and_share", Vec::new(), Vec::new(), Some("challenger".to_string())).await {
         handle_err!(stream, "create_and_share", e);
     }
-    let bank_id = FakeID::Enumerated(2, 0); // <-- ADAPTER-SPECIFIC: the shared Bank
+    let bank_id = FakeID::Enumerated(2, 0);
 
-    // seed the bank with SUI (the valuable reserve).
-    // TODO(finals): seed = Coin<SUI> ~1_000_000 from the challenger gas / a split; pin FakeID.
-    let seed_coin = FakeID::Enumerated(0, 0); // <-- ADAPTER-SPECIFIC
+    let seed_coin = FakeID::Enumerated(0, 0);
     if let Err(e) = suitf.call_function(
         chall_addr, "bank", "fund",
         vec![SuiValue::Object(bank_id, None), SuiValue::Object(seed_coin, None)],
@@ -92,25 +88,22 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
         handle_err!(stream, "fund<SUI>", e);
     }
 
-    // mint 1_000_000 CHEAP to the solver.
-    // TODO(finals): treasury = the TreasuryCap<CHEAP> created by cheap::init (owned by challenger); pin FakeID.
-    let treasury = FakeID::Enumerated(1, 0); // <-- ADAPTER-SPECIFIC
-    let solver_addr = "0x0"; // TODO(finals): the solver account address in the adapter
+    let treasury = FakeID::Enumerated(1, 0);
+    let solver_addr = "0x0";
     if let Err(e) = suitf.call_function(
         chall_addr, "cheap", "mint",
         vec![
             SuiValue::Object(treasury, None),
-            SuiValue::MoveValue(serde_json::json!("1000000")),           // amount: u64  (TODO: adapt SuiValue encoding)
-            SuiValue::MoveValue(serde_json::json!(solver_addr)),          // recipient: address
+            SuiValue::MoveValue(serde_json::json!("1000000")),
+            SuiValue::MoveValue(serde_json::json!(solver_addr)),
         ],
         Vec::new(),
         Some("challenger".to_string()),
     ).await {
         handle_err!(stream, "cheap::mint", e);
     }
-    let cheap_coin = FakeID::Enumerated(4, 0); // <-- ADAPTER-SPECIFIC: the minted CHEAP coin owned by solver
+    let cheap_coin = FakeID::Enumerated(4, 0);
 
-    // read + publish the player's solve
     let mut buf = vec![0u8; 200_000];
     let n = match stream.read(&mut buf) {
         Ok(0) => handle_err!(stream, "no solution", "empty"),
@@ -128,7 +121,6 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     };
     let _ = writeln!(stream, "[SERVER] solution published at: {}", sol_addr);
 
-    // run the solve: solution::solve(bank, cheap_coin)
     if let Err(e) = suitf.call_function(
         sol_addr, "solve", "solve",
         vec![SuiValue::Object(bank_id, None), SuiValue::Object(cheap_coin, None)],
@@ -138,7 +130,6 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
         handle_err!(stream, "solve", e);
     }
 
-    // validate: flag<SUI>(bank) aborts unless the SUI holdings are drained
     match suitf.call_function(
         chall_addr, "bank", "flag",
         vec![SuiValue::Object(bank_id, None)],

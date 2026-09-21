@@ -51,8 +51,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let listener = TcpListener::bind("0.0.0.0:1337")?;
     loop {
         let (stream, _) = listener.accept()?;
-        // handle()'s future holds non-Send framework types, so it can't ride
-        // tokio::spawn. One os thread + a current-thread runtime per connection.
         std::thread::spawn(move || {
             let rt = match tokio::runtime::Builder::new_current_thread().enable_all().build() {
                 Ok(rt) => rt,

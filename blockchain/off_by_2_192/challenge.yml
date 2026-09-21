@@ -1,15 +1,15 @@
-name: Off By 2^192
+name: Tidepool
 author: h7
 category: blockchain
 difficulty: insane
 description: |
-  A Sui liquidity pool with the usual guardrails: to mint liquidity you must pay for it, and
-  the amount you owe is computed with a checked fixed-point shift that refuses to proceed on
-  overflow. The math looks careful. It is not careful enough.
+  Tidepool is a Sui liquidity pool. To mint liquidity you pay for it, and the amount you owe is
+  computed with a checked fixed-point conversion that refuses to proceed on overflow. The math
+  looks careful.
 
-  Read `checked_shlw`. Mint yourself the pool's whole reserve for nothing. Launch an instance
-  and connect over the provided endpoint.
-sub_description: "a pool that computes what you owe with a checked shift. the overflow check is off by 2^192."
+  Mint yourself the pool's whole reserve for nothing. Launch an instance and connect over the
+  provided endpoint.
+sub_description: "a sui pool that prices your deposits through a checked fixed-point conversion. the math looks careful."
 points: 1000
 flags:
   - type: dynamic

@@ -42,7 +42,6 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
         Err(e) => handle_err!(stream, "init failed", e),
     };
 
-    // publish the challenge module
     let mod_path = "./chall/build/off_by_2_192/bytecode_modules/pool.mv";
     let src_path = "./chall/build/off_by_2_192/debug_info/pool.json";
     let mod_bytes = match std::fs::read(mod_path) {
@@ -68,10 +67,7 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     };
     let _ = writeln!(stream, "[SERVER] challenge published at: {}", chall_addr);
 
-    // seed + share the pool.
-    // TODO(finals): `seed` must be a Coin<SUI> (~1_000_000) — source it from the challenger's
-    // gas coin / a split; pin the FakeID on the real adapter object numbering.
-    let seed_coin = FakeID::Enumerated(0, 0); // <-- ADAPTER-SPECIFIC, pin on run
+    let seed_coin = FakeID::Enumerated(0, 0);
     if let Err(e) = suitf
         .call_function(
             chall_addr,
@@ -85,10 +81,8 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     {
         handle_err!(stream, "create_and_share", e);
     }
-    // the shared Pool object id after create_and_share:
-    let pool_id = FakeID::Enumerated(2, 0); // <-- ADAPTER-SPECIFIC, pin on run
+    let pool_id = FakeID::Enumerated(2, 0);
 
-    // read + publish the player's solve module
     let mut buf = vec![0u8; 200_000];
     let n = match stream.read(&mut buf) {
         Ok(0) => handle_err!(stream, "no solution", "empty"),
@@ -113,7 +107,6 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     };
     let _ = writeln!(stream, "[SERVER] solution published at: {}", sol_addr);
 
-    // run the solve
     if let Err(e) = suitf
         .call_function(
             sol_addr,
@@ -128,7 +121,6 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
         handle_err!(stream, "solve", e);
     }
 
-    // validate: flag() aborts unless the reserve is drained
     match suitf
         .call_function(
             chall_addr,

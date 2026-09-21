@@ -78,7 +78,6 @@ async fn handle(mut socket: TcpStream) -> Result<(), Box<dyn Error>> {
     let payer_kp = challenge.ctx.payer.insecure_clone();
     let payer = payer_kp.pubkey();
 
-    // mint A: token-2022 with a transfer fee
     let a_space = ExtensionType::try_calculate_account_len::<Mint>(&[ExtensionType::TransferFeeConfig]).unwrap();
     challenge.run_ixs_full(&[
         system_instruction::create_account(&payer, &mint_a.pubkey(), Rent::default().minimum_balance(a_space), a_space as u64, &tid()),
@@ -86,7 +85,6 @@ async fn handle(mut socket: TcpStream) -> Result<(), Box<dyn Error>> {
         token_ix::initialize_mint2(&tid(), &mint_a.pubkey(), &payer, None, DECIMALS)?,
     ], &[&payer_kp, &mint_a], &payer).await?;
 
-    // mint B: plain token-2022
     let b_space = ExtensionType::try_calculate_account_len::<Mint>(&[]).unwrap();
     challenge.run_ixs_full(&[
         system_instruction::create_account(&payer, &mint_b.pubkey(), Rent::default().minimum_balance(b_space), b_space as u64, &tid()),
