@@ -6,11 +6,13 @@ use sui::sui::SUI;
 
 const E_OVERFLOW: u64 = 1;
 const E_INSUFFICIENT: u64 = 2;
+const E_NOT_SOLVED: u64 = 99;
 
 public struct Pool has key {
     id: UID,
     reserve: Balance<SUI>,
     total_lp: u256,
+    initial: u64,
 }
 
 public struct LP has key, store {
@@ -37,12 +39,17 @@ fun required_tokens(lp_amount: u256): u64 {
 }
 
 public fun create(seed: Coin<SUI>, ctx: &mut TxContext): Pool {
-    let amount = (coin::value(&seed) as u256);
-    Pool { id: object::new(ctx), reserve: coin::into_balance(seed), total_lp: amount }
+    let val = coin::value(&seed);
+    Pool { id: object::new(ctx), reserve: coin::into_balance(seed), total_lp: (val as u256), initial: val }
 }
 
 public fun share(pool: Pool) {
     transfer::share_object(pool);
+}
+
+// win check: aborts unless the reserve has been drained to under 1% of its initial size
+public fun flag(pool: &Pool) {
+    assert!(balance::value(&pool.reserve) * 100 <= pool.initial, E_NOT_SOLVED);
 }
 
 public fun add_liquidity(pool: &mut Pool, lp_amount: u256, payment: &mut Coin<SUI>, ctx: &mut TxContext): LP {

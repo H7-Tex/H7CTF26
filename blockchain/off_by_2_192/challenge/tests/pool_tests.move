@@ -25,6 +25,7 @@ fun drains_pool_via_overflow() {
     let out = pool::remove_liquidity(&mut pool, lp, ts::ctx(&mut sc));
     assert!(coin::value(&out) >= 999_000, 0);
     assert!(pool::reserve_value(&pool) <= 1_000, 1);
+    pool::flag(&pool);
     coin::burn_for_testing(out);
 
     test_utils::destroy(pool);
