@@ -61,7 +61,7 @@ async fn handle(mut socket: TcpStream) -> Result<(), Box<dyn Error>> {
     let program = builder
         .add_program("./fee_swap.so", Some(Pubkey::new_unique()))
         .ok_or("duplicate program")?;
-    let (authority, bump) = Pubkey::find_program_address(&[AUTH_SEED], &program);
+    let (authority, _bump) = Pubkey::find_program_address(&[AUTH_SEED], &program);
 
     let user = Keypair::new();
     let mint_a = Keypair::new();
@@ -112,7 +112,7 @@ async fn handle(mut socket: TcpStream) -> Result<(), Box<dyn Error>> {
     let pool_space: usize = 200;
     challenge.run_ixs_full(&[
         system_instruction::create_account(&payer, &pool.pubkey(), Rent::default().minimum_balance(pool_space), pool_space as u64, &program),
-        enc(program, Ix::InitPool { bump }, vec![
+        enc(program, Ix::InitPool, vec![
             AccountMeta::new(pool.pubkey(), false),
             AccountMeta::new_readonly(vault_a.pubkey(), false),
             AccountMeta::new_readonly(vault_b.pubkey(), false),

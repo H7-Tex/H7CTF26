@@ -16,6 +16,7 @@ flags:
     dynamic_flag_prefix: "H7CTF{"
 provide:
   - path: challenge/sources/bank.move
+  - path: challenge/sources/cheap.move
   - path: challenge/Move.toml
 deploy:
   resource_type: docker
