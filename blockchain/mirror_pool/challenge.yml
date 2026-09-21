@@ -1,0 +1,30 @@
+name: Mirror Pool
+author: h7
+category: blockchain
+difficulty: insane
+description: |
+  MirrorLend lets you borrow against your Mirror LP tokens — it prices them straight from
+  the pool's own virtual price, the number every integrator trusts. Read the lending
+  contract: it's clean. Read the pool: it's clean too. Borrow more than your collateral is
+  worth, and drain the lender. Launch an instance and connect over the provided endpoint.
+sub_description: "a lender that trusts an AMM's live LP price. both contracts are clean on their own."
+points: 1000
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+provide:
+  - path: challenge/src/Setup.sol
+  - path: challenge/src/Pool.sol
+  - path: challenge/src/MirrorLend.sol
+  - path: challenge/src/Token.sol
+  - path: challenge/src/IERC20.sol
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/mirror_pool
+  cpu_limit: "0.5"
+  memory_limit: 512Mi
+  exposed_ports:
+    - { port: 1337, protocol: tcp }
+  instance_timeout: 1800
+  max_extensions: 2
