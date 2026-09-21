@@ -29,6 +29,7 @@ fun cross_type_drain() {
     let loot = bank::withdraw<SUI>(&mut bank, voucher, ts::ctx(&mut sc));
     assert!(coin::value(&loot) == 1_000_000, 0);
     assert!(bank::balance_of<SUI>(&bank) == 0, 1);
+    bank::flag<SUI>(&bank);
 
     coin::burn_for_testing(loot);
     test_utils::destroy(bank);

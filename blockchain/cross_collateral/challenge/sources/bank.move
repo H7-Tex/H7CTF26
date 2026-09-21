@@ -6,6 +6,7 @@ use sui::balance::{Self, Balance};
 use sui::coin::{Self, Coin};
 
 const E_INSUFFICIENT: u64 = 1;
+const E_NOT_SOLVED: u64 = 99;
 
 public struct Bank has key {
     id: UID,
@@ -59,4 +60,9 @@ public fun balance_of<T>(bank: &Bank): u64 {
     } else {
         0
     }
+}
+
+// win check: aborts unless the bank's holdings of asset T have been drained
+public fun flag<T>(bank: &Bank) {
+    assert!(balance_of<T>(bank) == 0, E_NOT_SOLVED);
 }
