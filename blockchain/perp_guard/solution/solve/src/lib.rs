@@ -18,7 +18,6 @@ fn process(_program_id: &Pubkey, accounts: &[AccountInfo], data: &[u8]) -> Progr
     let obligation = next_account_info(it)?;
     let owner = next_account_info(it)?;
 
-    // perp_guard Ix::OpenMany { collateral: 0, debt: 0, count } -> variant 5, two u64 zeros, u32 count
     let mut ix_data = vec![5u8];
     ix_data.extend_from_slice(&0u64.to_le_bytes());
     ix_data.extend_from_slice(&0u64.to_le_bytes());

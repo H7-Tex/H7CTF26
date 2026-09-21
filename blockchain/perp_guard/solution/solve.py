@@ -51,7 +51,6 @@ def main():
         elif text.startswith("obligation:"):
             obligation = text.split()[1]
 
-    # one OpenMany round: the solve program cpi-opens OPEN_COUNT junk positions in a single tx
     f.write(f"4\nr {program}\nr {market}\nw {obligation}\ns {user}\n4\n".encode())
     f.write(OPEN_COUNT.to_bytes(4, "little"))
     f.flush()

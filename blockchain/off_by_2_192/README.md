@@ -1,12 +1,12 @@
-# Off By 2^192
+# Tidepool
 
 **Category:** blockchain (Sui / Move)
 **Difficulty:** insane
 
-A constant-sum-ish liquidity pool on Sui. To mint `lp_amount` of liquidity you call
-`add_liquidity` and pay the token amount the pool computes you owe. That amount is derived with
-a **checked** fixed-point left-shift — the kind that is supposed to abort rather than let a
-number silently wrap. Redeem your LP later and you get back your share of the reserve.
+Tidepool is a liquidity pool on Sui. To mint `lp_amount` of liquidity you call `add_liquidity`
+and pay the token amount the pool computes you owe — an amount derived through a **checked**
+fixed-point conversion that is meant to abort rather than let a number wrap. Redeem your LP
+later and you get back your share of the reserve.
 
 You start with nothing. Walk away with the pool's entire reserve.
 
@@ -27,6 +27,5 @@ submit your solve transaction.
 
 ## Notes
 
-This is the shape of a real, nine-figure Sui exploit. The bug is one comparison operator in a
-helper that everything downstream trusts. No missing assertion, no unchecked arithmetic that a
-linter would flag — the overflow guard is *present*, it just guards the wrong boundary.
+Every account is validated and every arithmetic path is guarded. There is no missing check to
+find. Read the conversion the pool trusts, and the numbers it produces at the edges.

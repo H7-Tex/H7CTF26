@@ -13,8 +13,6 @@ public struct Bank has key {
     balances: Bag,
 }
 
-// a claim on `value` units of the bank. NOTE: it records an amount but not the asset type
-// it was minted against.
 public struct Voucher has key, store {
     id: UID,
     value: u64,
@@ -66,7 +64,6 @@ public fun balance_of<T>(bank: &Bank): u64 {
     }
 }
 
-// win check: aborts unless the bank's holdings of asset T have been drained
 public fun flag<T>(bank: &Bank) {
     assert!(balance_of<T>(bank) == 0, E_NOT_SOLVED);
 }

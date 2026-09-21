@@ -20,9 +20,6 @@ public struct LP has key, store {
     amount: u256,
 }
 
-// checked shift-left-by-64. flags overflow only when n > (0xffff_ffff_ffff_ffff << 192),
-// but n << 64 already overflows u256 for any n >= (1 << 192): values in
-// [1<<192, 0xffff..<<192] shift-truncate while overflow reports false.
 public fun checked_shlw(n: u256): (u256, bool) {
     let mask = 0xffffffffffffffffu256 << 192;
     if (n > mask) {
@@ -51,7 +48,6 @@ public fun create_and_share(seed: Coin<SUI>, ctx: &mut TxContext) {
     share(create(seed, ctx));
 }
 
-// win check: aborts unless the reserve has been drained to under 1% of its initial size
 public fun flag(pool: &Pool) {
     assert!(balance::value(&pool.reserve) * 100 <= pool.initial, E_NOT_SOLVED);
 }
