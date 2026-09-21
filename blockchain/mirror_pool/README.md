@@ -1,13 +1,16 @@
 # Mirror Pool
 
-- **Category:** blockchain (EVM)
-- **Difficulty:** insane
-- **Author:** h7
+`blockchain` · `evm` · `insane`
 
-MirrorLend lets you borrow against your Mirror LP tokens. It prices your collateral straight from the pool's own `get_virtual_price()` — the number every integrator trusts. Read the lending contract: it's clean. Read the pool: it's clean too.
+mirrorlend lets you borrow against your mirror lp tokens. it prices your collateral straight off the pool's own `get_virtual_price()` — the number every integrator trusts. read the lender: clean. read the pool: clean too.
 
-Borrow more than your collateral is worth, and drain the lender.
+borrow more than your collateral is worth, drain the lender.
 
-**Files:** `Setup.sol`, `Pool.sol`, `MirrorLend.sol`, `Token.sol`, `IERC20.sol`
+#### connect
+launch an instance, point your rpc at the endpoint. you get the rpc, your key, the setup address. flag drops when `Setup.isSolved()` goes true.
 
-**Connect:** launch your instance and connect over the provided endpoint; the flag is revealed when `Setup.isSolved()` returns true.
+#### provided
+- `challenge/src/*.sol`
+
+#### notes
+the obvious move — donate to pump the virtual price, then over-borrow — is a dead end; the price only ever moves the wrong way for you, and the borrow check scales with it. you need a *moment* where the price you borrow at and the price the check later sees don't agree.

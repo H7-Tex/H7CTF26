@@ -1,22 +1,22 @@
-# Contributing — H7CTF'26 challenge standard
+# contributing — the h7ctf'26 challenge standard
 
-The bar: every challenge teaches a real technique, ships a working reference solve and a writeup, and deploys cleanly on Anvil. No guess-the-flag. Flag format: `H7CTF{...}`.
+the bar: every challenge teaches a real technique, ships a working reference solve + a writeup, and deploys clean on anvil. no guess-the-flag. flag format `H7CTF{...}`.
 
-## Per-challenge directory
+#### per-challenge directory
 
 ```
 <category>/<name>/
 ├── challenge.yml
 ├── README.md
-├── challenge/     source, Dockerfile, and the real flag
+├── challenge/     source, dockerfile, and the real flag
 ├── handout/       exactly what players download (no real flag)
-├── solution/      solve.py + how-to-run
+├── solution/      solve + how-to-run
 └── writeup/       README.md (intended path) + img/
 ```
 
-`<name>` is kebab-case. Multi-service challenges nest per-service dirs under `challenge/` with a `docker-compose.yml`.
+`<name>` is lowercase_underscores. multi-service challenges nest per-service dirs under `challenge/` with a `docker-compose.yml`. download-only challenges skip `handout/` and just `provide:` straight from `challenge/`.
 
-## `challenge.yml`
+#### challenge.yml
 
 ```yaml
 name: string                 # required
@@ -45,25 +45,22 @@ deploy:                       # omit for static-download challenges
   ova: challenge/box.ova     # vm only
 ```
 
-Anvil notes: `is_regex` and `network_mode` are unsupported (exact-match flags only); dynamic per-instance flags cover the unique-flag need. Full contract: `../h7ctf26-challenge-schema.md`.
+anvil notes: `is_regex` and `network_mode` aren't supported (exact-match flags only); dynamic per-instance flags cover the unique-flag need. full contract: `../h7ctf26-challenge-schema.md`.
 
-## Flag / secrets rule
+#### flag / secrets rule
+- the real flag lives only in `challenge/flag.txt` (or gets injected per-instance via `$FLAG`) and never appears in `handout/` or `provide:`. if a handout needs a flag file, ship a dummy `H7CTF{dummy}`.
+- no infra secrets (tokens, deploy creds) in the repo.
 
-- The real flag lives only in `challenge/flag.txt` (or is injected per-instance via `$FLAG`) and is never in `handout/` or `provide:`. If a handout needs a flag file, ship a dummy `H7CTF{dummy}`.
-- No infra secrets (tokens, deploy creds) in the repo.
-
-## Ship checklist
-
+#### ship checklist
 - [ ] `challenge.yml` valid; all required fields.
 - [ ] `README.md` card complete.
-- [ ] Builds clean locally (`docker compose up`).
-- [ ] Hosted service hardened: non-root, resource limits, jail where it takes untrusted input.
-- [ ] `solution/solve.py` recovers the flag on a fresh instance.
+- [ ] builds clean locally (`docker compose up`).
+- [ ] hosted service hardened: non-root, resource limits, jail where it takes untrusted input.
+- [ ] `solution/` recovers the flag on a fresh instance.
 - [ ] `writeup/README.md` explains the intended path; screenshots in `writeup/img/`.
-- [ ] No real flag in the handout.
-- [ ] Difficulty + flag format correct.
+- [ ] no real flag in the handout.
+- [ ] difficulty + flag format correct.
 
-## Conventions
-
-- Commits: `vX.X.X` subject (bump the last digit for most work), body is lowercase `- pointer` bullets. No AI trailer.
-- Code: laziest thing that works (ponytail). **No comments** — rare exceptions lowercase.
+#### conventions
+- commits: `vX.X.X` subject (bump the last digit for most work), body is lowercase `- pointer` bullets. no ai trailer.
+- code: laziest thing that works (ponytail). no comments.
