@@ -1,56 +1,29 @@
 # Cross Collateral — writeup
 
-## The vulnerability
+`priced cross-asset bank, with the conversion rate pointing the wrong way`
 
-The bank stores balances per asset type (a `Bag` keyed by `TypeName`), and `deposit` /
-`withdraw` are both generic over the asset type `T`:
+#### the setup
 
-```move
-public fun deposit<T>(bank: &mut Bank, coin: Coin<T>, ctx): Voucher {
-    let value = coin::value(&coin);
-    fund(bank, coin);                       // adds to the T balance
-    Voucher { id: object::new(ctx), value } // <-- records `value`, but NOT T
-}
+deposit any listed asset, get a `Ticket`, redeem it for any *other* listed asset at the bank's posted prices. so this is not the naive "untyped receipt" bug — the bank prices everything and converts between assets. trading junk up to SUI should cost you, not pay.
 
-public fun withdraw<T>(bank: &mut Bank, voucher: Voucher, ctx): Coin<T> {
-    let Voucher { id, value } = voucher;
-    object::delete(id);
-    // pays out `value` of WHATEVER T the caller names
-    coin::from_balance(balance::split(bag::borrow_mut(&mut bank.balances, type_name::with_defining_ids<T>()), value), ctx)
-}
-```
+#### the bug
 
-The `Voucher` carries the *amount* but not the *type* it was minted against. `withdraw<T>` is
-generic, so the caller chooses `T` freely, and the only thing tying a withdrawal to a deposit
-is a bare `u64`. But a `u64` means completely different things across assets: 1,000,000 units
-of a worthless token is not 1,000,000 units of SUI. The type that should have flowed from
-deposit to withdrawal was dropped.
-
-Move's type system is otherwise airtight here — the bug is precisely the *absence* of a type
-parameter where one was needed. `Voucher` should have been `Voucher<phantom T>`.
-
-## The exploit
-
-You are funded with a large amount of a worthless token `CHEAP`:
-
-1. `deposit<CHEAP>(1_000_000 CHEAP)` → `Voucher { value: 1_000_000 }`. Costs you nothing real.
-2. `withdraw<SUI>(voucher)` → the bank splits `1_000_000` out of its **SUI** balance and hands
-   it to you.
-
-The bank's SUI reserve is gone; you funded it with a token no one wants. `sui move test`
-proves it (`cross_type_drain`): seed 1,000,000 SUI, deposit 1,000,000 CHEAP, withdraw SUI,
-reserve ends at 0.
-
-## The fix
-
-Bind the voucher to the deposited type:
+`withdraw` converts the ticket's value from its asset into the withdrawal asset — with the ratio inverted:
 
 ```move
-public struct Voucher<phantom T> has key, store { id: UID, value: u64 }
-
-public fun deposit<T>(bank, coin: Coin<T>, ctx): Voucher<T> { ... }
-public fun withdraw<T>(bank, voucher: Voucher<T>, ctx): Coin<T> { ... }
+let in_price  = *table::borrow(&bank.prices, asset);      // deposited asset
+let out_price = *table::borrow(&bank.prices, out_key);    // asset you're taking
+let out = value * out_price / in_price;                   // flipped
 ```
 
-Now `withdraw<SUI>` only accepts a `Voucher<SUI>`, which only `deposit<SUI>` can mint — the
-type flows end to end and the cross-asset redemption stops compiling.
+to convert `value` units of the deposited asset (price `in_price`) into `T` (price `out_price`), the honest math is `value * in_price / out_price` — value it in a common unit, then divide by the output's price. this does `out_price / in_price`. backwards.
+
+with SUI listed at 1000 and CHEAP at 1, depositing `V` CHEAP and withdrawing SUI pays `V * 1000 / 1 = 1000V` SUI instead of the honest `V / 1000`. a million-x swing in your favour.
+
+#### the play
+
+funded with CHEAP: `deposit<CHEAP>(1000)` → `withdraw<SUI>(ticket)` → `1000 * 1000 / 1 = 1_000_000` SUI. the whole reserve for a bag of junk. `sui move test` proves it (SUI balance → 0).
+
+#### the fix
+
+`out = value * in_price / out_price`. price the input in a common unit first, *then* divide by the output's price — and never let a withdrawal exceed the deposit's honest value.
