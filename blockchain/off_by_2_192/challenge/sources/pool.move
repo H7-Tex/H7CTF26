@@ -6,6 +6,8 @@ use sui::sui::SUI;
 
 const E_OVERFLOW: u64 = 1;
 const E_INSUFFICIENT: u64 = 2;
+const E_TOO_MUCH: u64 = 3;
+const E_NO_FREE: u64 = 4;
 const E_NOT_SOLVED: u64 = 99;
 
 public struct Pool has key {
@@ -53,7 +55,9 @@ public fun flag(pool: &Pool) {
 }
 
 public fun add_liquidity(pool: &mut Pool, lp_amount: u256, payment: &mut Coin<SUI>, ctx: &mut TxContext): LP {
+    assert!(lp_amount <= (1u256 << 200), E_TOO_MUCH);
     let required = required_tokens(lp_amount);
+    assert!(required > 0, E_NO_FREE);
     assert!(coin::value(payment) >= required, E_INSUFFICIENT);
     let deposit = coin::split(payment, required, ctx);
     balance::join(&mut pool.reserve, coin::into_balance(deposit));

