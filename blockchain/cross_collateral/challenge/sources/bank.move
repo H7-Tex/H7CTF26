@@ -28,8 +28,12 @@ public fun share(bank: Bank) {
     transfer::share_object(bank);
 }
 
+public fun create_and_share(ctx: &mut TxContext) {
+    share(create(ctx));
+}
+
 public fun fund<T>(bank: &mut Bank, coin: Coin<T>) {
-    let key = type_name::with_defining_ids<T>();
+    let key = type_name::get<T>();
     if (bag::contains(&bank.balances, key)) {
         let bal: &mut Balance<T> = bag::borrow_mut(&mut bank.balances, key);
         balance::join(bal, coin::into_balance(coin));
@@ -47,14 +51,14 @@ public fun deposit<T>(bank: &mut Bank, coin: Coin<T>, ctx: &mut TxContext): Vouc
 public fun withdraw<T>(bank: &mut Bank, voucher: Voucher, ctx: &mut TxContext): Coin<T> {
     let Voucher { id, value } = voucher;
     object::delete(id);
-    let key = type_name::with_defining_ids<T>();
+    let key = type_name::get<T>();
     let bal: &mut Balance<T> = bag::borrow_mut(&mut bank.balances, key);
     assert!(balance::value(bal) >= value, E_INSUFFICIENT);
     coin::from_balance(balance::split(bal, value), ctx)
 }
 
 public fun balance_of<T>(bank: &Bank): u64 {
-    let key = type_name::with_defining_ids<T>();
+    let key = type_name::get<T>();
     if (bag::contains(&bank.balances, key)) {
         balance::value<T>(bag::borrow(&bank.balances, key))
     } else {

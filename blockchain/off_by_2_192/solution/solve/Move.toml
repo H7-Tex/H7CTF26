@@ -1,6 +1,11 @@
 [package]
 name = "solution"
-edition = "2024"
+version = "0.0.1"
+edition = "2024.alpha"
 
 [dependencies]
 off_by_2_192 = { local = "../../challenge" }
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "devnet-v1.49.0" }
+
+[addresses]
+solution = "0x0"

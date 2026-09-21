@@ -47,6 +47,10 @@ public fun share(pool: Pool) {
     transfer::share_object(pool);
 }
 
+public fun create_and_share(seed: Coin<SUI>, ctx: &mut TxContext) {
+    share(create(seed, ctx));
+}
+
 // win check: aborts unless the reserve has been drained to under 1% of its initial size
 public fun flag(pool: &Pool) {
     assert!(balance::value(&pool.reserve) * 100 <= pool.initial, E_NOT_SOLVED);
