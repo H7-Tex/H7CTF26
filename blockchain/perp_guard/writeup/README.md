@@ -32,7 +32,11 @@ wr_u64(&mut data, off + 8, debt);
 wr_u64(&mut data, COUNT_OFF, (count + 1) as u64);
 ```
 
-So growing the array is cheap for the borrower, but `Liquidate` grows linearly with it.
+So growing the array is cheap for the borrower, but `Liquidate` grows linearly with it. And
+`OpenMany` appends in bulk — `count` positions per instruction, still O(1) each — so the array
+can be inflated to tens of thousands of entries in a single transaction while `Liquidate`
+still has to walk every one of them in a single transaction of its own. That asymmetry
+(cheap, batchable append vs. all-at-once linear liquidation) is the whole bug.
 Push the position count high enough and `Liquidate` exceeds the transaction compute budget
 (1.4M CU) and reverts *every time it is called*. The obligation becomes permanently
 un-liquidatable. The per-position health check in `OpenPosition` never lets you open a single
@@ -52,12 +56,17 @@ bug in the *design* of `Liquidate` against attacker-growable state — a real So
 2. Pad the obligation with thousands of zero-value positions. Zero positions pass the
    per-position health check (`0 <= 0`) and add nothing to collateral or debt, so the
    obligation stays underwater once the price drops — but the position *count* explodes.
-   Doing this one instruction at a time is far too slow, so the reference solve is a small
-   Solana program that CPIs `OpenPosition { 0, 0 }` in a loop within one transaction. Note
-   Solana's per-transaction instruction-trace cap of 64 (top-level + all CPIs): each padding
-   tx can fit ~55 `OpenPosition` CPIs, so the solve runs many rounds (the compute limit is
-   raised to 1.4M per round). The exact `COUNT`/`ROUNDS`/`OBLIGATION_BYTES` are calibrated on
-   the real SBF runtime so that a fully padded obligation pushes `Liquidate` past 1.4M CU.
+   `OpenMany { collateral: 0, debt: 0, count }` appends `count` positions in a single
+   instruction — each append is O(1) (one raw slot write + a counter bump), so ~30k fit under
+   one 1.4M-CU transaction. Zero positions pass the per-position health check and add nothing
+   to collateral or debt, so the obligation stays underwater once the price drops while its
+   position count explodes. One `OpenMany` tx is enough. (This deliberately sidesteps Solana's
+   64-instruction-trace cap, which would throttle a CPI loop of single `OpenPosition` calls to
+   ~60 per tx.) The reference solve is a tiny program that CPIs `OpenMany` once;
+   `solution/solve.py` uploads it and fires a single round. `count` / `OBLIGATION_BYTES` are
+   set from the SBF measurement so the padded obligation pushes `Liquidate` past 1.4M CU
+   (~56 CU/position → crosses at ≈25k positions for the aggregate liquidate; lower with the
+   per-position valuation).
 3. The server drops the oracle price to 0.5. The real position is now underwater
    (debt 800_000 > collateral 1_000_000 · 0.5 · 0.8 = 400_000).
 4. The server confirms — in native code, with no compute limit — that the obligation is
