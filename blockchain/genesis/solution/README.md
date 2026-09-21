@@ -1,24 +1,18 @@
 # Genesis — reference solve
 
-The proven reference exploit is the passing forge test at `../challenge/test/Solve.t.sol`
-(`forge test` is green): it deploys `Setup`, runs the full attack, and asserts `isSolved()`.
+proven exploit is the green forge test at `../challenge/test/Solve.t.sol` — `forge test` deploys `Setup`, runs the full attack, asserts `isSolved()`. there's a second test proving the naive donation (no `sync()`) leaves the victim with real shares — that's the trap.
 
-## Exploit — ERC-4626 first-depositor inflation
+#### the play — erc-4626 inflation you have to re-arm
 
-The vault's inflation guard is a no-op (`_decimalsOffset()` returns 0), and `totalAssets()`
-reads the raw token balance, which anyone can inflate with a bare transfer.
+`totalAssets()` returns an internal `reserve` counter, not `asset.balanceOf(this)`, so a bare donation is invisible until someone calls the unguarded `sync()` that slams `reserve` up to the real balance. re-arm it, then the classic first-depositor inflation is live.
 
-1. As the first depositor, `deposit` 1 wei of the asset → you mint 1 share.
-2. Donate a large amount of the asset straight to the vault (a plain `transfer`, not a
-   `deposit`). `totalAssets()` jumps while `totalSupply` stays 1.
-3. The anchor investor's `victimDeposit()` now computes `assets * totalSupply / totalAssets()`,
-   which rounds their whole deposit **down to 0 shares** — their assets are absorbed into your
-   single share.
-4. Redeem your share and drain the vault. `isSolved()` holds:
-   `victimDeposited && vault.balanceOf(victim) == 0 && token.balanceOf(vault) < 1 ether`.
+1. `deposit(1, you)` — supply 0 → 1 share, `reserve` = 1.
+2. `transfer(vault, 100 ether)` — real balance jumps, `reserve` still 1 (donation dormant).
+3. `sync()` — `reserve` = 100e18 + 1. armed.
+4. victim's `victimDeposit()` → `convertToShares(100e18) = 100e18 * 1 / (100e18+1) = 0`. they get **0 shares**, their 100 ether stays in the vault.
+5. `redeem(1)` — you own 100% of supply, take the whole reserve.
 
-## Against a live instance
+victim shares 0, vault drained → `isSolved()`.
 
-`GET /` on the launched instance returns the RPC endpoint, your private key, and the `Setup`
-address. Replay the steps above with a forge script (`--rpc-url $RPC --private-key $KEY
---broadcast`) or `cast`, then `GET /flag`.
+#### against a live instance
+`GET /` returns the rpc endpoint, your private key, and the `Setup` address. replay with a forge script (`--rpc-url $RPC --private-key $KEY --broadcast`) or `cast`, then `GET /flag`.

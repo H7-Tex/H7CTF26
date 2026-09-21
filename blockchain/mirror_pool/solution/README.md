@@ -1,26 +1,15 @@
 # Mirror Pool — reference solve
 
-The proven reference exploit is the passing forge test at `../challenge/test/Solve.t.sol`
-(`forge test` is green): it deploys `Setup`, runs the full attack, and asserts `isSolved()`.
+proven exploit is the green forge test at `../challenge/test/Solve.t.sol` — `forge test` deploys `Setup`, runs the full attack, asserts `isSolved()`.
 
-## Exploit — read-only reentrancy across two clean contracts
+#### the play — read-only reentrancy across two clean contracts
 
-`MirrorLend` prices LP collateral off `Pool.get_virtual_price()` live. `Pool.removeLiquidity()`
-sends ETH to the caller **before** it updates its reserves, so mid-callback the virtual price is
-skewed high.
+`MirrorLend` prices lp collateral off `Pool.get_virtual_price()` live. `Pool.removeLiquidity()` sends you eth *before* it finishes settling reserves, so mid-callback the virtual price reads high.
 
-1. Add liquidity to the `Pool`, take the LP tokens, and deposit them into `MirrorLend` as
-   collateral.
-2. Call `Pool.removeLiquidity()`. It transfers ETH to you first; your `receive()` runs while the
-   pool's reserves are momentarily inconsistent, so `get_virtual_price()` reports an inflated
-   LP price.
-3. Inside that callback, call `MirrorLend.borrow()`. It values your LP collateral at the
-   inflated price and lets you borrow far more than it is worth.
-4. Let `removeLiquidity()` finish; the price snaps back but you have already over-borrowed. The
-   lender is insolvent ⇒ `isSolved()`.
+1. add liquidity to the `Pool`, take the lp, deposit it into `MirrorLend` as collateral.
+2. call `Pool.removeLiquidity()`. it sends eth first — your `receive()` runs while `totalSupply` is already down but the token half is still in the pool, so `get_virtual_price()` reports an inflated lp price.
+3. inside that callback, call `MirrorLend.borrow()`. it values your collateral at the inflated price and lets you borrow far past its worth.
+4. let `removeLiquidity()` finish — price snaps back, you've already over-borrowed. lender's insolvent ⇒ `isSolved()`.
 
-## Against a live instance
-
-`GET /` on the launched instance returns the RPC endpoint, your private key, and the `Setup`
-address. Replay with a forge script (`--rpc-url $RPC --private-key $KEY --broadcast`) or `cast`,
-then `GET /flag`.
+#### against a live instance
+`GET /` returns the rpc endpoint, your private key, and the `Setup` address. replay with a forge script (`--rpc-url $RPC --private-key $KEY --broadcast`) or `cast`, then `GET /flag`.
