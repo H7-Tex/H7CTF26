@@ -1,0 +1,10 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'h7ctf26/evm-harness:latest', '_evm_harness']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '${_AR}/evm-genesis:latest', 'genesis/challenge']
+images:
+  - '${_AR}/evm-genesis:latest'
+options:
+  machineType: 'E2_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
