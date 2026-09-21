@@ -1,0 +1,30 @@
+name: Fee Swap
+author: h7
+category: blockchain
+difficulty: hard
+description: |
+  FeeSwap is a minimal two-asset pool. Send it token A, it sends you back the same amount of
+  token B, and vice versa — a clean 1:1 desk between two stable-ish assets. The pool has a
+  healthy reserve of B that it is very confident it can always honour.
+
+  You are holding token A. Read how the swap accounts for what it sends and what it receives,
+  and walk out with the pool's B reserve. Launch an instance and connect over the provided
+  endpoint.
+sub_description: "a 1:1 swap desk that trusts the amount you say you're sending. you hold a token-2022 with a transfer fee."
+points: 800
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+provide:
+  - path: challenge/program/src/lib.rs
+  - path: challenge/program/Cargo.toml
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/fee_swap
+  cpu_limit: "1"
+  memory_limit: 1Gi
+  exposed_ports:
+    - { port: 1337, protocol: tcp }
+  instance_timeout: 1800
+  max_extensions: 2
