@@ -1,4 +1,4 @@
-FROM rust:1.89-slim AS builder
+FROM rust:1.89-bookworm AS builder
 RUN apt-get update && apt-get install -y curl build-essential pkg-config libudev-dev libssl-dev && rm -rf /var/lib/apt/lists/*
 RUN sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
 ENV PATH="/root/.local/share/solana/install/active_release/bin:${PATH}"
