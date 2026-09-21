@@ -3,13 +3,13 @@ author: h7
 category: blockchain
 difficulty: hard
 description: |
-  CrossCollateral is a multi-asset bank on Sui. Deposit any coin and you get a voucher for
-  what you put in; hand the voucher back and the bank returns your funds. It holds a real
-  reserve of SUI for its honest users.
+  crosscollateral is a multi-asset bank on sui. deposit any listed asset, get a ticket, redeem it
+  later for any other listed asset — converted at the bank's posted prices. it holds a real sui
+  reserve for its honest users.
 
-  You have a bag of a worthless token. Read what a voucher actually remembers about your
-  deposit, and leave with the SUI. Launch an instance and connect over the provided endpoint.
-sub_description: "a bank that hands you a voucher for what you deposit. the voucher remembers how much — but not what."
+  you've got a bag of a worthless listed token. leave with the sui. spin up an instance and
+  connect over the provided endpoint.
+sub_description: "a priced multi-asset bank. trading junk up to sui should cost you. it doesn't."
 points: 800
 flags:
   - type: dynamic
