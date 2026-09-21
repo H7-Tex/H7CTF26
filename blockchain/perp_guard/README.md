@@ -1,36 +1,17 @@
 # Perp Guard
 
-**Category:** blockchain (Solana)
-**Difficulty:** insane
+`blockchain` · `solana` · `insane`
 
-PerpGuard is an on-chain lending market. You post collateral into an obligation, open
-positions against it, and borrow. The market stays solvent through one rule: any position
-that falls below its liquidation threshold can be seized by a keeper, who repays the debt
-and takes the collateral. Every position must always be liquidatable — that is the invariant
-the whole thing rests on.
+perpguard is a solana lending market. post collateral, open positions, borrow against them. the one rule holding the whole thing up: any position that goes underwater can be liquidated by a keeper. every position must stay liquidatable — that's the safety model. and obligations are capped, so a keeper's liquidation can't loop forever.
 
-You are a borrower who intends to default. The oracle is about to mark your collateral down.
-Your job is to walk away with a loan the keepers can never claw back.
+you're a borrower who plans to default. the oracle's about to mark your collateral down. take a loan the keepers can never claw back.
 
-## Goal
+#### connect
+spin up an instance, connect over the endpoint. you get the program id, the keypair you control, and a channel to send solve txs. break "always liquidatable" and the flag is yours.
 
-End with an obligation that is underwater at the oracle price **and** that the keeper's
-`Liquidate` can no longer process. Break the "always liquidatable" invariant, and the flag
-is yours.
-
-## Connect
-
-Launch an instance from the platform and connect to the endpoint. You are handed the deployed
-program id, the keypair you control, and a channel to submit your solve transactions.
-
-## Provided
-
-- `challenge/program/src/lib.rs` — the PerpGuard program
+#### provided
+- `challenge/program/src/lib.rs`
 - `challenge/program/Cargo.toml`
 
-## Notes
-
-There is no missing signature check, no arithmetic overflow, and no unchecked account here —
-a scanner will find nothing. The flaw is in what the program *does*, not in what it forgot to
-verify. Read `Liquidate` and ask what an obligation is allowed to look like by the time a
-keeper needs it.
+#### notes
+no missing signer, no overflow, nothing a scanner trips on. the position cap looks like it bounds the keeper's work — do the arithmetic on what one liquidation actually costs to run, and where that lands against a transaction's budget.

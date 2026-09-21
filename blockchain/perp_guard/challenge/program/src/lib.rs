@@ -15,6 +15,7 @@ pub const SEIZED_OFF: usize = 32;
 pub const COUNT_OFF: usize = 33;
 pub const HEADER: usize = 41;
 pub const POS_SIZE: usize = 16;
+pub const MAX_POSITIONS: usize = 20_000;
 
 #[derive(BorshSerialize, BorshDeserialize, Debug)]
 pub struct Market {
@@ -106,6 +107,9 @@ pub fn process(_program_id: &Pubkey, accounts: &[AccountInfo], input: &[u8]) -> 
                 return Err(ProgramError::MissingRequiredSignature);
             }
             let count = rd_u64(&data, COUNT_OFF) as usize;
+            if count + 1 > MAX_POSITIONS {
+                return Err(ProgramError::InvalidArgument);
+            }
             let off = HEADER + count * POS_SIZE;
             if off + POS_SIZE > data.len() {
                 return Err(ProgramError::AccountDataTooSmall);
@@ -147,6 +151,9 @@ pub fn process(_program_id: &Pubkey, accounts: &[AccountInfo], input: &[u8]) -> 
                 return Err(ProgramError::MissingRequiredSignature);
             }
             let mut n = rd_u64(&data, COUNT_OFF) as usize;
+            if n + (count as usize) > MAX_POSITIONS {
+                return Err(ProgramError::InvalidArgument);
+            }
             for _ in 0..count {
                 let off = HEADER + n * POS_SIZE;
                 if off + POS_SIZE > data.len() {
