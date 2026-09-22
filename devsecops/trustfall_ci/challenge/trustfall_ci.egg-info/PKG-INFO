@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: trustfall-ci
+Version: 1.0.1
+Summary: Trustfall CI black-box CTF challenge
+Requires-Python: >=3.12
+Requires-Dist: fastapi==0.115.6
+Requires-Dist: httpx==0.28.1
+Requires-Dist: uvicorn[standard]==0.34.0

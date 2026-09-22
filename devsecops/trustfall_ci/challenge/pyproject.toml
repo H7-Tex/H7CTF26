@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trustfall-ci"
+version = "1.0.1"
+description = "Trustfall CI black-box CTF challenge"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi==0.115.6",
+  "httpx==0.28.1",
+  "uvicorn[standard]==0.34.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["trustfall*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,119 @@
+services:
+  portal:
+    build: .
+    command: ["portal"]
+    environment:
+      ROLE: portal
+      DATA_DIR: /data
+      INSTANCE_ID: ${INSTANCE_ID:?set INSTANCE_ID}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:?set INTERNAL_TOKEN}
+      SCANNER_URL: http://scanner:8081
+      AGENTS_URL: http://agents:8082
+      MAX_INPUT_BYTES: 262144
+    ports:
+      - "${PUBLIC_PORT:?set PUBLIC_PORT}:8080"
+    volumes:
+      - portal-data:/data
+    depends_on:
+      scanner: { condition: service_healthy }
+      agents: { condition: service_healthy }
+      release: { condition: service_healthy }
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    restart: unless-stopped
+
+  scanner:
+    build: .
+    command: ["scanner"]
+    restart: unless-stopped
+    environment:
+      ROLE: scanner
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:?set INTERNAL_TOKEN}
+      MAX_INPUT_BYTES: 262144
+    expose: ["8081"]
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8081/healthz')"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  agents:
+    build: .
+    command: ["agents"]
+    restart: unless-stopped
+    environment:
+      ROLE: agents
+      DATA_DIR: /data
+      INSTANCE_ID: ${INSTANCE_ID:?set INSTANCE_ID}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:?set INTERNAL_TOKEN}
+      OLLAMA_URL: ${OLLAMA_URL:-http://ollama:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5-coder:7b}
+      OLLAMA_MODEL_DIGEST: ${OLLAMA_MODEL_DIGEST:-dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364}
+      MAX_INPUT_BYTES: 262144
+    volumes:
+      - agents-data:/data
+    expose: ["8082"]
+    depends_on:
+      ollama: { condition: service_healthy, required: false }
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8082/healthz')"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  release:
+    build: .
+    command: ["release"]
+    restart: unless-stopped
+    environment:
+      ROLE: release
+      INSTANCE_ID: ${INSTANCE_ID:?set INSTANCE_ID}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:?set INTERNAL_TOKEN}
+      AGENTS_URL: http://agents:8082
+      PORTAL_URL: http://portal:8080
+      FLAG: ${FLAG:?set FLAG}
+    expose: ["8083"]
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8083/healthz')"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  ollama:
+    image: ollama/ollama:0.5.4
+    profiles: ["local"]
+    environment:
+      OLLAMA_MODELS: /models
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5-coder:7b}
+      OLLAMA_MODEL_DIGEST: ${OLLAMA_MODEL_DIGEST:-dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364}
+    volumes:
+      - ${OLLAMA_MODELS_PATH:?set OLLAMA_MODELS_PATH}:/models:ro
+    expose: ["11434"]
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    healthcheck:
+      # The CLI displays a 12-character manifest prefix; agents health verifies the full digest via /api/tags.
+      test: ["CMD-SHELL", "ollama list | grep -F \"$${OLLAMA_MODEL}\" | grep -F \"$${OLLAMA_MODEL_DIGEST%%????????????????????????????????????????????????????}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+
+volumes:
+  portal-data: {}
+  agents-data: {}

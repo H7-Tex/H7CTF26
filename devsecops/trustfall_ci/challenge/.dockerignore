@@ -1,0 +1,9 @@
+.git
+.venv
+__pycache__
+.pytest_cache
+solution
+writeup
+handout
+event-flag*
+flag.txt
