@@ -1,7 +1,7 @@
 # Trustfall CI
 
-Author: Ahmed
-Category: ai
+Author: Owatron
+Category: DevSecOps
 Difficulty: hard
 
 ## Player premise
