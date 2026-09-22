@@ -27,3 +27,12 @@ only these need pinning on the actual `move-transactional-test-runner` object nu
 - (cross_collateral) the `TreasuryCap<CHEAP>` FakeID from `cheap::init`, the minted CHEAP coin's FakeID, the solver account address, and the `SuiValue` encoding for `cheap::mint`'s pure args (`amount: u64`, `recipient: address`)
 
 flag: when the validating `flag`/`flag<SUI>` call succeeds (no abort), the server emits `$FLAG`.
+
+#### building the images (reproducibility + Cloud Build settings)
+- the patched `sui-ctf-framework` (it defines `fund_account_named`, which upstream otter-sec does **not** have) is **vendored in-repo** at `<chall>/server/vendor/sui-ctf-framework/`, and both `server/Cargo.toml` reference it as `sui-ctf-framework = { path = "vendor/sui-ctf-framework" }`. it lives under `server/` (not a shared top-level `blockchain/vendor/`) on purpose: the Dockerfile's build context is the challenge dir and it only `COPY server ./server` + `COPY challenge ./chall`, so a top-level vendor would be outside the context — under `server/` it rides the existing `COPY` and a clean `git archive` build reproduces with **no Dockerfile change**. do NOT repoint either `Cargo.toml` back at the upstream git (the `fund_account_named` calls won't compile).
+- the full **cold** sui dep tree compiles slower than Cloud Build's **default 1h cap** on the default 8-vCPU builder, so a plain `gcloud builds submit` **TIMEOUTs** (`build exceed the duration(seconds:3600)`) — this is a duration limit, not a code failure. build both sui images with a bigger machine + raised timeout:
+  ```
+  gcloud builds submit <chall> --tag <AR>/h7ctf26/<chall>:latest \
+      --machine-type=E2_HIGHCPU_32 --timeout=7200s
+  ```
+  (or maintain a cached sui base image). whatever builds these for the event must set `--machine-type` + `--timeout`, or the deploy build dies at 1h.
