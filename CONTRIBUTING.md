@@ -45,6 +45,32 @@ deploy:                       # omit for static-download challenges
   ova: challenge/box.ova     # vm only
 ```
 
+**multi-container (compose-style) challenges** are supported: add a `deploy.services:` list and each role becomes its own pod on a private per-instance network, resolvable by name (`http://scanner:8081`). only roles with `public: true` get a route; the rest are internal. per-instance values `${INSTANCE_ID}`, `${INTERNAL_TOKEN}`, `${FLAG}` are substituted into a role's `env` — so `${FLAG}` reaches ONLY the role that declares it (never a player-facing one). `egress: true` opts a role into outbound internet (e.g. a shared LLM). omit `services:` and it's a plain single-image challenge, exactly as before.
+
+```yaml
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/<name>          # shared by all roles unless a role sets its own image
+  cpu_limit: "1.0"
+  memory_limit: 512Mi
+  instance_timeout: 1800
+  services:
+    - name: web                  # pod + service name (compose DNS)
+      command: ["web"]           # -> container args (keeps the image ENTRYPOINT)
+      public: true               # only this role is routed to players
+      ports: [{ port: 8080, protocol: http }]
+      env: { INSTANCE_ID: "${INSTANCE_ID}", BACKEND_URL: "http://backend:9000" }
+    - name: backend              # internal only (no public)
+      command: ["backend"]
+      ports: [{ port: 9000, protocol: http }]
+      env: { INTERNAL_TOKEN: "${INTERNAL_TOKEN}", FLAG: "${FLAG}" }   # FLAG scoped to this role only
+    - name: worker
+      command: ["worker"]
+      egress: true               # outbound internet (blocked by default)
+      env: { LLM_URL: "https://shared-llm.example" }
+```
+
 anvil notes: `is_regex` and `network_mode` aren't supported (exact-match flags only); dynamic per-instance flags cover the unique-flag need. full contract: `../h7ctf26-challenge-schema.md`.
 
 #### flag / secrets rule
