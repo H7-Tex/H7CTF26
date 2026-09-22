@@ -1,0 +1,33 @@
+name: Trustfall CI
+author: Owatron
+category: devsecops
+difficulty: hard
+
+description: |
+  Everyone is automating their CI pipeline, so naturally we kept going.
+  Security scanning, automated review, approvals, release orchestration —
+  Trustfall CI handles the whole thing now. We even gave parts of it agents.
+  Very efficient. Probably fine.
+  You have access to the candidate repository and deployment portal.
+  Reach production and recover the protected secret.
+
+sub_description: |
+  Modern DevSecOps has fewer humans in the loop. Surely that's an improvement.
+
+points: 500
+
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/trustfall_ci
+  cpu_limit: "1.0"
+  memory_limit: 512Mi
+  exposed_ports:
+    - port: 8080
+      protocol: http
+  instance_timeout: 1800
+  max_extensions: 2
