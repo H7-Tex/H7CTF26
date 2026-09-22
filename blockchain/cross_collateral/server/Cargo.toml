@@ -19,4 +19,4 @@ move-transactional-test-runner = { git = "https://github.com/MystenLabs/sui", ta
 sui-types = { git = "https://github.com/MystenLabs/sui", tag = "devnet-v1.49.0", package = "sui-types" }
 sui-transactional-test-runner = { git = "https://github.com/MystenLabs/sui", tag = "devnet-v1.49.0", package = "sui-transactional-test-runner" }
 
-sui-ctf-framework = { path = "../vendor/sui-ctf-framework" }
+sui-ctf-framework = { path = "vendor/sui-ctf-framework" }
