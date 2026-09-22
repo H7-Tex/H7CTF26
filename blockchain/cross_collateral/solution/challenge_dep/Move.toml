@@ -1,0 +1,10 @@
+[package]
+name = "cross_collateral"
+version = "0.0.1"
+edition = "2024.alpha"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "devnet-v1.49.0" }
+
+[addresses]
+cross_collateral = "0x2cecb0d6fcd149afdb2ea766519b24e8333ef1da2a4046a896689c9d6a6a57a2"

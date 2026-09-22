@@ -1,0 +1,10 @@
+[package]
+name = "off_by_2_192"
+version = "0.0.1"
+edition = "2024.alpha"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "devnet-v1.49.0" }
+
+[addresses]
+off_by_2_192 = "0x20f0971f1ae1bbf06e987e9a369e3a928651a63703bb55437877e185be4a686d"

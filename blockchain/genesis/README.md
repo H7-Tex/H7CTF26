@@ -1,6 +1,6 @@
 # Genesis
 
-`blockchain` · `evm` · `hard`
+`blockchain` `evm` `hard`
 
 fresh erc-4626 vault, just went live. some anchor investor is about to drop a fat first deposit into it. you got there first.
 
@@ -15,4 +15,4 @@ spin up an instance, point your rpc at the endpoint. you get the rpc url, your p
 - `challenge/src/Token.sol`
 
 #### notes
-the textbook inflation trick faceplants here — the vault doesn't price what it doesn't know it's holding. read how it decides what it holds. that's the whole game.
+the textbook inflation trick faceplants here. the vault doesn't price what it doesn't know it's holding. read how it decides what it holds. that's the whole game.

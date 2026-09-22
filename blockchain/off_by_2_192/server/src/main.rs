@@ -67,7 +67,20 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     };
     let _ = writeln!(stream, "[SERVER] challenge published at: {}", chall_addr);
 
-    let seed_coin = FakeID::Enumerated(0, 0);
+    // Mint a DISTINCT seed Coin<SUI> instead of reusing a gas coin as the `seed`
+    // arg — passing a gas object as both the argument and the gas payment aborts
+    // with MutableObjectUsedMoreThanOnce. Split a fresh coin off the challenger's
+    // gas (signed by NAME so the runner binds the keypair) and transfer it to the
+    // challenger.
+    if let Err(e) = suitf
+        .fund_account_named("challenger".to_string(), 1_000_000, "challenger".to_string())
+        .await
+    {
+        handle_err!(stream, "fund seed coin", e);
+    }
+    // task ordering: init=0, publish pool=1, fund seed=2 -> the split coin is (2,0)
+    let seed_coin = FakeID::Enumerated(2, 0);
+
     if let Err(e) = suitf
         .call_function(
             chall_addr,
@@ -81,7 +94,18 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     {
         handle_err!(stream, "create_and_share", e);
     }
-    let pool_id = FakeID::Enumerated(2, 0);
+    // create_and_share is task 3 -> the shared Pool is (3,0)
+    let pool_id = FakeID::Enumerated(3, 0);
+
+    // Fund the solver a payment Coin<SUI> for solve()'s `payment` arg.
+    if let Err(e) = suitf
+        .fund_account_named("solver".to_string(), 1_000_000, "solver".to_string())
+        .await
+    {
+        handle_err!(stream, "fund payment coin", e);
+    }
+    // fund payment is task 4 -> the split coin is (4,0)
+    let payment_coin = FakeID::Enumerated(4, 0);
 
     let mut buf = vec![0u8; 200_000];
     let n = match stream.read(&mut buf) {
@@ -112,7 +136,7 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
             sol_addr,
             "solve",
             "solve",
-            vec![SuiValue::Object(pool_id, None)],
+            vec![SuiValue::Object(pool_id, None), SuiValue::Object(payment_coin, None)],
             Vec::new(),
             Some("solver".to_string()),
         )

@@ -1,4 +1,4 @@
-# contributing — the h7ctf'26 challenge standard
+# contributing: the h7ctf'26 challenge standard
 
 the bar: every challenge teaches a real technique, ships a working reference solve + a writeup, and deploys clean on anvil. no guess-the-flag. flag format `H7CTF{...}`.
 
@@ -21,11 +21,11 @@ the bar: every challenge teaches a real technique, ships a working reference sol
 ```yaml
 name: string                 # required
 author: string | [string]   # required
-category: string             # required — matches the parent dir
+category: string             # required, matches the parent dir
 difficulty: easy | medium | hard | insane   # required
 description: string          # required, markdown; gated behind launch when the economy is on
 sub_description: string      # optional, short pre-launch blurb (non-spoilery)
-points: int                  # required — base points
+points: int                  # required, base points
 flag: "H7CTF{...}"           # inline static flag, OR:
 flags:
   - type: static | dynamic

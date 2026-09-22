@@ -1,8 +1,8 @@
 # Cross Collateral
 
-`blockchain` · `sui` · `hard`
+`blockchain` `sui` `hard`
 
-crosscollateral is a multi-asset bank. deposit any listed asset, get a ticket, redeem it later for any other listed asset — converted at the bank's posted prices. it holds a real SUI reserve.
+crosscollateral is a multi-asset bank. deposit any listed asset, get a ticket, redeem it later for any other listed asset, converted at the bank's posted prices. it holds a real SUI reserve.
 
 you're funded with a bag of a worthless listed token. leave with the SUI.
 
@@ -15,4 +15,4 @@ spin up an instance, connect to the endpoint. you get the package id, the shared
 - `challenge/Move.toml`
 
 #### notes
-the bank prices every asset and converts between them, so trading junk up to SUI should cost you dearly, not pay. read the conversion — specifically which way the exchange rate points.
+the bank prices every asset and converts between them, so trading junk up to SUI should cost you dearly, not pay. read the conversion, specifically which way the exchange rate points.
