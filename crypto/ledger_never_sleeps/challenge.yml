@@ -1,0 +1,35 @@
+name: The Ledger Never Sleeps
+author: abu
+category: crypto
+difficulty: hard
+description: |
+  The Aurum treasury signer is online. It will authorize any approval you send it
+  over ECDSA (secp256k1), except an ADMIN_TRANSFER, which it refuses. To skip an
+  RNG call, its per-signature nonce is a deterministic chain, not random. No nonce
+  repeats and there is no bit bias, so the audit passed.
+
+  Launch your instance. The signer speaks JSON over HTTP at `http://{{ nc }}/` :
+
+      GET  /pubkey            -> the signer public key
+      POST /sign  {msg}       -> an ECDSA approval (ADMIN_TRANSFER refused)
+      POST /forge {msg,r,s}   -> submit a signature; a valid ADMIN_TRANSFER releases the flag
+
+  Recover the signing key from the approvals it hands you, then authorize the
+  transfer it would never sign.
+sub_description: |
+  A treasury signer that never repeats a nonce, and still hands you its key.
+points: 500
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/ledger-never-sleeps
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 1800
+  max_extensions: 2
+tags: [crypto, ecdsa, nonce, lcg, secp256k1]
