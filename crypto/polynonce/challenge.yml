@@ -1,0 +1,39 @@
+name: Polynonce
+author: abu
+category: crypto
+difficulty: hard
+description: |
+  The Aurum treasury signer batches ECDSA approvals over secp256k1. To "save an
+  RNG call per signature", a former engineer replaced the random nonce with a
+  deterministic chain: each signature's nonce is derived from the previous one.
+  No nonce ever repeats, and the top bits look uniform, so the internal audit
+  passed.
+
+  Launch your instance and download the two files it serves from
+  `http://{{ nc }}/` : `signatures.json` (the public key and eight signed
+  approvals) and `flag.enc`. You can solve offline once you have them. The flag
+  was sealed with the recovered signing key:
+
+      key = SHA256(d)             # d = private key, 32-byte big-endian
+      iv  = SHA256("Qx,Qy")[:12]  # decimal pubkey coords, comma-joined
+      flag.enc = AES-256-GCM(key, iv, FLAG)   # ciphertext || 16-byte tag
+
+  Recover the key. Open the envelope.
+sub_description: |
+  Eight ECDSA approvals, one reused idea. The nonces never repeat, and they still
+  give up the whole key.
+points: 500
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/polynonce
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [crypto, ecdsa, nonce, secp256k1]
