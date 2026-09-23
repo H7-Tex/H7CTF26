@@ -1,0 +1,39 @@
+name: NoiseGate Earbuds
+author: abu
+category: hardware
+difficulty: medium
+description: |
+  We sniffed a pair of NoiseGate wireless earbuds powering on and talking to their
+  companion app over Bluetooth Low Energy. There is more than one device advertising
+  in the capture, so find the earbuds first.
+
+  Launch your instance and download `capture.pcap` from its base URL (shown when you
+  launch it). It is a standard BLE link-layer recording: open it in Wireshark, which
+  dissects btle / btatt natively.
+
+  Two secrets are in this capture. The earbuds leak the first in a plain config read.
+  The second they only release after the app authenticates, and it is not sent in the
+  clear. Recover both.
+sub_description: |
+  One BLE sniff of a pair of earbuds and their app. One secret leaks; one is only
+  handed over after auth, encrypted. Recover both.
+flags:
+  - type: dynamic
+    name: v1
+    dynamic_flag_prefix: "H7CTF{"
+    points: 200
+  - type: dynamic
+    name: v2
+    dynamic_flag_prefix: "H7CTF{"
+    points: 300
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/noisegate-earbuds
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 1800
+  max_extensions: 2
+tags: [hardware, ble, bluetooth, gatt, pcap, wireshark]
