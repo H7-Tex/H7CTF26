@@ -1,0 +1,35 @@
+name: Roll Back
+author: abu
+category: hardware
+difficulty: hard
+description: |
+  A cheap 433 MHz "rolling code" garage remote. We recorded eight button presses as
+  raw complex baseband from an SDR. The receiver ignores any code it has already seen,
+  so a straight replay of a captured press does nothing.
+
+  Launch your instance and download `capture.cf32` from its base URL (shown when you
+  launch it): interleaved float32 I/Q, little-endian, fs = 1000000 Hz. The signal is
+  on-off keyed.
+
+  Recover the frames, work out what the remote transmits next, and send that code to
+  the receiver:
+    POST /unlock   body: {"code": "<12 hex digits = the 48-bit frame>"}
+  Open the door.
+sub_description: |
+  Eight presses of a rolling-code remote. Replay is rejected. Predict the next code
+  and the door opens.
+points: 450
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/roll-back
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 1800
+  max_extensions: 2
+tags: [hardware, sdr, rf, ook, rolling-code, replay]
