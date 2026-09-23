@@ -17,6 +17,7 @@ description: |
 sub_description: |
   One BLE sniff of a pair of earbuds and their app. One secret leaks; one is only
   handed over after auth, encrypted. Recover both.
+points: 500
 flags:
   - type: dynamic
     name: v1
