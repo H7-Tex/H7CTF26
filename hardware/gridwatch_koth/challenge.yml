@@ -1,0 +1,33 @@
+name: GridWatch Operator Console
+author: abu
+category: hardware
+difficulty: hard
+description: |
+  GridWatch is the web SCADA operator console for the SS-14 33kV substation feeder.
+  Only one operator can hold the seat at a time. This is King of the Hill: seize the
+  operator seat, install your team token as the active operator, and hold it. The
+  longer your team holds the seat, the more you score. Other teams are trying to knock
+  you off; the console also resets the seat periodically, so you will have to take it
+  again.
+
+  The shared target is at the address shown when the challenge opens. Your team KotH
+  token is issued when the challenge opens (it is your identity on the shared target).
+
+  Take the seat: report the current holder at GET /koth/status.
+sub_description: |
+  Shared King-of-the-Hill: seize the substation operator seat, install your team token,
+  and hold it. Hold-time scores.
+scoring: koth
+koth:
+  status_path: /koth/status
+  tick_seconds: 15
+  points_per_tick: 10
+deploy:
+  resource_type: docker
+  instancing: static
+  image: h7ctf26/gridwatch-koth
+  cpu_limit: "2.0"
+  memory_limit: 512Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+tags: [hardware, koth, ics, scada, jwt, web]
