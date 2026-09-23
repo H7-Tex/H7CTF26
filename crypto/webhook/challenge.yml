@@ -8,7 +8,7 @@ description: |
   authorizes an owner-only payout. You intercepted one legitimate webhook, but you
   do not have the signing secret.
 
-  Launch your instance. The receiver speaks over HTTP at `http://{{ nc }}/` :
+  Launch your instance. The receiver speaks over HTTP at your instance's base URL (shown when you launch it):
 
       GET  /sample        -> a captured legitimate webhook (body + X-Signature)
       POST /webhook       -> processed if X-Signature = SHA256(secret||body); role=owner pays out

@@ -8,7 +8,7 @@ description: |
   RNG call, its per-signature nonce is a deterministic chain, not random. No nonce
   repeats and there is no bit bias, so the audit passed.
 
-  Launch your instance. The signer speaks JSON over HTTP at `http://{{ nc }}/` :
+  Launch your instance. The signer speaks JSON over HTTP at your instance's base URL (shown when you launch it):
 
       GET  /pubkey            -> the signer public key
       POST /sign  {msg}       -> an ECDSA approval (ADMIN_TRANSFER refused)

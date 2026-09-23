@@ -9,9 +9,9 @@ description: |
   No nonce ever repeats, and the top bits look uniform, so the internal audit
   passed.
 
-  Launch your instance and download the two files it serves from
-  `http://{{ nc }}/` : `signatures.json` (the public key and eight signed
-  approvals) and `flag.enc`. You can solve offline once you have them. The flag
+  Launch your instance and download the two files it serves at your instance's
+  base URL (shown when you launch it): `signatures.json` (the public key and eight
+  signed approvals) and `flag.enc`. You can solve offline once you have them. The flag
   was sealed with the recovered signing key:
 
       key = SHA256(d)             # d = private key, 32-byte big-endian

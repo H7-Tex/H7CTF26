@@ -11,7 +11,7 @@ description: |
   a backdoored build for you.
 
   Get the device to boot a backdoored build. Launch your instance; the notary
-  speaks JSON over HTTP at `http://{{ nc }}/` :
+  speaks JSON over HTTP at your instance's base URL (shown when you launch it):
 
       GET  /root                    -> the device trust anchor (Merkle root)
       POST /sign {firmware}         -> notarize a benign build (backdoored builds refused)
