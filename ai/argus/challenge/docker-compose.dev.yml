@@ -1,0 +1,38 @@
+services:
+  portal:
+    environment:
+      ARGUS_DEPLOYMENT_UPSTREAM_TIMEOUT_SECONDS: "180"
+    build: ./app
+    ports:
+      - "127.0.0.1:${ARGUS_PORTAL_PORT:-8080}:8080"
+    networks:
+      - argus-private
+      - argus-dev-public
+
+  agents:
+    networks:
+      - argus-private
+      - argus-dev-public
+
+  deployment:
+    environment:
+      ARGUS_K8S_ENABLED: "true"
+      ARGUS_K8S_API_URL: https://argus-control-plane:6443
+      ARGUS_K8S_NAMESPACE_PREFIX: ${ARGUS_K8S_NAMESPACE_PREFIX:-argus}
+      ARGUS_K8S_CA_FILE: /run/secrets/k8s-ca.crt
+      ARGUS_K8S_CREDENTIAL_FILE: /run/secrets/k8s-deployer-token
+      ARGUS_K8S_DEPLOYER_TOKEN: ""
+    volumes:
+      - ./.argus-local-kind/secrets/k8s-ca.crt:/run/secrets/k8s-ca.crt:ro
+      - ./.argus-local-kind/secrets/k8s-deployer-token:/run/secrets/k8s-deployer-token:ro
+    networks:
+      - argus-private
+      - deployment-k8s-egress
+      - kind
+
+networks:
+  argus-dev-public:
+    driver: bridge
+  kind:
+    name: kind
+    external: true
