@@ -1,0 +1,32 @@
+name: SCHRÖDINGER PACKAGE
+author: H7CTF
+category: web
+difficulty: hard
+description: |
+  Astra Package Exchange is the internal service used to register, inspect, and
+  exercise Python packages before they are made available to engineering teams.
+  Uploaded wheels move through a set of automated checks that record package
+  metadata, file inventories, inspection results, and runtime activity.
+
+sub_description: |
+  Browse the registry, inspect package history, compare recorded package data,
+  and follow runtime sessions through the service.
+
+points: 500
+
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/schrodinger-package
+  cpu_limit: "1.0"
+  memory_limit: 512Mi
+  exposed_ports:
+    - port: 8080
+      protocol: http
+  instance_timeout: 1800
+  max_extensions: 2
+  egress: false

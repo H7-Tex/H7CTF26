@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Registry · Astra Package Exchange{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div>
+    <h1>Registry</h1>
+    <p class="page-description">Registered Python packages.</p>
+  </div>
+  <div class="upload-area">
+    <label class="button button-primary" for="package-upload">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3.5v13M3.5 10h13"/></svg>
+      Upload package
+    </label>
+    <input id="package-upload" class="visually-hidden" type="file" accept=".whl" aria-label="Choose a Python wheel to upload">
+    <span class="upload-hint">.whl · up to 20 MiB</span>
+  </div>
+</section>
+
+<section class="registry-toolbar" aria-label="Registry controls">
+  <label class="search-field">
+    <span class="search-icon" aria-hidden="true">
+      <svg viewBox="0 0 20 20"><circle cx="8.8" cy="8.8" r="5.8"/><path d="m13.2 13.2 4 4"/></svg>
+    </span>
+    <span class="visually-hidden">Search packages</span>
+    <input id="registry-search" type="search" placeholder="Search packages" autocomplete="off">
+    <kbd>/</kbd>
+  </label>
+  <p id="registry-count" class="result-count" aria-live="polite">Loading packages…</p>
+</section>
+
+<div class="table-frame">
+  <div class="table-scroll">
+    <table class="data-table registry-table">
+      <thead><tr>
+        <th scope="col">Package</th><th scope="col">Version</th><th scope="col">Inspection</th>
+        <th scope="col">Uploaded</th><th scope="col" class="numeric">Size</th><th scope="col">SHA-256</th>
+      </tr></thead>
+      <tbody id="package-rows"><tr><td colspan="6" class="table-state">Loading registry…</td></tr></tbody>
+    </table>
+  </div>
+</div>
+<p class="table-footnote">Package contents are stored by artifact ID. Select a package to review its metadata and activity.</p>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', path='/js/registry.js') }}" defer></script>{% endblock %}

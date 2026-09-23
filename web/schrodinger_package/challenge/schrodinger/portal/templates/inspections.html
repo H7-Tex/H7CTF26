@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Inspections · Astra Package Exchange{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><h1>Inspections</h1><p class="page-description">Inspection history for registered packages.</p></div>
+</section>
+<div class="registry-toolbar"><p id="inspection-count" class="result-count" aria-live="polite">Loading inspections…</p></div>
+<div class="table-frame"><div class="table-scroll">
+  <table class="data-table">
+    <thead><tr><th scope="col">Package</th><th scope="col">Version</th><th scope="col">Result</th><th scope="col">Files</th><th scope="col">Inspected</th><th scope="col">SHA-256</th></tr></thead>
+    <tbody id="inspection-rows"><tr><td colspan="6" class="table-state">Loading inspection records…</td></tr></tbody>
+  </table>
+</div></div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', path='/js/inspections.js') }}" defer></script>{% endblock %}

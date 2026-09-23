@@ -1,0 +1,50 @@
+name: Schrödinger Package CI
+
+on:
+  push:
+    paths:
+      - "**"
+  pull_request:
+    paths:
+      - "**"
+
+jobs:
+  challenge:
+    runs-on: ubuntu-latest
+    env:
+      FLAG: H7CTF{ci_dummy}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: python -m pip install -r challenge/requirements.txt
+      - name: Run pytest
+        working-directory: challenge
+        run: python -m pytest -q tests
+      - name: Validate Compose configuration
+        working-directory: challenge
+        run: docker compose config --quiet
+      - name: Build and start all three roles
+        working-directory: challenge
+        run: docker compose up --build --detach --wait
+      - name: Verify pinned runtime versions
+        working-directory: challenge
+        run: |
+          docker compose exec -T runtime python --version | grep -F "Python 3.12.14"
+          docker compose exec -T runtime python -m pip --version | grep -F "pip 25.0.1"
+      - name: Exercise Docker acceptance cases
+        working-directory: challenge
+        run: python tests/docker_acceptance.py
+      - name: Verify Runtime environment and mounted data remain secret-free
+        working-directory: challenge
+        run: |
+          docker compose exec -T runtime python -c 'import os; from pathlib import Path; assert "FLAG" not in os.environ; roots=(Path("/app"), Path("/var/lib/schrodinger")); files=(p for root in roots if root.exists() for p in root.rglob("*") if p.is_file()); assert all(b"H7CTF{ci_dummy}" not in p.read_bytes() for p in files)'
+      - name: Run reference solution against Portal
+        working-directory: .
+        run: python solution/solve.py --base-url http://127.0.0.1:8080
+      - name: Stop challenge stack
+        if: always()
+        working-directory: challenge
+        run: docker compose down --volumes --remove-orphans

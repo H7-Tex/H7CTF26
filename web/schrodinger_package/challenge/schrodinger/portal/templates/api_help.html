@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}API Reference · Astra Package Exchange{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><h1>API Reference</h1><p class="page-description">Package and runtime records are available through the HTTP API.</p></div>
+</section>
+<section class="content-section">
+  <div class="section-heading"><div><h2>Registry API</h2><p>Endpoints use the package ID assigned at upload.</p></div></div>
+  <div class="table-frame"><div class="table-scroll"><table class="data-table">
+    <thead><tr><th scope="col">Method</th><th scope="col">Path</th><th scope="col">Purpose</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">POST</td><td class="mono">/api/packages</td><td>Upload a wheel as multipart field <code>file</code>.</td></tr>
+      <tr><td class="mono">GET</td><td class="mono">/api/packages</td><td>List registered packages.</td></tr>
+      <tr><td class="mono">GET</td><td class="mono">/api/packages/{package_id}</td><td>Read package metadata and current status.</td></tr>
+      <tr><td class="mono">GET</td><td class="mono">/api/packages/{package_id}/inspector</td><td>Read the latest inspection record and file inventory.</td></tr>
+      <tr><td class="mono">POST</td><td class="mono">/api/packages/{package_id}/inspection</td><td>Run a package inspection.</td></tr>
+      <tr><td class="mono">POST</td><td class="mono">/api/packages/{package_id}/runtime</td><td>Start a runtime session.</td></tr>
+      <tr><td class="mono">GET</td><td class="mono">/api/packages/{package_id}/runtime/logs</td><td>Read saved session output for this package.</td></tr>
+    </tbody>
+  </table></div></div>
+</section>
+<section class="content-section">
+  <div class="section-heading"><div><h2>Records</h2><p>Package and runtime records include package details and status.</p></div></div>
+  <p class="package-summary">Runtime records include saved output.</p>
+</section>
+{% endblock %}

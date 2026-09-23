@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Package · Astra Package Exchange{% endblock %}
+{% block content %}
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <a href="/registry">Registry</a><span aria-hidden="true">/</span><span id="breadcrumb-package">Package</span>
+</nav>
+<section class="page-heading package-heading">
+  <div>
+    <h1 id="package-name">Loading package…</h1>
+    <div class="package-subtitle"><span id="package-version" class="version-tag"></span><span id="package-filename" class="mono muted"></span></div>
+  </div>
+  <div class="package-actions">
+    <a class="button" href="/packages/{{ artifact_id }}/inspector">Open inspector report</a>
+    <button id="inspect-package" class="button" type="button">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.8" cy="8.8" r="5.8"/><path d="m13.2 13.2 4 4M8.8 6v5.6M6 8.8h5.6"/></svg>
+      Run inspection
+    </button>
+    <button id="run-package" class="button" type="button">Create runtime session</button>
+  </div>
+</section>
+<p id="package-summary" class="package-summary"></p>
+<section id="runtime-flag" class="notice" role="status" hidden aria-live="polite"></section>
+
+<section class="package-layout">
+  <div class="package-main-column">
+    <section class="content-section">
+      <div class="section-heading"><div><h2>Package files</h2><p>Inventory from the latest inspection.</p></div><span id="file-count" class="section-meta"></span></div>
+      <div class="table-frame">
+        <div class="table-scroll">
+          <table class="data-table file-table">
+            <thead><tr><th scope="col">Path</th><th scope="col" class="numeric">Size</th><th scope="col">SHA-256</th></tr></thead>
+            <tbody id="manifest-rows"><tr><td colspan="3" class="table-state">Loading package inventory…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <section class="content-section">
+      <div class="section-heading"><div><h2>Inspection history</h2><p>Inspection records for this package.</p></div></div>
+      <div id="package-inspections" class="inspection-list"><p class="table-state">Loading inspection history…</p></div>
+    </section>
+  </div>
+  <aside class="metadata-panel" aria-labelledby="metadata-title">
+    <h2 id="metadata-title">Artifact details</h2>
+    <dl class="metadata-list">
+      <div><dt>Inspection</dt><dd id="package-assurance">-</dd></div>
+      <div><dt>Uploaded</dt><dd id="package-uploaded">-</dd></div>
+      <div><dt>Artifact size</dt><dd id="package-size">-</dd></div>
+      <div><dt>SHA-256</dt><dd id="package-sha" class="mono hash-value">-</dd></div>
+      <div><dt>License</dt><dd id="package-license">-</dd></div>
+      <div><dt>Requires Python</dt><dd id="package-python">-</dd></div>
+      <div><dt>Artifact ID</dt><dd id="package-id" class="mono hash-value">{{ artifact_id }}</dd></div>
+    </dl>
+  </aside>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>window.packageArtifactId = {{ artifact_id | tojson }};</script>
+<script src="{{ url_for('static', path='/js/package.js') }}" defer></script>
+{% endblock %}

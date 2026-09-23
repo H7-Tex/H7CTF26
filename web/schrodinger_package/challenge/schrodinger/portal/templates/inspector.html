@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Inspector report · Astra Package Exchange{% endblock %}
+{% block content %}
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <a href="/registry">Registry</a><span aria-hidden="true">/</span>
+  <a href="/packages/{{ artifact_id }}">Package</a><span aria-hidden="true">/</span><span>Inspector report</span>
+</nav>
+<section class="page-heading">
+  <div><h1 id="inspector-title">Inspector report</h1><p id="inspector-summary" class="page-description">Loading inspection results...</p></div>
+  <div class="package-actions"><button id="inspect-package" class="button" type="button">Run inspection</button></div>
+</section>
+<section class="metadata-panel report-meta">
+  <h2>Inspector view</h2>
+  <dl class="metadata-list">
+    <div><dt>Status</dt><dd id="inspector-status">-</dd></div>
+    <div><dt>Package ID</dt><dd id="inspector-package-id" class="mono hash-value">{{ artifact_id }}</dd></div>
+    <div><dt>SHA-256</dt><dd id="inspector-sha" class="mono hash-value">-</dd></div>
+    <div><dt>Visible runtime hooks</dt><dd id="inspector-hooks">-</dd></div>
+  </dl>
+</section>
+<section class="content-section">
+  <div class="section-heading"><div><h2>Recorded files</h2><p>Paths and digests reported by the Inspector.</p></div></div>
+  <div class="table-frame"><div class="table-scroll"><table class="data-table">
+    <thead><tr><th scope="col">Path</th><th scope="col" class="numeric">Size</th><th scope="col">SHA-256</th></tr></thead>
+    <tbody id="inspector-files"><tr><td colspan="3" class="table-state">Loading report…</td></tr></tbody>
+  </table></div></div>
+</section>
+<section class="content-section">
+  <div class="section-heading"><div><h2>Findings</h2><p>Inspector notes for the selected artifact.</p></div></div>
+  <div id="inspector-findings" class="inspection-list"><p class="table-state">Loading findings…</p></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>window.packageArtifactId = {{ artifact_id | tojson }};</script>
+<script src="{{ url_for('static', path='/js/inspector.js') }}" defer></script>
+{% endblock %}

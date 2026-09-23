@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7f6">
+  <title>{% block title %}Astra Package Exchange{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/app.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body data-page="{{ active_nav }}">
+  <header class="topbar">
+    <a class="brand" href="/registry" aria-label="Astra Package Exchange, registry">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="m12 2.8 8.2 4.6v9.2L12 21.2l-8.2-4.6V7.4L12 2.8Z" stroke="currentColor" stroke-width="1.5"/>
+          <path d="m4.2 7.4 7.8 4.4 7.8-4.4M12 11.8v9" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </span>
+      <span>Astra <span class="brand-secondary">Package Exchange</span></span>
+    </a>
+    <nav class="primary-nav" aria-label="Primary navigation">
+      <a href="/registry" {% if active_nav == 'registry' %}aria-current="page"{% endif %}>Registry</a>
+      <a href="/inspections" {% if active_nav == 'inspections' %}aria-current="page"{% endif %}>Inspections</a>
+      <a href="/runtime" {% if active_nav == 'runtime' %}aria-current="page"{% endif %}>Runtime</a>
+      <a href="/policy" {% if active_nav == 'policy' %}aria-current="page"{% endif %}>Policy</a>
+      <a href="/api-help" {% if active_nav == 'api-help' %}aria-current="page"{% endif %}>API</a>
+    </nav>
+    <div class="workspace-label"><span class="workspace-dot"></span>Internal</div>
+  </header>
+
+  <main id="main-content" class="main-shell">
+    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <span>Astra Package Exchange</span>
+    <span>Python package registry</span>
+  </footer>
+  <script src="{{ url_for('static', path='/js/common.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

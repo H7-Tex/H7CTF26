@@ -1,0 +1,14 @@
+.git
+.github
+.pytest_cache
+.venv
+__pycache__
+*.py[cod]
+*.sqlite3
+runtime-data/
+artifacts/
+tests/
+flag.txt
+.env
+.env.*
+!.env.example
