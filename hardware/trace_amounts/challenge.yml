@@ -1,0 +1,33 @@
+name: Trace Amounts
+author: abu
+category: hardware
+difficulty: hard
+description: |
+  A contactless payment card runs AES-128 to authorize each tap. We put a current probe
+  on its power line and captured a batch of authorizations: for each one, the power trace
+  and the known challenge plaintext. The card guards its key in hardware and never reveals
+  it, but the power it draws depends on the data it handles.
+
+  Launch your instance and download the capture from its base URL (shown when you launch
+  it): `traces.npy` (float32, N x samples), `plaintexts.npy` (uint8, N x 16), and
+  `secret.enc` (a value the card encrypted with its AES-128 key, ECB).
+
+  Recover the key from the power traces and decrypt the secret.
+sub_description: |
+  Power traces from a smart card doing AES-128, with known plaintexts. The key never
+  leaves the card, but the power does. Recover it and decrypt the secret.
+points: 500
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/trace-amounts
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 1800
+  max_extensions: 2
+tags: [hardware, side-channel, power-analysis, cpa, dpa, aes]
