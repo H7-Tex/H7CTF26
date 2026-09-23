@@ -1,0 +1,41 @@
+name: Rollback
+author: abu
+category: crypto
+difficulty: hard
+description: |
+  Helios ships firmware signed with an LMS/WOTS+ hash-based scheme, the
+  post-quantum kind approved for firmware signing. The rule of every stateful
+  hash-based signature: each one-time leaf signs exactly once. The notary has a
+  maintenance "rollback" that reverts the signing counter. The device boots any
+  firmware that verifies against its burned-in root, and the notary will not sign
+  a backdoored build for you.
+
+  Get the device to boot a backdoored build. Launch your instance; the notary
+  speaks JSON over HTTP at `http://{{ nc }}/` :
+
+      GET  /root                    -> the device trust anchor (Merkle root)
+      POST /sign {firmware}         -> notarize a benign build (backdoored builds refused)
+      POST /rollback                -> maintenance: revert the signing counter
+      POST /deploy {firmware, sig}  -> device update; boots anything that verifies
+
+  The signing scheme is in `lms.py` (attached). The weakness is not in that code.
+sub_description: |
+  A post-quantum firmware signer that follows one rule, until a maintenance button
+  breaks it.
+points: 500
+provide:
+  - path: challenge/lms.py
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/rollback
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 1800
+  max_extensions: 2
+tags: [crypto, pqc, hash-based-signatures, lms, wots]
