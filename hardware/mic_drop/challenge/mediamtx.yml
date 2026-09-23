@@ -1,0 +1,18 @@
+logLevel: error
+api: no
+metrics: no
+playback: no
+rtspAddress: 127.0.0.1:8554
+rtmp: no
+hls: yes
+hlsAddress: :8080
+hlsAlwaysRemux: yes
+hlsVariant: mpegts
+hlsSegmentCount: 7
+hlsSegmentDuration: 1s
+webrtc: no
+srt: no
+paths:
+  boardroom:
+    runOnInit: ffmpeg -re -stream_loop -1 -i /srv/boardroom.wav -c:a aac -b:a 128k -flags +global_header -f rtsp rtsp://127.0.0.1:8554/boardroom
+    runOnInitRestart: yes
