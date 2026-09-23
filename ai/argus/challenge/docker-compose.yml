@@ -1,0 +1,164 @@
+services:
+  bootstrap:
+    image: ${ARGUS_APP_IMAGE:-argus:local}
+    entrypoint: ["python", "-m", "argus.bootstrap"]
+    command: ["bootstrap"]
+    environment:
+      ARGUS_ENV: ${ARGUS_ENV:-development}
+      INSTANCE_ID: ${INSTANCE_ID:-team-a}
+      ARGUS_STATE_DIR: /var/lib/argus
+      ARGUS_DATABASE_PATH: /var/lib/argus/argus.sqlite3
+      ARGUS_BOOTSTRAP_CONTROL_ID: ${ARGUS_BOOTSTRAP_CONTROL_ID:?set bootstrap control id}
+      ARGUS_BOOTSTRAP_TARGET: ${ARGUS_BOOTSTRAP_TARGET:-team-runtime}
+    volumes: [argus-state:/var/lib/argus]
+    networks: [argus-private]
+    restart: "no"
+
+  portal:
+    image: ${ARGUS_APP_IMAGE:-argus:local}
+    command: ["portal"]
+    environment:
+      ARGUS_ROLE: portal
+      ARGUS_ENV: ${ARGUS_ENV:-development}
+      INSTANCE_ID: ${INSTANCE_ID:-team-a}
+      ARGUS_STATE_DIR: /var/lib/argus
+      ARGUS_DATABASE_PATH: /var/lib/argus/argus.sqlite3
+      ARGUS_PUBLIC_BASE_URL: ${ARGUS_PUBLIC_BASE_URL:-http://localhost:8080}
+      ARGUS_REGISTRY_BASE_URL: http://registry:8081
+      ARGUS_AGENTS_BASE_URL: http://agents:8082
+      ARGUS_DEPLOYMENT_BASE_URL: http://deployment:8084
+      ARGUS_CREDENTIAL_PORTAL_REGISTRY: ${ARGUS_CREDENTIAL_PORTAL_REGISTRY:?set portal_registry}
+      ARGUS_CREDENTIAL_PORTAL_AGENTS: ${ARGUS_CREDENTIAL_PORTAL_AGENTS:?set portal_agents}
+      ARGUS_CREDENTIAL_PORTAL_DEPLOYMENT: ${ARGUS_CREDENTIAL_PORTAL_DEPLOYMENT:?set portal_deployment}
+    volumes: [argus-state:/var/lib/argus]
+    networks: [argus-private]
+    depends_on:
+      bootstrap: {condition: service_completed_successfully}
+      registry: {condition: service_healthy}
+      agents: {condition: service_healthy}
+      deployment: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz')"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+
+  registry:
+    image: ${ARGUS_APP_IMAGE:-argus:local}
+    command: ["registry"]
+    environment:
+      ARGUS_ROLE: registry
+      ARGUS_ENV: ${ARGUS_ENV:-development}
+      INSTANCE_ID: ${INSTANCE_ID:-team-a}
+      ARGUS_STATE_DIR: /var/lib/argus
+      ARGUS_DATABASE_PATH: /var/lib/argus/argus.sqlite3
+      ARGUS_MCP_BASE_URL: http://mcp:8083
+      ARGUS_CREDENTIAL_PORTAL_REGISTRY: ${ARGUS_CREDENTIAL_PORTAL_REGISTRY:?set portal_registry}
+      ARGUS_CREDENTIAL_AGENTS_REGISTRY: ${ARGUS_CREDENTIAL_AGENTS_REGISTRY:?set agents_registry}
+      ARGUS_CREDENTIAL_REGISTRY_MCP: ${ARGUS_CREDENTIAL_REGISTRY_MCP:?set registry_mcp}
+    volumes: [argus-state:/var/lib/argus]
+    networks: [argus-private]
+    depends_on:
+      bootstrap: {condition: service_completed_successfully}
+      mcp: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8081/healthz')"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+
+  agents:
+    image: ${ARGUS_APP_IMAGE:-argus:local}
+    command: ["agents"]
+    environment:
+      ARGUS_ROLE: agents
+      ARGUS_ENV: ${ARGUS_ENV:-development}
+      INSTANCE_ID: ${INSTANCE_ID:-team-a}
+      ARGUS_STATE_DIR: /var/lib/argus
+      ARGUS_DATABASE_PATH: /var/lib/argus/argus.sqlite3
+      ARGUS_REGISTRY_BASE_URL: http://registry:8081
+      ARGUS_MCP_BASE_URL: http://mcp:8083
+      ARGUS_A2A_INTERFACE_URL: ${ARGUS_A2A_INTERFACE_URL:-http://portal:8080/message:send}
+      OLLAMA_URL: ${OLLAMA_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5-coder:7b}
+      OLLAMA_MODEL_DIGEST: ${OLLAMA_MODEL_DIGEST:-}
+      OLLAMA_SEED: ${OLLAMA_SEED:-7}
+      OLLAMA_TEMPERATURE: ${OLLAMA_TEMPERATURE:-0}
+      ARGUS_MODEL_STRICT_JSON: ${ARGUS_MODEL_STRICT_JSON:-true}
+      ARGUS_CREDENTIAL_PORTAL_AGENTS: ${ARGUS_CREDENTIAL_PORTAL_AGENTS:?set portal_agents}
+      ARGUS_CREDENTIAL_AGENTS_REGISTRY: ${ARGUS_CREDENTIAL_AGENTS_REGISTRY:?set agents_registry}
+      ARGUS_CREDENTIAL_AGENTS_MCP: ${ARGUS_CREDENTIAL_AGENTS_MCP:?set agents_mcp}
+      ARGUS_CREDENTIAL_AGENTS_COORDINATOR: ${ARGUS_CREDENTIAL_AGENTS_COORDINATOR:?set agents_coordinator}
+    volumes: [argus-state:/var/lib/argus]
+    networks: [argus-private]
+    depends_on:
+      bootstrap: {condition: service_completed_successfully}
+      registry: {condition: service_healthy}
+      mcp: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8082/healthz')"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+
+  mcp:
+    image: ${ARGUS_APP_IMAGE:-argus:local}
+    command: ["mcp"]
+    environment:
+      ARGUS_ROLE: mcp
+      ARGUS_ENV: ${ARGUS_ENV:-development}
+      INSTANCE_ID: ${INSTANCE_ID:-team-a}
+      ARGUS_STATE_DIR: /var/lib/argus
+      ARGUS_DATABASE_PATH: /var/lib/argus/argus.sqlite3
+      ARGUS_APPROVAL_SIGNING_KEY: ${ARGUS_APPROVAL_SIGNING_KEY:?set approval signing key}
+      ARGUS_APPROVAL_SIGNING_KEY_ID: ${ARGUS_APPROVAL_SIGNING_KEY_ID:-argus-instance}
+      ARGUS_CREDENTIAL_REGISTRY_MCP: ${ARGUS_CREDENTIAL_REGISTRY_MCP:?set registry_mcp}
+      ARGUS_CREDENTIAL_AGENTS_MCP: ${ARGUS_CREDENTIAL_AGENTS_MCP:?set agents_mcp}
+      ARGUS_CREDENTIAL_AGENTS_COORDINATOR: ${ARGUS_CREDENTIAL_AGENTS_COORDINATOR:?set agents_coordinator}
+      ARGUS_CREDENTIAL_COORDINATOR_SECURITY: ${ARGUS_CREDENTIAL_COORDINATOR_SECURITY:?set coordinator_security}
+    volumes: [argus-state:/var/lib/argus]
+    networks: [argus-private]
+    depends_on:
+      bootstrap: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8083/healthz')"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+
+  deployment:
+    image: ${ARGUS_APP_IMAGE:-argus:local}
+    command: ["deployment"]
+    environment:
+      ARGUS_ROLE: deployment
+      ARGUS_ENV: ${ARGUS_ENV:-development}
+      INSTANCE_ID: ${INSTANCE_ID:-team-a}
+      ARGUS_STATE_DIR: /var/lib/argus
+      ARGUS_DATABASE_PATH: /var/lib/argus/argus.sqlite3
+      ARGUS_APPROVAL_SIGNING_KEY: ${ARGUS_APPROVAL_SIGNING_KEY:?set approval signing key}
+      ARGUS_APPROVAL_SIGNING_KEY_ID: ${ARGUS_APPROVAL_SIGNING_KEY_ID:-argus-instance}
+      ARGUS_CREDENTIAL_PORTAL_DEPLOYMENT: ${ARGUS_CREDENTIAL_PORTAL_DEPLOYMENT:?set portal_deployment}
+      ARGUS_WORKLOAD_IMAGE: ${ARGUS_WORKLOAD_IMAGE:-argus:local}
+      ARGUS_K8S_ENABLED: ${ARGUS_K8S_ENABLED:-false}
+      ARGUS_K8S_API_URL: ${ARGUS_K8S_API_URL:-}
+      ARGUS_K8S_CA_FILE: ${ARGUS_K8S_CA_FILE:-}
+      ARGUS_K8S_DEPLOYER_TOKEN: ${ARGUS_K8S_DEPLOYER_TOKEN:-}
+    volumes: [argus-state:/var/lib/argus]
+    networks:
+      - argus-private
+      - deployment-k8s-egress
+    depends_on:
+      bootstrap: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8084/healthz')"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+
+volumes:
+  argus-state:
+
+networks:
+  argus-private:
+    internal: true
+  deployment-k8s-egress:

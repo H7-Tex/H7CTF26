@@ -1,0 +1,53 @@
+name: ARGUS
+author: Owatron
+category: ai
+difficulty: hard
+description: |
+Modern enterprise systems are built on trust.
+
+Trust the registry.
+Trust the workflow.
+Trust the automation.
+Trust the service that translated what the other service meant.
+Trust that everyone involved is talking about the same thing.
+
+ARGUS brings all of this together into one convenient operations platform.
+
+Convenience, as always, is relative.
+
+sub_description: |
+One platform. Many moving parts. Remarkably few opportunities for misunderstanding.
+points: 500
+
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/argus
+  cpu_limit: "1.0"
+  memory_limit: 512Mi
+  exposed_ports:
+    - port: 8080
+      protocol: http
+  instance_timeout: 1800
+  max_extensions: 2
+  egress: true
+  env:
+    INSTANCE_ID: "${INSTANCE_ID}"
+    INTERNAL_TOKEN: "${INTERNAL_TOKEN}"
+    ARGUS_H7_QWEN_MODEL_DIGEST: "${ARGUS_H7_QWEN_MODEL_DIGEST}"
+    ARGUS_TRUSTED_PROXY_IPS: "${ANVIL_INGRESS_PROXY_CIDRS}"
+
+services:
+  - name: flag-holder
+    image: python:3.11-slim
+    command: ["python", "-c", "import time; time.sleep(10**9)"]
+    public: false
+    cpu_limit: "0.05"
+    memory_limit: 32Mi
+    env:
+      INSTANCE_ID: "${INSTANCE_ID}"
+      FLAG: "${FLAG}"
