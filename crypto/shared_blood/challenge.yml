@@ -1,0 +1,37 @@
+name: Shared Blood
+author: abu
+category: crypto
+difficulty: medium
+description: |
+  VoltEye runs a fleet of IP cameras. Each device gets an RSA identity cert at
+  manufacture, and the cloud RSA-encrypts an admin bootstrap token to each device
+  during provisioning. The fleet's keys were generated with a weak RNG. You have
+  the fleet's public certs and one intercepted provisioning payload; the admin
+  bootstrap token inside it unlocks the console.
+
+  Launch your instance. The camera cloud is at your instance's base URL (shown
+  when you launch it):
+
+      GET  /fleet             device certs (public moduli)
+      GET  /captured          one intercepted provisioning payload (RSA/PKCS1v1.5)
+      POST /admin {token}     admin bootstrap; the right token unlocks the flag
+
+  Recover the target device's key, read the token it protects, and unlock the console.
+sub_description: |
+  A camera fleet, one intercepted payload, and device keys that were not as unique
+  as they should be.
+points: 350
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/shared-blood
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 1800
+  max_extensions: 2
+tags: [crypto, rsa, batch-gcd, shared-primes]
