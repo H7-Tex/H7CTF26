@@ -1,0 +1,32 @@
+name: Signal, Unknown
+author: abu
+category: hardware
+difficulty: medium
+description: |
+  We pulled one burst off the air near a device nobody could identify. No datasheet,
+  no protocol notes, no idea what modulation it uses. The capture is raw complex
+  baseband from an SDR.
+
+  Launch your instance and download `capture.cf32` from its base URL (shown when you
+  launch it). It is interleaved float32 I/Q (little-endian: I0 Q0 I1 Q1 ...) at a
+  sample rate of 1000000 Hz. Load it in inspectrum, Universal Radio Hacker, GNU
+  Radio, or numpy.
+
+  Figure out the modulation, find the burst, recover the message.
+sub_description: |
+  One unlabeled RF burst. No datasheet. Recover what it is transmitting.
+points: 300
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/signal-unknown
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 1800
+  max_extensions: 2
+tags: [hardware, sdr, rf, fsk, iq, demodulation]
