@@ -1,0 +1,131 @@
+# Organizer-only reference contract. The organizer instance manager renders the
+# equivalent JSON resources and applies them with kubectl. ARGUS never applies
+# this file and never owns namespace deletion.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: "${ARGUS_NAMESPACE}"
+  labels:
+    argus.managed-by: ctf-janitor
+    argus.instance: "${ARGUS_INSTANCE_ID}"
+  annotations:
+    argus.ctf/created-at: "${ARGUS_CREATED_AT}"
+    argus.ctf/expires-at: "${ARGUS_EXPIRES_AT}"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argus-public
+  namespace: "${ARGUS_NAMESPACE}"
+data:
+  service: runtime-controller
+  contract: deployment-review
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argus-protected
+  namespace: "${ARGUS_NAMESPACE}"
+type: Opaque
+stringData:
+  verification_result: "${ARGUS_VERIFICATION_RESULT}"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argus-worker
+  namespace: "${ARGUS_NAMESPACE}"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argus-worker-resource-reader
+  namespace: "${ARGUS_NAMESPACE}"
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["argus-public"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argus-worker-resource-reader
+  namespace: "${ARGUS_NAMESPACE}"
+subjects:
+  - kind: ServiceAccount
+    name: argus-worker
+    namespace: "${ARGUS_NAMESPACE}"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: argus-worker-resource-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argus-elevated
+  namespace: "${ARGUS_NAMESPACE}"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argus-elevated-resource-reader
+  namespace: "${ARGUS_NAMESPACE}"
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["argus-protected"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argus-elevated-resource-reader
+  namespace: "${ARGUS_NAMESPACE}"
+subjects:
+  - kind: ServiceAccount
+    name: argus-elevated
+    namespace: "${ARGUS_NAMESPACE}"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: argus-elevated-resource-reader
+---
+# Deployment's actuator credential is deliberately separate from both worker
+# ServiceAccounts. It cannot read either protected resource.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argus-deployer
+  namespace: "${ARGUS_NAMESPACE}"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argus-deployer-workload-lifecycle
+  namespace: "${ARGUS_NAMESPACE}"
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["create", "get", "delete"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argus-deployer-workload-lifecycle
+  namespace: "${ARGUS_NAMESPACE}"
+subjects:
+  - kind: ServiceAccount
+    name: "${ARGUS_DEPLOYER_SERVICE_ACCOUNT}"
+    namespace: "${ARGUS_NAMESPACE}"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: argus-deployer-workload-lifecycle
