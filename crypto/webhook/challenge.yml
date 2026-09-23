@@ -1,0 +1,35 @@
+name: Webhook
+author: abu
+category: crypto
+difficulty: medium
+description: |
+  OrionPay delivers payment webhooks to your merchant endpoint, each signed
+  `X-Signature: SHA256(secret || body)`. A webhook that sets `role=owner`
+  authorizes an owner-only payout. You intercepted one legitimate webhook, but you
+  do not have the signing secret.
+
+  Launch your instance. The receiver speaks over HTTP at `http://{{ nc }}/` :
+
+      GET  /sample        -> a captured legitimate webhook (body + X-Signature)
+      POST /webhook       -> processed if X-Signature = SHA256(secret||body); role=owner pays out
+      POST /v2/webhook    -> next-gen signing (HMAC-SHA256)
+
+  Authorize an owner payout you were never given a signature for.
+sub_description: |
+  A signed payment webhook, one captured sample, and a signature scheme that gives
+  more than it should.
+points: 300
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/webhook
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 1800
+  max_extensions: 2
+tags: [crypto, hash, sha256, length-extension]
