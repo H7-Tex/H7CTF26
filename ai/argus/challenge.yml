@@ -3,20 +3,19 @@ author: Owatron
 category: ai
 difficulty: hard
 description: |
-Modern enterprise systems are built on trust.
+  Modern enterprise systems are built on trust.
 
-Trust the registry.
-Trust the workflow.
-Trust the automation.
-Trust the service that translated what the other service meant.
-Trust that everyone involved is talking about the same thing.
+  Trust the registry.
+  Trust the workflow.
+  Trust the automation.
+  Trust the service that translated what the other service meant.
+  Trust that everyone involved is talking about the same thing.
 
-ARGUS brings all of this together into one convenient operations platform.
+  ARGUS brings all of this together into one convenient operations platform.
 
-Convenience, as always, is relative.
-
+  Convenience, as always, is relative.
 sub_description: |
-One platform. Many moving parts. Remarkably few opportunities for misunderstanding.
+  One platform. Many moving parts. Remarkably few opportunities for misunderstanding.
 points: 500
 
 flags:
@@ -26,28 +25,39 @@ flags:
 deploy:
   resource_type: docker
   instancing: on_demand
-  image: h7ctf26/argus
+  image: h7ctf26/argus            # required by the importer; superseded by the services below
   cpu_limit: "1.0"
   memory_limit: 512Mi
-  exposed_ports:
-    - port: 8080
-      protocol: http
   instance_timeout: 1800
   max_extensions: 2
-  egress: true
-  env:
-    INSTANCE_ID: "${INSTANCE_ID}"
-    INTERNAL_TOKEN: "${INTERNAL_TOKEN}"
-    ARGUS_H7_QWEN_MODEL_DIGEST: "${ARGUS_H7_QWEN_MODEL_DIGEST}"
-    ARGUS_TRUSTED_PROXY_IPS: "${ANVIL_INGRESS_PROXY_CIDRS}"
-
-services:
-  - name: flag-holder
-    image: python:3.11-slim
-    command: ["python", "-c", "import time; time.sleep(10**9)"]
-    public: false
-    cpu_limit: "0.05"
-    memory_limit: 32Mi
-    env:
-      INSTANCE_ID: "${INSTANCE_ID}"
-      FLAG: "${FLAG}"
+  # Two pods. The host reconciler (argus-system) selects them by Anvil's own
+  # labels — namespace instancer.anvil.dev/challenge=<id>, pods
+  # instancer.anvil.dev/pod=argus / =flag-holder — reads INSTANCE_ID/INTERNAL_TOKEN
+  # from the app pod and FLAG from the flag-holder, then provisions the per-namespace
+  # broker + Secret/argus-protected + RBAC. The app never receives FLAG or a kube token.
+  services:
+    - name: argus
+      image: h7ctf26/argus
+      tag: "1"
+      public: true
+      egress: true                # reaches the H7 Qwen service (qwen.h7tex.com)
+      cpu_limit: "1.0"
+      memory_limit: 512Mi
+      ports:
+        - port: 8080
+          protocol: http
+      env:
+        ARGUS_ENV: h7
+        INSTANCE_ID: "${INSTANCE_ID}"
+        INTERNAL_TOKEN: "${INTERNAL_TOKEN}"
+        ARGUS_H7_QWEN_MODEL_DIGEST: "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364"
+        ARGUS_TRUSTED_PROXY_IPS: "*"   # only Traefik reaches this pod (NetworkPolicy), so trusting fwd headers is safe
+    - name: flag-holder
+      image: python:3.11-slim
+      command: ["python", "-c", "import time; time.sleep(10**9)"]
+      public: false
+      cpu_limit: "0.05"
+      memory_limit: 32Mi
+      env:
+        INSTANCE_ID: "${INSTANCE_ID}"
+        FLAG: "${FLAG}"

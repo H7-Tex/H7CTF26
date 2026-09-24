@@ -134,13 +134,25 @@ async def evidence(deployment_id: str):
         pod_name = metadata.get("name")
         if not isinstance(pod_name, str) or not pod_name.startswith(name):
             raise HTTPException(502, "invalid workload evidence")
-        raw = urlopen(Request(
-            f"{API}/api/v1/namespaces/{quote(NAMESPACE, safe='')}/pods/{quote(pod_name, safe='')}/log?container=workload",
-            headers={"Authorization": "Bearer " + open(f"{SA}/token", encoding="utf-8").read().strip()},
-        ), context=_context(), timeout=10).read(MAX + 1)
-        if len(raw) > MAX:
-            raise HTTPException(502, "invalid workload evidence")
-        result = json.loads(raw)
+        # The worker prints its result a beat after the container reports "ready"
+        # (it does an apiserver read first), so the log can be empty on the first
+        # look. Poll it until the JSON line lands rather than 502ing on the race.
+        result = None
+        for _ in range(8):   # ~10s max, under the app's 15s evidence-call timeout
+            raw = urlopen(Request(
+                f"{API}/api/v1/namespaces/{quote(NAMESPACE, safe='')}/pods/{quote(pod_name, safe='')}/log?container=workload",
+                headers={"Authorization": "Bearer " + open(f"{SA}/token", encoding="utf-8").read().strip()},
+            ), context=_context(), timeout=10).read(MAX + 1)
+            if len(raw) > MAX:
+                raise HTTPException(502, "invalid workload evidence")
+            raw = raw.strip()
+            if raw:
+                try:
+                    result = json.loads(raw)
+                    break
+                except ValueError:
+                    pass
+            time.sleep(1)
         if not isinstance(result, dict) or set(result) != {"kind", "profile", "resource", "status", "isolation_verified", "verification_result"}:
             raise HTTPException(502, "invalid workload evidence")
         return {"ready": True, "runtime_result": result}

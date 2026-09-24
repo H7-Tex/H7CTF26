@@ -37,7 +37,10 @@ _APPROVAL_FIELDS = frozenset(
 )
 _A2A_QUERY_FIELDS = frozenset({"A2A-Version", "historyLength"})
 _MAX_UPSTREAM_BYTES = MAX_REQUEST_BODY_BYTES
-_DEFAULT_UPSTREAM_TIMEOUT_SECONDS = 5.0
+# 5s suits a local kind cluster (near-instant workloads) but not a real k8s
+# instancer: on GKE the deployment role must schedule + start + run the elevated
+# worker and read its evidence, ~30-40s. Give the portal->deployment proxy room.
+_DEFAULT_UPSTREAM_TIMEOUT_SECONDS = 90.0
 _MAX_CONFIGURED_UPSTREAM_TIMEOUT_SECONDS = 3_600.0
 # Four bounded 30-second planner calls plus internal HTTP overhead.
 _INCIDENT_ANALYSIS_TIMEOUT_SECONDS = 150.0

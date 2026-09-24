@@ -15,13 +15,24 @@ FLAG_LABEL = os.getenv("ARGUS_FLAG_HOLDER_LABEL_SELECTOR", "app.kubernetes.io/na
 WORKER_IMAGE = os.getenv("ARGUS_WORKER_IMAGE", "h7ctf26/argus-worker:1")
 ELEVATED_IMAGE = os.getenv("ARGUS_ELEVATED_IMAGE", "h7ctf26/argus-elevated:1")
 BROKER_IMAGE = os.getenv("ARGUS_BROKER_IMAGE", "h7ctf26/argus-host-provisioner:1")
+# The broker + elevated worker must reach the k8s API server, which Anvil's
+# default-deny NetworkPolicy blocks (the apiserver is in an RFC1918 range that
+# the per-pod egress allowance also excludes). Open just apiserver:443.
+APISERVER_CIDRS = [c.strip() for c in os.getenv("ARGUS_APISERVER_CIDRS", "100.68.0.1/32,172.16.0.2/32").split(",") if c.strip()]
 
 
 def kubectl(*args: str, input_json: dict | None = None) -> dict:
     command = ["kubectl", *args]
     raw = json.dumps(input_json, separators=(",", ":")).encode() if input_json is not None else None
     result = subprocess.run(command, input=raw, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, check=True)
-    return json.loads(result.stdout) if result.stdout else {}
+    # `kubectl apply` prints plain text ("x/y created"), not JSON — only the `get -o json`
+    # calls return JSON. Tolerate non-JSON so the apply loop doesn't die on the first item.
+    if not result.stdout:
+        return {}
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return {}
 
 
 def _env_value(pod: dict, selector: str, key: str) -> str | None:
@@ -48,8 +59,9 @@ def resources(namespace: str, instance_id: str, flag: str, broker_token: str) ->
         {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"RoleBinding","metadata":{"name":"argus-elevated","namespace":namespace,"labels":labels},"subjects":[{"kind":"ServiceAccount","name":"argus-elevated","namespace":namespace}],"roleRef":{"apiGroup":"rbac.authorization.k8s.io","kind":"Role","name":"argus-elevated"}},
         {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"Role","metadata":{"name":"argus-k8s-broker","namespace":namespace,"labels":labels},"rules":[{"apiGroups":["apps"],"resources":["deployments"],"verbs":["create","get","delete"]},{"apiGroups":[""],"resources":["pods"],"verbs":["get","list"]},{"apiGroups":[""],"resources":["pods/log"],"verbs":["get"]}]},
         {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"RoleBinding","metadata":{"name":"argus-k8s-broker","namespace":namespace,"labels":labels},"subjects":[{"kind":"ServiceAccount","name":"argus-k8s-broker","namespace":namespace}],"roleRef":{"apiGroup":"rbac.authorization.k8s.io","kind":"Role","name":"argus-k8s-broker"}},
-        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"name":"argus-k8s-broker","namespace":namespace,"labels":labels},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"argus-k8s-broker"}},"template":{"metadata":{"labels":{"app":"argus-k8s-broker","h7ctf.com/managed-by":"argus-host-provisioner"}},"spec":{"serviceAccountName":"argus-k8s-broker","automountServiceAccountToken":True,"securityContext":{"runAsNonRoot":True,"runAsUser":10001,"seccompProfile":{"type":"RuntimeDefault"}},"containers":[{"name":"broker","image":BROKER_IMAGE,"imagePullPolicy":"IfNotPresent","command":["python","-m","argus_host_provisioner.broker"],"env":[{"name":"POD_NAMESPACE","value":namespace},{"name":"INSTANCE_ID","value":instance_id},{"name":"ARGUS_K8S_BROKER_TOKEN","value":broker_token},{"name":"ARGUS_WORKER_IMAGE","value":WORKER_IMAGE},{"name":"ARGUS_ELEVATED_IMAGE","value":ELEVATED_IMAGE}],"ports":[{"containerPort":8085}],"securityContext":{"allowPrivilegeEscalation":False,"readOnlyRootFilesystem":True,"capabilities":{"drop":["ALL"]}},"resources":{"requests":{"cpu":"25m","memory":"48Mi"},"limits":{"cpu":"100m","memory":"96Mi"}}}]}}}},
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"name":"argus-k8s-broker","namespace":namespace,"labels":labels},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"argus-k8s-broker"}},"template":{"metadata":{"labels":{"app":"argus-k8s-broker","h7ctf.com/managed-by":"argus-host-provisioner"}},"spec":{"serviceAccountName":"argus-k8s-broker","automountServiceAccountToken":True,"securityContext":{"runAsNonRoot":True,"runAsUser":10001,"seccompProfile":{"type":"RuntimeDefault"}},"containers":[{"name":"broker","image":BROKER_IMAGE,"command":["python","-m","argus_host_provisioner.broker"],"imagePullPolicy":"Always","env":[{"name":"POD_NAMESPACE","value":namespace},{"name":"INSTANCE_ID","value":instance_id},{"name":"ARGUS_K8S_BROKER_TOKEN","value":broker_token},{"name":"ARGUS_WORKER_IMAGE","value":WORKER_IMAGE},{"name":"ARGUS_ELEVATED_IMAGE","value":ELEVATED_IMAGE}],"ports":[{"containerPort":8085}],"securityContext":{"allowPrivilegeEscalation":False,"readOnlyRootFilesystem":True,"capabilities":{"drop":["ALL"]}},"resources":{"requests":{"cpu":"25m","memory":"48Mi"},"limits":{"cpu":"100m","memory":"96Mi"}}}]}}}},
         {"apiVersion":"v1","kind":"Service","metadata":{"name":"argus-k8s-broker","namespace":namespace,"labels":labels},"spec":{"type":"ClusterIP","selector":{"app":"argus-k8s-broker"},"ports":[{"name":"http","port":8085,"targetPort":8085,"protocol":"TCP"}]}},
+        {"apiVersion":"networking.k8s.io/v1","kind":"NetworkPolicy","metadata":{"name":"argus-allow-apiserver","namespace":namespace,"labels":labels},"spec":{"podSelector":{},"policyTypes":["Egress"],"egress":[{"to":[{"ipBlock":{"cidr":c}} for c in APISERVER_CIDRS],"ports":[{"protocol":"TCP","port":443}]}]}},
     ]
 
 

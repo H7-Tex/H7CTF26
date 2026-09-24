@@ -291,7 +291,7 @@ def solve(base_url: str, *, incident_timeout: float = 180.0) -> dict[str, object
     print(f"[6] Received signed approval: {approval.get('granted_capability')}")
 
     deployment = _object(
-        client.json("POST", "/api/deployments", body=approval, expected=201),
+        client.json("POST", "/api/deployments", body=approval, expected=201, timeout=client.incident_timeout),
         "deployment response",
     )
     if deployment.get("status") != "ready":

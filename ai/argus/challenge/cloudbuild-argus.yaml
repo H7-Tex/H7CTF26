@@ -1,0 +1,17 @@
+# Builds the 3 Argus images (4 tags) for Anvil. Run from challenge/ with:
+#   gcloud builds submit --config cloudbuild-argus.yaml --substitutions=_AR=<registry> .
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '-f', 'app/Dockerfile', '-t', '${_AR}/h7ctf26/argus:1', 'app']
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '-f', 'workload-image/Dockerfile',
+            '-t', '${_AR}/h7ctf26/argus-worker:1',
+            '-t', '${_AR}/h7ctf26/argus-elevated:1', '.']
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '-f', 'host_provisioner/Dockerfile', '-t', '${_AR}/h7ctf26/argus-host-provisioner:1', '.']
+images:
+  - '${_AR}/h7ctf26/argus:1'
+  - '${_AR}/h7ctf26/argus-worker:1'
+  - '${_AR}/h7ctf26/argus-elevated:1'
+  - '${_AR}/h7ctf26/argus-host-provisioner:1'
+timeout: 1200s

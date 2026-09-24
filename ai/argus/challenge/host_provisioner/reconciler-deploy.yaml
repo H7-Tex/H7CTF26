@@ -1,0 +1,86 @@
+# Argus host reconciler — one in-cluster instance. Watches Anvil instance
+# namespaces labeled with the argus challenge id, reads INSTANCE_ID/INTERNAL_TOKEN
+# from the app pod + FLAG from the flag-holder pod, and provisions the per-namespace
+# broker + Secret/argus-protected + RBAC + apiserver-egress NetworkPolicy.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argus-system
+  labels: {app.kubernetes.io/managed-by: h7ctf}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argus-host-provisioner
+  namespace: argus-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: argus-host-provisioner
+rules:
+  - apiGroups: [""]
+    resources: [namespaces]
+    verbs: [get, list, watch]
+  - apiGroups: [""]
+    resources: [pods]
+    verbs: [get, list]
+  - apiGroups: [""]
+    resources: [configmaps, secrets, serviceaccounts, services]
+    verbs: [get, list, create, update, patch]
+  - apiGroups: ["apps"]
+    resources: [deployments]
+    verbs: [get, list, create, update, patch]
+  - apiGroups: ["networking.k8s.io"]
+    resources: [networkpolicies]
+    verbs: [get, list, create, update, patch]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: [roles, rolebindings]
+    verbs: [get, list, create, update, patch, escalate, bind]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argus-host-provisioner
+subjects:
+  - kind: ServiceAccount
+    name: argus-host-provisioner
+    namespace: argus-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: argus-host-provisioner
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argus-host-provisioner
+  namespace: argus-system
+  labels: {app: argus-host-provisioner}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: argus-host-provisioner}
+  template:
+    metadata:
+      labels: {app: argus-host-provisioner}
+    spec:
+      serviceAccountName: argus-host-provisioner
+      automountServiceAccountToken: true
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: reconciler
+          image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/argus-host-provisioner:1
+          imagePullPolicy: Always
+          command: ["python", "-m", "argus_host_provisioner.provision"]
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: false, capabilities: {drop: ["ALL"]}}
+          resources: {requests: {cpu: "25m", memory: "64Mi"}, limits: {cpu: "200m", memory: "128Mi"}}
+          env:
+            - {name: HOME, value: "/tmp"}
+            - {name: ARGUS_NAMESPACE_SELECTOR, value: "instancer.anvil.dev/challenge=84df24c5-ed16-4afd-ad0f-df04c24657a3"}
+            - {name: ARGUS_APP_LABEL_SELECTOR, value: "instancer.anvil.dev/pod=argus"}
+            - {name: ARGUS_FLAG_HOLDER_LABEL_SELECTOR, value: "instancer.anvil.dev/pod=flag-holder"}
+            - {name: ARGUS_WORKER_IMAGE, value: "asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/argus-worker:1"}
+            - {name: ARGUS_ELEVATED_IMAGE, value: "asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/argus-elevated:1"}
+            - {name: ARGUS_BROKER_IMAGE, value: "asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/argus-host-provisioner:1"}
+            - {name: ARGUS_APISERVER_CIDRS, value: "100.68.0.1/32,172.16.0.2/32"}
