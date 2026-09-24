@@ -20,7 +20,6 @@ flags:
   - type: static
     flag: "H7CTF{d3l3t3d_but_n0t_g0n3}"
 handout:
-  # both tiny -> Anvil attachments (also in-repo)
-  - name: messages.db
-  - name: secure.xml
+  # messages.db + secure.xml packed into a zip (Anvil allows .zip); unzip to get both
+  - name: evidence.zip
 tags: [forensics, mobile, android, sqlite, deleted-records, app-forensics]

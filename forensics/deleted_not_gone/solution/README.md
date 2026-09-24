@@ -1,6 +1,7 @@
 # Deleted, Not Gone: intended solution
 
 ```
+unzip evidence.zip        # -> messages.db + secure.xml
 python3 solve.py messages.db secure.xml
 ```
 
