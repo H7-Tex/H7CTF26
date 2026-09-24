@@ -25,7 +25,7 @@ flags:
   - { type: dynamic, name: v4, dynamic_flag_prefix: "H7CTF{", points: 200 }
 points: 800
 handout:
-  - name: meridian-pay-3.2.1.apk
+  - name: meridian-pay-3.2.1.apk.zip
 deploy:
   resource_type: docker
   instancing: on_demand

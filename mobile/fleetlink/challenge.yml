@@ -17,7 +17,7 @@ flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"
 handout:
-  - name: fleetlink-4.1.0.apk
+  - name: fleetlink-4.1.0.apk.zip
 deploy:
   resource_type: docker
   instancing: on_demand

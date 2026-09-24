@@ -18,7 +18,7 @@ flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"
 handout:
-  - name: onyx-locker-2.4.0.apk
+  - name: onyx-locker-2.4.0.apk.zip
 deploy:
   resource_type: docker
   instancing: on_demand
