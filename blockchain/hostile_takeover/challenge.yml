@@ -1,0 +1,36 @@
+name: Hostile Takeover
+author: abu
+category: blockchain
+difficulty: hard
+description: |
+  GENESIS DAO owns a treasury, and one privileged seat controls it: the Guardian. This is
+  King of the Hill on-chain. Stage a hostile governance takeover, install your team as the
+  Guardian, and hold the seat while rivals coup you back.
+
+  The shared arena and your team's KotH token are shown when the challenge opens. Point your
+  transactions at the RPC bridge (POST /rpc/<your-koth-token>), read the current governor
+  epoch from GET /koth/info, and report the current Guardian at GET /koth/status. The seat
+  resets each round.
+sub_description: |
+  On-chain King of the Hill: seize the DAO Guardian seat via a flash-loan governance takeover
+  and hold it. Hold-time scores. The governor epoch rotates each round, so re-solve to re-hold.
+scoring: koth
+koth:
+  status_path: /koth/status
+  tick_seconds: 15
+  points_per_tick: 10
+provide:
+  - path: challenge/src/GovToken.sol
+  - path: challenge/src/FlashLender.sol
+  - path: challenge/src/Governor.sol
+  - path: challenge/src/Throne.sol
+  - path: challenge/src/Setup.sol
+deploy:
+  resource_type: docker
+  instancing: static
+  image: h7ctf26/hostile-takeover
+  cpu_limit: "2.0"
+  memory_limit: 1Gi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+tags: [blockchain, koth, defi, governance, flash-loan, evm, foundry]
