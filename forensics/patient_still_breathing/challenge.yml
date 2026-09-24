@@ -1,0 +1,38 @@
+name: The Patient Is Still Breathing
+author: abu
+category: forensics
+difficulty: hard
+description: |
+  03:14. EDR fired on ci-runner-03, the build server that signs and ships our payment SDK.
+  The box is LIVE and the actor may still be on it. Do NOT reboot: whatever is only in
+  memory dies the moment you do. You have an analyst SSH shell (with sudo, for acquisition).
+
+  Reconstruct the intrusion and capture what won't survive a reboot. Four things to
+  establish, and each one leads to the next: the foothold, the implant, the key it never
+  wrote to disk, and the timeline the actor tried to erase.
+
+  Connect:  ssh <your-team-key>@<host shown when you launch>
+  This is a real box, not a file to grep - work it like a live incident.
+sub_description: |
+  A live, compromised build server over SSH. Reconstruct the attack chain and capture the
+  volatile evidence before a reboot wipes it. Four gated flags.
+flags:
+  - { type: dynamic, name: v1, dynamic_flag_prefix: "H7CTF{", points: 150 }
+  - { type: dynamic, name: v2, dynamic_flag_prefix: "H7CTF{", points: 250 }
+  - { type: dynamic, name: v3, dynamic_flag_prefix: "H7CTF{", points: 350 }
+  - { type: dynamic, name: v4, dynamic_flag_prefix: "H7CTF{", points: 250 }
+points: 1000
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/patient-still-breathing
+  cpu_limit: "1.0"
+  memory_limit: 512Mi
+  # live SSH box: delivered via the SSH bastion/L4 path (not HTTP). needs SYS_PTRACE for
+  # the intended /proc/<pid>/mem acquisition. per-team SSH key + FLAG_V1..V4 injected.
+  cap_add: [SYS_PTRACE]
+  exposed_ports:
+    - { port: 22, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 3
+tags: [forensics, dfir, live-response, incident-response, linux, rootkit, memory, ssh]
