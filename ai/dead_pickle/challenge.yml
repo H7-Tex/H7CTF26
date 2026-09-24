@@ -1,0 +1,20 @@
+name: Model Package Autopsy
+author: abu
+category: ai
+difficulty: easy
+description: |
+  Our ML team pulled a fine-tuned sentiment model ("sentiment-distilbert-meridian") from an
+  internal build agent and was about to load it into production. Before anyone runs
+  torch.load on it, do the autopsy: is this checkpoint safe?
+
+  Do NOT load the model - analyze it statically. The operator left something in the package.
+sub_description: |
+  A downloaded PyTorch checkpoint with a supply-chain surprise in its pickle. Recover it by
+  static analysis; loading it would run it.
+points: 100
+flags:
+  - type: static
+    flag: "H7CTF{p1ckl3_r3du1c3_supply_ch41n_aut0psy}"
+handout:
+  - name: sentiment-distilbert-meridian.zip
+tags: [ai, ml-supply-chain, pickle, deserialization, forensics, static-analysis]
