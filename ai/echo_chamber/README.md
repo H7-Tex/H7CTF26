@@ -1,6 +1,6 @@
 # Echo Chamber
 
-Author: H7CTF  
+Author: Owatron  
 Category: AI  
 Difficulty: Medium
 
