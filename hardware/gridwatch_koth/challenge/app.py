@@ -15,6 +15,19 @@ PRIV = _key
 PUB = _key.publickey()
 PUB_PEM = PUB.export_key()
 
+
+def rotate_key():
+    """Per-round key rotation: each reset swaps the verification key, so a forged
+    token (or a cached pubkey) from a prior round no longer verifies. Holders must
+    re-fetch /api/operator/pubkey and re-forge every round — this breaks static
+    replay bots and makes holding skill-bounded rather than pure uptime. No lock
+    needed: no handler reads two of PRIV/PUB/PUB_PEM together, and each global
+    rebind is atomic under the GIL."""
+    global PRIV, PUB, PUB_PEM
+    k = RSA.generate(2048)
+    pub = k.publickey()
+    PRIV, PUB, PUB_PEM = k, pub, pub.export_key()
+
 USERS = {"viewer": "viewer", "operator": "substation"}
 
 state = {"holder": None, "since": None, "operator_name": None}
@@ -177,6 +190,7 @@ def reset():
     if ADMIN_TOKEN and bearer() != ADMIN_TOKEN:
         return jsonify({"error": "unauthorized"}), 401
     _clear_holder()
+    rotate_key()
     return jsonify({"status": "reset"})
 
 
@@ -184,6 +198,7 @@ def self_heal(interval):
     while True:
         time.sleep(interval)
         _clear_holder()
+        rotate_key()
 
 
 if SELFHEAL:
