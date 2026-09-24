@@ -1,4 +1,4 @@
-import os, time, json, base64, hmac, hashlib, threading
+import os, time, json, base64, hmac, hashlib, threading, html
 from flask import Flask, request, jsonify, Response
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
@@ -92,7 +92,7 @@ def index():
     with state_lock:
         holder = state["holder"]
         op = state["operator_name"]
-    who = f"operator seat held by {op} (token {holder[:8]}...)" if holder else "operator seat UNHELD"
+    who = f"operator seat held by {html.escape(op)} (token {html.escape(holder[:8])}...)" if holder else "operator seat UNHELD"
     return Response(f"""<!doctype html><meta charset=utf-8><title>GridWatch</title>
 <h1>GridWatch :: Substation Operator Console</h1>
 <p>Feeder SS-14 / 33kV. Live SCADA operator console. Current: <b>{who}</b>.</p>
