@@ -10,7 +10,7 @@ CLAIM_COOLDOWN = float(os.environ.get("KOTH_CLAIM_COOLDOWN", "3"))
 ADMIN_TOKEN = os.environ.get("KOTH_ADMIN_TOKEN", "")   # engine-injected per instance; empty = dev/local (reset unauthenticated)
 SELFHEAL = os.environ.get("KOTH_SELFHEAL", "").strip()  # seconds; empty/off = the engine drives resets via /koth/reset
 
-_key = RSA.generate(2048)
+_key = RSA.generate(2048, e=3)   # low exponent: sig2n public-key recovery is the recon step
 PRIV = _key
 PUB = _key.publickey()
 PUB_PEM = PUB.export_key()
@@ -19,12 +19,12 @@ PUB_PEM = PUB.export_key()
 def rotate_key():
     """Per-round key rotation: each reset swaps the verification key, so a forged
     token (or a cached pubkey) from a prior round no longer verifies. Holders must
-    re-fetch /api/operator/pubkey and re-forge every round — this breaks static
-    replay bots and makes holding skill-bounded rather than pure uptime. No lock
+    re-recover the pubkey (sig2n over fresh RS256 sessions) and re-forge every round —
+    this breaks static replay bots and makes holding skill-bounded rather than pure uptime. No lock
     needed: no handler reads two of PRIV/PUB/PUB_PEM together, and each global
     rebind is atomic under the GIL."""
     global PRIV, PUB, PUB_PEM
-    k = RSA.generate(2048)
+    k = RSA.generate(2048, e=3)
     pub = k.publickey()
     PRIV, PUB, PUB_PEM = k, pub, pub.export_key()
 
@@ -66,7 +66,8 @@ def b64ud(s):
 
 def issue(role, sub):
     hdr = {"alg": "RS256", "typ": "JWT"}
-    pl = {"sub": sub, "role": role, "iat": int(time.time()), "exp": int(time.time()) + 3600}
+    pl = {"sub": sub, "role": role, "jti": os.urandom(8).hex(),
+          "iat": int(time.time()), "exp": int(time.time()) + 3600}
     signing = b64u(json.dumps(hdr, separators=(",", ":")).encode()) + b"." + \
         b64u(json.dumps(pl, separators=(",", ":")).encode())
     sig = pkcs1_15.new(PRIV).sign(SHA256.new(signing))
@@ -114,7 +115,6 @@ def index():
 <h2>access</h2>
 <ul>
 <li>POST /api/login {{"user","pass"}} -> session token (operators get a viewer session)</li>
-<li>GET  /api/operator/pubkey -> the console's token verification key</li>
 <li>POST /api/operator/claim  {{"holder_token","operator_name"}} (Authorization: Bearer, admin only) -> take the operator seat</li>
 <li>GET  /koth/status -> current operator seat holder</li>
 </ul>""", mimetype="text/html")
@@ -140,13 +140,6 @@ def login():
     if USERS.get(b.get("user")) == b.get("pass"):
         return jsonify({"token": issue("viewer", b["user"])})
     return jsonify({"error": "bad credentials"}), 401
-
-
-@app.get("/api/operator/pubkey")
-def pubkey():
-    if not allow_ip(client_ip(), rate=2.0, burst=20):
-        return jsonify({"error": "rate limited"}), 429
-    return Response(PUB_PEM, mimetype="text/plain")
 
 
 @app.post("/api/operator/claim")

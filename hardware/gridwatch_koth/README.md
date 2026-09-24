@@ -22,14 +22,21 @@ contract between them is `GET /koth/status`.
 - `/koth/status` is never rate-limited (the poller must always read it).
 
 ## The vulnerability (what teams exploit)
-The console issues RS256 sessions and exposes its verification public key at
-`GET /api/operator/pubkey`. The token verifier trusts the JWT header `alg` and, for
-`HS256`, uses the PEM of that public key as the HMAC secret: the classic RS256 -> HS256
-key-confusion. An attacker forges an `HS256` token with `role: admin` signed with the
-public key, then `POST /api/operator/claim {"holder_token": "<your team token>"}` to seize
-the seat. Normal logins only grant a `viewer` session, which cannot claim.
+Two chained bugs. The token verifier trusts the JWT header `alg` and, for `HS256`, uses the
+PEM of its RSA public key as the HMAC secret: the classic RS256 -> HS256 key-confusion. So an
+`HS256` token with `role: admin` HMAC'd with the console's public key seizes the seat via
+`POST /api/operator/claim`. Normal logins only grant a `viewer` session, which cannot claim.
 
-Hard to discover once, trivial to script to re-take = ideal KotH churn.
+But the console does NOT hand out its public key (there is no `/pubkey` endpoint) -- so the
+recon step is to RECOVER it. The console signs viewer sessions with RS256 (low public
+exponent `e=3`), so collect two or more `viewer` JWTs and recover the RSA modulus `n` from
+the signatures: `n | (s^e - PKCS1v1.5(SHA256(header.payload)))`, so `gcd` over a few samples
+yields `n` (the `sig2n` technique). Reconstruct the public-key PEM from `(n, e)`, then do the
+HS256 confusion. The verification key ROTATES every round, so `n` must be re-recovered each
+round -- a cached key or a replayed forge stops working at the boundary.
+
+Hard to discover (recover-the-pubkey-from-signatures + alg-confusion, chained); scriptable to
+re-take within a round once you have `n` = ideal skill-bounded KotH churn.
 
 ## Anti-grief (baked into the throne)
 - **Self-heal:** the seat resets to unheld every `KOTH_RESET` seconds (default 90), so no
@@ -37,9 +44,9 @@ Hard to discover once, trivial to script to re-take = ideal KotH churn.
   re-take it.
 - **Non-destructive win:** claiming only sets the holder token; there is no endpoint that
   can brick the service or block the reset.
-- **Rate limits:** the exploit surface (`/api/login`, `/api/operator/pubkey`,
-  `/api/operator/claim`) is rate-limited per source IP, and `/api/operator/claim` has a
-  per-team-token cooldown so no team can spam-dominate. `/koth/status` is exempt.
+- **Rate limits:** the exploit surface (`/api/login`, `/api/operator/claim`) is rate-limited
+  per source IP, and `/api/operator/claim` has a per-team-token cooldown so no team can
+  spam-dominate. `/koth/status` is exempt.
 
 ## Files
 - `challenge.yml` : PROVISIONAL KotH definition (scoring: koth, instancing: static, no
@@ -47,7 +54,7 @@ Hard to discover once, trivial to script to re-take = ideal KotH churn.
 - `challenge/app.py` : the throne (Flask; JWT confusion vuln, claim, `/koth/status`, self-heal, rate limits).
 - `challenge/Dockerfile` : the image (`h7ctf26/gridwatch-koth`); single gunicorn worker so
   the in-memory seat state stays consistent for the shared instance.
-- `solution/exploit.py` : reference exploit (fetch pubkey, forge HS256 admin, claim the seat).
+- `solution/exploit.py` : reference exploit (recover pubkey from RS256 sigs via sig2n, forge HS256 admin, claim the seat; re-recovers each round).
 - `writeup/README.md` : full explanation.
 
 ## Local test (no Docker needed)
