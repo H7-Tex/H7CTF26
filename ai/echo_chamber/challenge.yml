@@ -1,0 +1,29 @@
+name: Echo Chamber
+author: H7CTF
+category: ai
+difficulty: medium
+
+description: |
+  Atlas doesn't believe everything it reads.
+  It waits until several sources agree.
+
+sub_description: |
+  Investigate the incident and the evidence behind it.
+
+points: 350
+
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/echo_chamber
+  cpu_limit: "1.0"
+  memory_limit: 512Mi
+  exposed_ports:
+    - port: 8080
+      protocol: http
+  instance_timeout: 1800
+  max_extensions: 2

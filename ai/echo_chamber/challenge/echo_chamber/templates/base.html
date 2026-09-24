@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f8fbff">
+    <title>Echo Chamber — Incident Research Archive</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/components.css') }}">
+    <script type="module" src="{{ url_for('static', path='/js/workspace.js') }}"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to the case record</a>
+    <div class="archive-shell">
+      <header class="folio-masthead">
+        <a class="archive-brand" href="#incident" aria-label="Echo Chamber research desk">
+          <span class="archive-mark" aria-hidden="true">EC</span>
+          <span class="archive-name">Echo Chamber<span>Incident research</span></span>
+        </a>
+        <form id="search-form" class="archive-search" role="search">
+          <label class="visually-hidden" for="search-query">Search the knowledge archive</label>
+          <input id="search-query" name="query" type="search" maxlength="1000"
+                 placeholder="Search technical records" autocomplete="off" required>
+          <button class="text-button search-button" type="submit">Search archive</button>
+        </form>
+        <p class="collection-note"><span>Research collection</span>H7CTF / Incident records</p>
+      </header>
+
+      <aside class="case-index" aria-label="Research archive index">
+        <section class="index-case" aria-labelledby="index-case-title">
+          <p class="index-label" id="index-case-title">Open case</p>
+          <strong>INC-7421</strong>
+          <span>StreamForge · 4.8.x</span>
+        </section>
+
+        <nav class="case-navigation" aria-label="Case archive">
+          <button class="index-link" type="button" data-view="incident" aria-current="page">
+            <span>Case file</span><span class="index-code">INC-7421</span>
+          </button>
+          <button class="index-link" type="button" data-view="knowledge">
+            <span>Knowledge archive</span><span class="index-code">Browse</span>
+          </button>
+          <button class="index-link" type="button" data-view="research">
+            <span>Research intake</span><span class="index-code">Contribute</span>
+          </button>
+          <button class="index-link" type="button" data-view="evidence">
+            <span>Evidence record</span><span class="index-code">Open by ID</span>
+          </button>
+          <button class="index-link" type="button" data-view="reports">
+            <span>Reports</span><span class="index-code">Filed</span>
+          </button>
+        </nav>
+
+        <p class="index-foot">Technical records<br>Atlas research collection</p>
+      </aside>
+
+      <div class="research-desk">
+        <main class="workarea" id="main-content">
+          {% block content %}{% endblock %}
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,56 @@
+:root {
+  color-scheme: light;
+  --desk: #f4f9ff;
+  --index: #f8fbff;
+  --index-line: #376bd1;
+  --index-text: #152341;
+  --index-muted: #3e506f;
+  --paper: #fbfdff;
+  --paper-muted: #edf5ff;
+  --paper-deep: #dfedff;
+  --grid: #3e79dc12;
+  --ink: #101a2b;
+  --ink-soft: #2e3d55;
+  --muted: #42536d;
+  --quiet: #53647c;
+  --line: #c1d5f2;
+  --line-strong: #7d9ed6;
+  --accent: #1455d9;
+  --accent-strong: #0c43b6;
+  --accent-soft: #e4efff;
+  --signal: #d94338;
+  --success: #245c49;
+  --warning: #715119;
+  --danger: #8b3028;
+  --focus: #bd3b31;
+  --font-body: "Segoe UI", Arial, sans-serif;
+  --font-display: Georgia, Cambria, "Times New Roman", serif;
+  --font-mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --text-small: .8125rem;
+  --text-body: 1rem;
+  --text-title: clamp(2.15rem, 3.4vw, 3.35rem);
+  --line-height: 1.58;
+  --measure: 68ch;
+  --focus-ring: 3px solid var(--focus);
+  --focus-offset: 3px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: var(--line-height);
+  color: var(--ink);
+  background: var(--desk);
+  accent-color: var(--accent);
+  caret-color: var(--accent);
+  scrollbar-color: var(--line-strong) var(--paper-muted);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+::selection { color: var(--paper); background: var(--accent-strong); }

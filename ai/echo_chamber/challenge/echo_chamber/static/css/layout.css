@@ -1,0 +1,66 @@
+* { box-sizing: border-box; }
+html { min-width: 320px; scroll-behavior: auto; }
+body { min-width: 320px; margin: 0; overflow-x: clip; color: var(--ink); background: var(--desk); }
+button, input, textarea { font: inherit; }
+button { touch-action: manipulation; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: var(--focus-ring); outline-offset: var(--focus-offset);
+}
+.archive-shell { display: grid; grid-template-columns: 246px minmax(0, 1fr); min-height: 100vh; min-height: 100svh; }
+.folio-masthead {
+  position: relative; grid-column: 1 / -1; display: grid;
+  grid-template-columns: 246px minmax(240px, 1fr) auto; align-items: center;
+  gap: clamp(18px, 3vw, 44px); min-height: 90px; padding: 14px clamp(20px, 3.2vw, 46px);
+  background-color: var(--paper); background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px; border-bottom: 2px solid var(--accent);
+}
+.folio-masthead::after {
+  position: absolute; top: 10px; right: 12px; width: 15px; height: 15px;
+  border-top: 1px solid var(--accent); border-right: 1px solid var(--accent); content: "";
+}
+.case-index {
+  position: sticky; top: 0; display: flex; flex-direction: column; align-self: start;
+  min-height: calc(100vh - 90px); min-height: calc(100svh - 90px); padding: 30px 21px 22px;
+  color: var(--index-text); background-color: var(--index); background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px; border-right: 1px solid var(--index-line);
+}
+.research-desk {
+  min-width: 0; background-color: var(--paper);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.workarea { width: min(100%, 1580px); min-width: 0; margin: 0 auto; padding: 38px clamp(24px, 4vw, 66px) 84px; }
+.view[hidden] { display: none; }
+.incident-layout, .records-layout, .research-layout, .reports-layout {
+  display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(270px, .72fr); align-items: start;
+  gap: clamp(30px, 4.6vw, 72px);
+}
+.reading-column, .case-margin, .record-list, .record-inspector, .submission-register, .report-paper { min-width: 0; }
+.case-margin, .record-inspector { padding-left: 28px; border-left: 1px solid var(--line); }
+.page-heading { max-width: var(--measure); margin-bottom: 35px; }
+.page-heading-row { display: flex; align-items: end; justify-content: space-between; gap: 24px; max-width: none; }
+.records-layout { grid-template-columns: minmax(0, 1.45fr) minmax(300px, .8fr); }
+.research-layout { grid-template-columns: minmax(0, 1.55fr) minmax(260px, .72fr); }
+.reports-layout { grid-template-columns: minmax(230px, .68fr) minmax(0, 1.5fr); }
+@media (max-width: 1050px) {
+  .archive-shell { grid-template-columns: 210px minmax(0, 1fr); }
+  .folio-masthead { grid-template-columns: 210px minmax(200px, 1fr) auto; gap: 18px; padding-right: 28px; padding-left: 28px; }
+  .collection-note { max-width: 185px; }
+  .workarea { padding-right: 30px; padding-left: 30px; }
+  .incident-layout, .records-layout, .research-layout, .reports-layout { grid-template-columns: minmax(0, 1fr); gap: 34px; }
+  .case-margin, .record-inspector { padding: 25px 0 0; border-top: 1px solid var(--line); border-left: 0; }
+}
+@media (max-width: 720px) {
+  .archive-shell { grid-template-columns: minmax(0, 1fr); }
+  .folio-masthead { grid-template-columns: minmax(0, 1fr) auto; gap: 12px; min-height: 0; padding: 14px 18px 12px; }
+  .folio-masthead::after { display: none; }
+  .folio-masthead .archive-search { grid-column: 1 / -1; grid-row: 2; width: 100%; }
+  .collection-note { display: none; }
+  .case-index { position: static; min-height: 0; padding: 13px 18px 10px; border-right: 0; border-bottom: 1px solid var(--index-line); }
+  .case-index .index-case, .case-index .index-foot { display: none; }
+  .case-navigation { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 12px; margin-top: 12px; }
+  .workarea { padding: 28px 18px 55px; }
+  .page-heading-row { display: block; }
+  .page-heading-row > button { margin-top: 18px; }
+  .page-heading { margin-bottom: 28px; }
+}

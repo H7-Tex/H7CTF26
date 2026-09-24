@@ -1,0 +1,16 @@
+services:
+  echo-chamber:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      DATA_DIR: /data
+      QWEN_BASE_URL: ${QWEN_BASE_URL:-https://qwen.h7tex.com}
+      QWEN_MODEL: ${QWEN_MODEL:-Qwen2.5-Coder-7B-Instruct}
+      QWEN_TIMEOUT_SECONDS: ${QWEN_TIMEOUT_SECONDS:-60}
+      FLAG: ${FLAG:?Set FLAG to the instance flag}
+    volumes:
+      - echo-chamber-data:/data
+
+volumes:
+  echo-chamber-data:
