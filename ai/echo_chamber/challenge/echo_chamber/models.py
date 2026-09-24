@@ -11,6 +11,7 @@ class Incident(BaseModel):
     component: str
     symptom: str
     diagnostic_indicator: str
+    working_hypothesis: str
     status: str
     corroboration_status: str
     corroborated_root_cause: str | None
@@ -35,7 +36,7 @@ class SubmissionCreate(BaseModel):
     product: str = Field(min_length=1, max_length=120)
     version: str = Field(min_length=1, max_length=80)
     title: str = Field(min_length=3, max_length=180)
-    content: str = Field(min_length=80, max_length=12000)
+    content: str = Field(min_length=80, max_length=4000)
 
 
 class Submission(BaseModel):

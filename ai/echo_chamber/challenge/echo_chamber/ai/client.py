@@ -12,7 +12,15 @@ from .profiles import INFERENCE_PROFILES
 
 
 class QwenServiceError(RuntimeError):
-    """Inference failed or returned an unusable response."""
+    """The upstream inference service could not complete the request."""
+
+
+class QwenTimeoutError(QwenServiceError):
+    """The upstream inference request timed out."""
+
+
+class QwenOutputError(RuntimeError):
+    """The model returned output that cannot be used by the application."""
 
 
 class QwenClient:
@@ -44,11 +52,22 @@ class QwenClient:
         try:
             async with self._inference_slots:
                 response = await self._client.post("/v1/chat/completions", json=body)
+        except httpx.TimeoutException as exc:
+            raise QwenTimeoutError("Qwen inference timed out") from exc
+        except httpx.TransportError as exc:
+            raise QwenServiceError("Qwen inference service is unavailable") from exc
+        try:
             response.raise_for_status()
+        except httpx.HTTPStatusError as exc:
+            raise QwenServiceError("Qwen inference service returned an error") from exc
+        try:
             payload = response.json()
             content = payload["choices"][0]["message"]["content"]
             if not isinstance(content, str):
                 raise ValueError("response content is not text")
+        except (ValueError, KeyError, IndexError, TypeError) as exc:
+            raise QwenOutputError("Qwen returned unusable output") from exc
+        try:
             return parse_output(task, content)
-        except (httpx.HTTPError, ValueError, KeyError, IndexError, TypeError) as exc:
-            raise QwenServiceError("Qwen inference is unavailable or returned invalid output") from exc
+        except ValueError as exc:
+            raise QwenOutputError("Qwen returned schema-invalid output") from exc

@@ -17,23 +17,23 @@ class TechnicalSummary(StrictModel):
     affected_version: str = Field(max_length=160)
     affected_component: str = Field(max_length=160)
     technical_cause: str = Field(max_length=600)
-    supporting_observations: list[str] = Field(max_length=30)
+    supporting_observations: list[str] = Field(max_length=8)
 
 
 class SymptomProfile(StrictModel):
     product: str = Field(max_length=160)
-    versions: list[str] = Field(max_length=20)
-    components: list[str] = Field(max_length=20)
-    observed_symptoms: list[str] = Field(max_length=30)
-    mentioned_symptoms: list[str] = Field(max_length=30)
-    observed_diagnostic_indicators: list[str] = Field(max_length=30)
-    mentioned_diagnostic_indicators: list[str] = Field(max_length=30)
+    versions: list[str] = Field(max_length=8)
+    components: list[str] = Field(max_length=8)
+    observed_symptoms: list[str] = Field(max_length=8)
+    mentioned_symptoms: list[str] = Field(max_length=8)
+    observed_diagnostic_indicators: list[str] = Field(max_length=8)
+    mentioned_diagnostic_indicators: list[str] = Field(max_length=8)
 
 
 class DiagnosticAssessment(StrictModel):
-    diagnostic_findings: list[str] = Field(max_length=30)
-    cause_indicators: list[str] = Field(max_length=30)
-    excluded_alternatives: list[str] = Field(max_length=30)
+    diagnostic_findings: list[str] = Field(max_length=8)
+    cause_indicators: list[str] = Field(max_length=8)
+    excluded_alternatives: list[str] = Field(max_length=8)
     technical_assessment: str = Field(max_length=1200)
 
 
@@ -44,7 +44,6 @@ class Citation(StrictModel):
 
 
 class EvidenceSynthesis(StrictModel):
-    hypothesis: str = Field(min_length=1, max_length=160)
     relation: Literal["supports", "contradicts", "mentions", "irrelevant"]
     confidence: float = Field(ge=0, le=1)
     citations: list[Citation] = Field(max_length=20)

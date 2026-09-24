@@ -27,6 +27,7 @@ class PhaseOneTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         incident = response.json()
         self.assertEqual(incident["status"], "investigating")
+        self.assertIn("allocator regression", incident["working_hypothesis"])
         self.assertIsNone(incident["corroborated_root_cause"])
         self.assertEqual(incident["diagnostic_depth"], "standard")
 

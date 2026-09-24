@@ -81,7 +81,7 @@ if (form) {
     message(status, "The source is being processed into research records.");
     try {
       const result = await api("/api/research/submissions", { method: "POST", body: JSON.stringify(payload) });
-      const ids = [result.submission_id, ...recentIds().filter(id => id !== result.submission_id)].slice(0, 8);
+      const ids = [result.submission_id];
       localStorage.setItem(idsKey, JSON.stringify(ids));
       await Promise.all([loadHistory(), showSubmission(result.submission_id)]);
       message(status, "Research filed and ready to inspect.", "success");

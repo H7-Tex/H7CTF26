@@ -6,6 +6,14 @@ Difficulty: Medium
 
 Atlas Incident Intelligence is an incident research platform. Investigate its open incident and the technical knowledge available to analysts.
 
+Each instance keeps one active player research submission. A successful new submission replaces the prior source and its derived records, and resets incident analyses and reports; failed processing leaves the active source unchanged. Research documents are limited to 4,000 characters.
+
+The prepared post-deployment load probe accepts one base URL per isolated team instance and reports endpoint latency/error rates plus the configured upper bound for concurrent Qwen requests. It does not set or retrieve the flag. Do not point multiple simulated teams at the same shared instance.
+
+```sh
+python scripts/load_test.py --urls https://team-one.example https://team-two.example --iterations 1
+```
+
 ## Deployment configuration
 
 The application defaults to the authoritative H7CTF Qwen service and model:

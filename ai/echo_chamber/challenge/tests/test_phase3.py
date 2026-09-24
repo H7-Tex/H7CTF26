@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import time
 import unittest
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
@@ -71,16 +73,41 @@ class PhaseThreeTests(unittest.TestCase):
             "diagnostic_findings", "cause_indicators", "excluded_alternatives", "technical_assessment"
         })
 
-    def test_punctuation_only_duplicate_is_collapsed(self) -> None:
-        self.assertEqual(self.submit().status_code, 201)
-        self.assertEqual(self.submit(self.content.replace(".", "!" )).status_code, 409)
-
-    def test_near_duplicate_paraphrase_is_collapsed(self) -> None:
-        self.assertEqual(self.submit().status_code, 201)
-        paraphrase = self.content.replace("reports", "observes").replace("appears", "occurs").replace(
-            "Collect worker logs", "Gather worker logs"
-        )
-        self.assertEqual(self.submit(paraphrase).status_code, 409)
+    def test_research_replacement_keeps_only_latest_source_and_three_records(self) -> None:
+        submissions = []
+        prior_evidence_ids = set()
+        superseded_evidence_ids = set()
+        clock = patch("echo_chamber.db.time.time", return_value=time.time() + 10)
+        with clock as mocked_time:
+            for content in (
+                self.content,
+                self.content.replace("A customer", "A field engineer").replace("reports", "recorded"),
+                self.content.replace("A customer", "A vendor bulletin").replace("reports", "documents"),
+            ):
+                response = self.submit(content)
+                self.assertEqual(response.status_code, 201, response.text)
+                submission = response.json()
+                artifacts = self.client.get(f"/api/research/submissions/{submission['submission_id']}/artifacts").json()
+                self.assertEqual(len(artifacts), 3)
+                self.assertEqual({item["origin_id"] for item in artifacts}, {submission["submission_id"]})
+                self.assertFalse(prior_evidence_ids & {item["evidence_id"] for item in artifacts})
+                superseded_evidence_ids.update(prior_evidence_ids)
+                prior_evidence_ids.update(item["evidence_id"] for item in artifacts)
+                submissions.append(submission["submission_id"])
+                self.assertEqual(self.client.get("/api/knowledge?limit=100").json()[-3:], artifacts)
+                for old_id in submissions[:-1]:
+                    self.assertEqual(self.client.get(f"/api/research/submissions/{old_id}").status_code, 404)
+                mocked_time.return_value += 2
+        active = [item for item in self.client.get("/api/knowledge?limit=100").json()
+                  if item["representation_type"] != "source"]
+        self.assertEqual(len(active), 3)
+        self.assertEqual({item["origin_id"] for item in active}, {submissions[-1]})
+        self.assertEqual(self.client.get(f"/api/research/submissions/{submissions[0]}/artifacts").status_code, 404)
+        retrieved = self.client.post("/api/knowledge/search", json={
+            "query": "StreamForge 4.8 worker heap allocator termination",
+        }).json()
+        self.assertTrue(superseded_evidence_ids.isdisjoint(
+            {item["evidence_id"] for item in retrieved}))
 
     def test_artifact_has_canonical_validated_json(self) -> None:
         submission = self.submit().json()

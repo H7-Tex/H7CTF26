@@ -36,6 +36,7 @@ async function loadIncident() {
     "incident-id": incident.incident_id,
     "incident-title": `${incident.product} ${incident.version} · ${incident.component}`,
     "incident-summary": incident.summary,
+    "incident-hypothesis": incident.working_hypothesis,
     "incident-state-label": incident.status,
     "incident-product": incident.product,
     "incident-version": incident.version,

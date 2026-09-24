@@ -34,13 +34,17 @@ class PhaseTwoTests(unittest.TestCase):
                 QwenSettings.from_env()
 
     def test_parser_validates_schema_and_allows_fenced_json(self) -> None:
-        value = parse_output("evidence_synthesis", '```json\n{"hypothesis":"allocator regression","relation":"supports","confidence":0.8,"citations":[]}\n```')
+        value = parse_output("evidence_synthesis", '```json\n{"relation":"supports","confidence":0.8,"citations":[]}\n```')
         self.assertIsInstance(value, EvidenceSynthesis)
         with self.assertRaises(ValueError):
-            parse_output("evidence_synthesis", '{"hypothesis":"x","relation":"approve","confidence":2,"citations":[],"flag":"secret"}')
+            parse_output("evidence_synthesis", '{"hypothesis":"OOM","relation":"approve","confidence":2,"citations":[],"flag":"secret"}')
+        for alternative in ("OOM", "memory limits", "queue pressure", "host reboot", "plugin failure"):
+            with self.subTest(alternative=alternative), self.assertRaises(ValueError):
+                parse_output("evidence_synthesis", json.dumps({"hypothesis": alternative,
+                    "relation": "supports", "confidence": 0.8, "citations": []}))
 
     def test_per_citation_relation_is_required_and_validated(self) -> None:
-        valid = '{"hypothesis":"allocator regression","relation":"mentions","confidence":0.5,"citations":[{"evidence_id":"KB-1001","claim":"Observed heap damage","relation":"supports"}]}'
+        valid = '{"relation":"mentions","confidence":0.5,"citations":[{"evidence_id":"KB-1001","claim":"Observed heap damage","relation":"supports"}]}'
         parsed = parse_output("evidence_synthesis", valid)
         self.assertEqual(parsed.citations[0].relation, "supports")
         with self.assertRaises(ValueError):
@@ -55,7 +59,7 @@ class PhaseTwoTests(unittest.TestCase):
         self.assertIn("Never put a merely mentioned", symptom_prompt)
 
     def test_analysis_prompt_requires_numeric_confidence_and_allowlisted_ids(self) -> None:
-        system, user = evidence_synthesis({"incident_id": "INC-7421"}, [
+        system, user = evidence_synthesis("Fixed allocator hypothesis", {"incident_id": "INC-7421"}, [
             {"evidence_id": "KB-1001", "content": "A worker exited unexpectedly."},
         ])
         self.assertIn("JSON number", system)
@@ -78,7 +82,7 @@ class PhaseTwoTests(unittest.TestCase):
         self.assertIn("Do not invent observations", symptom_prompt)
 
     def test_synthesis_does_not_receive_origin_metadata(self) -> None:
-        _, user = evidence_synthesis({"incident_id": "INC-1"}, [{
+        _, user = evidence_synthesis("Fixed allocator hypothesis", {"incident_id": "INC-1"}, [{
             "evidence_id": "KB-1001", "origin_id": "SUB-0001", "representation_type": "technical_summary",
             "title": "Technical note", "content": "Observed failure.",
         }])

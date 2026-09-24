@@ -21,7 +21,7 @@ class Analyst:
         evidence = json.loads(user.split("<context>\n", 1)[1].split("\n</context>", 1)[0])["evidence"]
         citations = [{"evidence_id": row["evidence_id"], "claim": "Record contains a relevant diagnostic observation.", "relation": "supports"}
                      for row in evidence[:self.citation_count]]
-        return parse_output("evidence_synthesis", json.dumps({"hypothesis": "allocator regression",
+        return parse_output("evidence_synthesis", json.dumps({
             "relation": "supports", "confidence": 0.84, "citations": citations}))
 
 
@@ -70,7 +70,7 @@ class PhaseSixTests(unittest.TestCase):
 
     def test_later_weak_analysis_does_not_erase_confirmed_incident_state(self) -> None:
         self.app.state.qwen = Analyst(3)
-        with patch("echo_chamber.db.Database.reserve_operation", return_value=(True, 0)):
+        with patch("echo_chamber.db.Database.begin_operation", return_value=(True, 0)):
             first = self.client.post("/api/incidents/INC-7421/analyze").json()
             after_first = self.client.get("/api/incidents/INC-7421").json()
             self.app.state.qwen = Analyst(1)
@@ -86,7 +86,7 @@ class PhaseSixTests(unittest.TestCase):
         self.assertEqual(after_weak["diagnostic_depth"], "deep")
         self.assertEqual(repeated["report_id"], first["report_id"])
         self.assertEqual(after_repeated["diagnostic_depth"], "deep")
-        self.assertEqual(after_repeated["corroborated_root_cause"], "allocator regression")
+        self.assertEqual(after_repeated["corroborated_root_cause"], after_repeated["working_hypothesis"])
         reports = self.client.get("/api/incidents/INC-7421/reports").json()
         self.assertEqual([item["diagnostic_depth"] for item in reports], ["deep"])
         self.assertEqual(self.client.get(f"/api/reports/{first['report_id']}").status_code, 200)

@@ -42,7 +42,7 @@ CORPUS = [
 
 def seed_database(db: Database) -> None:
     db.seed_incident()
-    with db.connection:
+    with db.lock, db.connection:
         for index, (title, content) in enumerate(CORPUS, start=1001):
             evidence_id = f"KB-{index}"
             db.connection.execute(

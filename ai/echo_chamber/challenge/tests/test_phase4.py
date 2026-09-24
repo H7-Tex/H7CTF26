@@ -23,7 +23,7 @@ class Analyst:
             {"evidence_id": "KB-1009", "claim": "A known but unrelated record was not retrieved.", "relation": "mentions"},
             {"evidence_id": "KB-9999", "claim": "An unknown record was not supplied.", "relation": "supports"},
         ]
-        return parse_output("evidence_synthesis", json.dumps({"hypothesis": "allocator regression",
+        return parse_output("evidence_synthesis", json.dumps({
             "relation": "mentions", "confidence": 0.82, "citations": citations}))
 
 

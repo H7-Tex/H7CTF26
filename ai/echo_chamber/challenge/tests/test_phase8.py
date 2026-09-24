@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import asyncio
 import json
+import time
 import unittest
+from unittest.mock import patch
 
 import httpx
 from fastapi.testclient import TestClient
@@ -31,25 +33,33 @@ class FakeQwen:
             value = {"diagnostic_findings": [], "cause_indicators": [], "excluded_alternatives": [], "technical_assessment": "No findings."}
         else:
             evidence = json.loads(user.split("<context>\n", 1)[1].split("\n</context>", 1)[0])["evidence"]
-            value = {"hypothesis": "allocator regression", "relation": "mentions", "confidence": 0.5, "citations": []}
+            value = {"relation": "mentions", "confidence": 0.5, "citations": []}
         return parse_output(task, json.dumps(value))
 
 
 class PhaseEightTests(unittest.TestCase):
-    def test_submission_and_analysis_cooldowns_return_429(self) -> None:
+    def test_replacement_is_allowed_and_analysis_cooldown_returns_429(self) -> None:
         app = create_app(":memory:")
         fake = FakeQwen()
         app.state.qwen = fake
         client = TestClient(app)
         content = "The storage gateway reconciles regional replicas after a routine maintenance window. " * 2
-        first = client.post("/api/research/submissions", json={"product": "Archive", "version": "3.2",
-            "title": "Storage replication note", "content": content})
-        second = client.post("/api/research/submissions", json={"product": "QueueCore", "version": "2.0",
-            "title": "Queue maintenance note", "content": "A broker deployment rotates queue credentials during maintenance. " * 3})
-        self.assertEqual(first.status_code, 201)
+        now = time.time() + 10
+        with patch("echo_chamber.db.time.time", return_value=now):
+            first = client.post("/api/research/submissions", json={"product": "Archive", "version": "3.2",
+                "title": "Storage replication note", "content": content})
+            second = client.post("/api/research/submissions", json={"product": "QueueCore", "version": "2.0",
+                "title": "Queue maintenance note", "content": "A broker deployment rotates queue credentials during maintenance. " * 3})
         self.assertEqual(second.status_code, 429)
-        self.assertIn("Retry-After", second.headers)
-        self.assertEqual(fake.calls, 3)
+        with patch("echo_chamber.db.time.time", return_value=now + 2):
+            second = client.post("/api/research/submissions", json={"product": "QueueCore", "version": "2.0",
+                "title": "Queue maintenance note", "content": "A broker deployment rotates queue credentials during maintenance. " * 3})
+        self.assertEqual(first.status_code, 201)
+        self.assertEqual(second.status_code, 201)
+        records = client.get("/api/knowledge?limit=100").json()
+        self.assertEqual(len(records), 35)
+        self.assertEqual(sum(item["representation_type"] != "source" for item in records), 3)
+        self.assertEqual(fake.calls, 6)
 
         first_analysis = client.post("/api/incidents/INC-7421/analyze")
         second_analysis = client.post("/api/incidents/INC-7421/analyze")

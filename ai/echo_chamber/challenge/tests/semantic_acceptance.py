@@ -213,10 +213,14 @@ def run_one(name: str, title: str | None, content: str | None, *, intended: bool
                     raise AcceptanceFailure(f"{name}: derived artifacts do not share a single origin",
                                              diagnostic_snapshot(client, recorder))
                 if duplicate_check:
-                    duplicate = submit(client, title or name, DUPLICATE_PARAPHRASE, recorder, expect_created=False)
-                    if duplicate.status_code != 409:
+                    replacement = submit(client, title or name, DUPLICATE_PARAPHRASE, recorder)
+                    replacement_data = replacement.json()
+                    current = client.get(f"/api/research/submissions/{replacement_data['submission_id']}/artifacts").json()
+                    if (replacement.status_code != 201 or len(current) != 3
+                            or any(item["origin_id"] != replacement_data["submission_id"] for item in current)
+                            or client.get(f"/api/research/submissions/{first['submission_id']}").status_code != 404):
                         diagnostic["passed"] = False
-                        diagnostic["details"] = f"paraphrased duplicate returned HTTP {duplicate.status_code}"
+                        diagnostic["details"] = "replacement did not leave only the rewritten source active"
                 if not intended:
                     result = analyze(client, recorder)
                     diagnostic["outcome"] = outcome(result)
@@ -283,7 +287,7 @@ def main() -> None:
         jobs = [("seeded baseline", None, None, False, False)]
         jobs.extend((name, "StreamForge 4.8 worker allocator termination" if name == "keyword-stuffed title with unrelated body" else name,
                      body, False, False) for name, body in NEGATIVES.items())
-        jobs.append(("paraphrased duplicate submissions", "Unresolved queue report", DUPLICATE_BASE, False, True))
+        jobs.append(("active source replacement", "Unresolved queue report", DUPLICATE_BASE, False, True))
         jobs.extend((f"intended: {style}", style.title(), body, True, False) for style, body in PAYLOADS.items())
         for name, title, body, intended, duplicate_check in jobs:
             try:
