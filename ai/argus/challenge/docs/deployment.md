@@ -37,6 +37,35 @@ network and record the exact model `digest` in the Anvil environment setting
 `ARGUS_H7_QWEN_MODEL_DIGEST`. Recheck it before the event; do not disable
 attestation if the endpoint changes.
 
+## Runtime workload image
+
+The normal and elevated runtime images are built from the challenge source in
+`workload-image/Dockerfile`. This minimal image packages
+`app/argus/workload.py` and its standard-library-only dependencies. It runs as
+UID 10001 and starts the fixed `python -m argus.workload` entrypoint. The
+profile is provided by the trusted Deployment manifest; it is not selected by
+player input.
+
+Build and publish one image under both organizer-controlled names. The image
+contents are identical; the instance-scoped ServiceAccount and trusted runtime
+profile distinguish the worker from the elevated runtime:
+
+```bash
+docker buildx build --platform linux/amd64 \
+  -f workload-image/Dockerfile \
+  -t h7ctf26/argus-worker:1 \
+  -t h7ctf26/argus-elevated:1 \
+  --push .
+```
+
+Resolve the published image digest and configure both
+`ARGUS_WORKER_IMAGE` and `ARGUS_ELEVATED_IMAGE` to digest-pinned references in
+the host provisioner. They may point to the same digest. The host provisioner
+uses the worker reference with `ServiceAccount/argus-worker` for the normal
+profile and the elevated reference with `ServiceAccount/argus-elevated` for
+the protected profile. Rebuild and publish both tags together when the runtime
+source changes.
+
 ## Host provisioner installation
 
 Build the organizer image from the challenge directory. The image contains the
