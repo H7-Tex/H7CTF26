@@ -1,0 +1,27 @@
+name: Ghost in the Timeline
+author: abu
+category: forensics
+difficulty: medium
+description: |
+  An engineer is under investigation for leaking a confidential product roadmap. Their
+  defense: the file on their laptop was created back in June, long before they had access
+  to the sensitive share, and they insist they never staged or deleted anything. The
+  file's timestamps back them up.
+
+  We imaged their disk (`case_disk.img`, an ext4 filesystem). Timestamps can be forged,
+  but not all of them. Establish when the roadmap was really touched, then find what the
+  engineer actually did around that time and recover what they took.
+
+  Tools: `debugfs` / `istat` / The Sleuth Kit for the metadata, and
+  `foremost` / `extundelete` / `photorec` (or a carver) for the deleted data.
+sub_description: |
+  A disk image, a "leaked" file with a suspiciously old timestamp, and an alibi. Prove the
+  real timeline and recover the deleted exfil.
+points: 300
+flags:
+  - type: static
+    flag: "H7CTF{gh0st_1n_th3_t1m3l1n3}"
+handout:
+  # 20 MB ext4 image -> Anvil built-in attachment
+  - name: case_disk.img
+tags: [forensics, disk, ext4, anti-forensics, timestomp, file-carving, dfir]

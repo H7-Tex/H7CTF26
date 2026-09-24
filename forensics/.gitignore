@@ -1,0 +1,8 @@
+# big binary handouts are hosted (GCS bucket / Anvil attachment), not committed.
+# small pcaps are kept in-repo.
+*.img
+*.lime
+*.lime.zst
+*.raw
+*.zst
+mem.*

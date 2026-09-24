@@ -6,8 +6,9 @@ from Crypto.Hash import SHA256
 
 app = Flask(__name__)
 
-RESET_INTERVAL = int(os.environ.get("KOTH_RESET", "90"))
 CLAIM_COOLDOWN = float(os.environ.get("KOTH_CLAIM_COOLDOWN", "3"))
+ADMIN_TOKEN = os.environ.get("KOTH_ADMIN_TOKEN", "")   # engine-injected per instance; empty = dev/local (reset unauthenticated)
+SELFHEAL = os.environ.get("KOTH_SELFHEAL", "").strip()  # seconds; empty/off = the engine drives resets via /koth/reset
 
 _key = RSA.generate(2048)
 PRIV = _key
@@ -164,16 +165,32 @@ def status():
         return jsonify({"holder": state["holder"], "since": state["since"]})
 
 
-def self_heal():
+def _clear_holder():
+    with state_lock:
+        state["holder"] = None
+        state["since"] = None
+        state["operator_name"] = None
+
+
+@app.post("/koth/reset")
+def reset():
+    if ADMIN_TOKEN and bearer() != ADMIN_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    _clear_holder()
+    return jsonify({"status": "reset"})
+
+
+def self_heal(interval):
     while True:
-        time.sleep(RESET_INTERVAL)
-        with state_lock:
-            state["holder"] = None
-            state["since"] = None
-            state["operator_name"] = None
+        time.sleep(interval)
+        _clear_holder()
 
 
-threading.Thread(target=self_heal, daemon=True).start()
+if SELFHEAL:
+    try:
+        threading.Thread(target=self_heal, args=(int(SELFHEAL),), daemon=True).start()
+    except ValueError:
+        pass
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", "8080")), threaded=True)

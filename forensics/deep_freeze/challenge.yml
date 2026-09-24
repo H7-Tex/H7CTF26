@@ -1,0 +1,32 @@
+name: Deep Freeze
+author: abu
+category: forensics
+difficulty: hard
+description: |
+  03:14 last night, ransomware tore through St. Cascade General's file server. The SOC
+  caught one nurse-station workstation still mid-encryption and did the right thing: they
+  pulled its RAM with a live acquisition before anyone powered it off. Then the box was
+  shut down, so the malware process (and whatever it was still holding) is gone from disk.
+
+  You're handed the acquisition and one file the malware had just finished locking. The
+  ransomware never got to wipe its key, so it should still be somewhere in that memory
+  image. Get it out, decrypt the file, and read what was inside.
+
+  Handout: `memory.lime.zst` (a real Linux memory image; decompress with zstd) and
+  `Q3_patient_records.pdf.locked` (AES-CBC; the first 16 bytes are the IV). Open the image
+  with Volatility 3 and hunt the key material (aeskeyfind is your friend).
+sub_description: |
+  A real RAM image from a workstation caught mid-encryption, plus one locked file. The
+  ransomware key never left memory. Recover it and decrypt.
+points: 500
+flags:
+  - type: static
+    flag: "H7CTF{r4ns0m_k3y_l3ft_1n_th3_fr0st}"
+handout:
+  # hosted on the public GCS handout bucket (image is ~662 MB)
+  - name: memory.lime.zst
+    url: https://storage.googleapis.com/h7ctf26-handouts/deep-freeze/mem.lime.zst
+    sha256: f6fd3e3f2303587f2693057a838eaa48b42c055f4a7751f07b45274d9d6462ef
+  - name: Q3_patient_records.pdf.locked
+    url: https://storage.googleapis.com/h7ctf26-handouts/deep-freeze/Q3_patient_records.pdf.locked
+tags: [forensics, memory, volatility, ransomware, aeskeyfind, dfir]
