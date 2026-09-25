@@ -87,6 +87,41 @@ services:
       - woodpecker-agent-data:/etc/woodpecker
       - /var/run/docker.sock:/var/run/docker.sock
 
+  registry:
+    image: registry:2.8.3
+    container_name: freightpipe-registry
+    restart: unless-stopped
+    environment:
+      REGISTRY_HTTP_ADDR: 0.0.0.0:5000
+    volumes:
+      - registry-data:/var/lib/registry
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:5000/v2/"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+      start_period: 5s
+
+  prod:
+    build: ./prod
+    image: freightpipe-prod:local
+    container_name: freightpipe-prod
+    restart: unless-stopped
+    depends_on:
+      registry:
+        condition: service_healthy
+    environment:
+      REGISTRY: registry:5000
+      IMAGE: prod-app:latest
+      CI_NETWORK: "${CI_NETWORK:-freightpipe-ci}"
+      WEBHOOK_SECRET: "${WEBHOOK_SECRET:-wh00k_hm4c_5ecr3t_5parr0w_2026}"
+      FLAG3: "${FLAG3:-H7CTF{placeholder_flag3}}"
+      PROD_APP_WRITE_TOKEN: "${PROD_APP_WRITE_TOKEN:-prodapp-write-token-placeholder}"
+    ports:
+      - "${PROD_WEB_PORT:-9090}:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   reviewbot:
     image: python:3.12-alpine
     container_name: freightpipe-reviewbot
@@ -102,6 +137,10 @@ services:
       PROD_REPO: dev/prod-app
       REVIEWBOT_INTERVAL: "${REVIEWBOT_INTERVAL:-90}"
       USER_FLAG: "${USER_FLAG:-H7CTF{placeholder_user_flag}}"
+      REGISTRY_USER: "${REGISTRY_USER:-deployer}"
+      REGISTRY_TOKEN: "${REGISTRY_TOKEN:-d3pl0y_t0k3n_5parr0w_2026}"
+      WEBHOOK_SECRET: "${WEBHOOK_SECRET:-wh00k_hm4c_5ecr3t_5parr0w_2026}"
+      DEPLOY_URL: "${DEPLOY_URL:-http://prod:9000/deploy}"
     command: ["python3", "/opt/reviewbot/bot.py"]
     volumes:
       - ./reviewbot/bot.py:/opt/reviewbot/bot.py:ro
@@ -110,6 +149,7 @@ volumes:
   woodpecker-oauth:
   woodpecker-server-data:
   woodpecker-agent-data:
+  registry-data:
 
 networks:
   default:

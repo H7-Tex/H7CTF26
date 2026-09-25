@@ -136,20 +136,45 @@ esac
 
 seed_dir=$(mktemp -d /tmp/freightpipe-seed.XXXXXX)
 
-log 'seeding freightpipe-scripts (token committed then removed in history)'
+log 'seeding freightpipe-scripts (build helper + app image source; token committed then removed in history)'
 clone_repo freightpipe-scripts
-mkdir -p scripts
-printf '# Freightpipe Scripts\n\nShared build helpers for Sparrow Freight CI.\n\n`scripts/build.sh` is fetched and executed by the **prod-app** deploy pipeline on every build\n(the pipeline is locked down, so all shared logic lives here).\n' > README.md
+mkdir -p scripts app
+printf '# Freightpipe Scripts\n\nShared build inputs for Sparrow Freight CI.\n\nThe **prod-app** deploy pipeline fetches this repo every build: it runs `scripts/build.sh`\n(the build/test stage) and then packages `Dockerfile` + `app/` into the production image that\ngets pushed to the registry and deployed. The pipeline itself is locked down in prod-app, so all\nbuild logic and app source live here.\n' > README.md
 cat > scripts/build.sh <<'EOF'
 #!/bin/sh
 set -eu
 echo "[freightpipe] building ${APP_NAME:-prod-app}"
 [ -f app/main.py ] && python3 -m py_compile app/main.py
-echo '[freightpipe] build complete'
+echo '[freightpipe] build/test complete'
 EOF
 chmod 0755 scripts/build.sh
-git add README.md scripts/build.sh
-git_commit 'build: add shared application build helper' '2026-01-10T09:00:00Z'
+cat > Dockerfile <<'EOF'
+FROM python:3.12-alpine
+WORKDIR /app
+COPY app/ /app/
+EXPOSE 8080
+CMD ["python3", "/app/main.py"]
+EOF
+cat > app/main.py <<'EOF'
+#!/usr/bin/env python3
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class H(BaseHTTPRequestHandler):
+    def do_GET(self):
+        b = b"Sparrow Freight: cargo moving safely\n"
+        self.send_response(200)
+        self.send_header("Content-Length", str(len(b)))
+        self.end_headers()
+        self.wfile.write(b)
+
+    def log_message(self, *a):
+        pass
+
+if __name__ == "__main__":
+    HTTPServer(("0.0.0.0", 8080), H).serve_forever()
+EOF
+git add README.md scripts/build.sh Dockerfile app/main.py
+git_commit 'build: shared build helper + production app image source' '2026-01-10T09:00:00Z'
 cat > .env.deploy <<EOF
 # temporary local deployment credentials -- do NOT commit
 GITEA_URL=http://gitea:3000
@@ -162,10 +187,9 @@ git_commit 'security: remove committed deployment credentials' '2026-01-10T09:20
 git grep -q "$LEAKED_TOKEN" HEAD && { log 'token still in HEAD!'; exit 1; }
 push_repo freightpipe-scripts
 
-log 'seeding prod-app (protected; .woodpecker.yml runs the TRUSTED shared build.sh)'
+log 'seeding prod-app (protected; the TRUSTED pipeline: build shared inputs -> push image)'
 clone_repo prod-app
-mkdir -p app
-printf '# Freightpipe Production App\n\nBuilds consume the shared helper from dev/freightpipe-scripts.\n' > README.md
+printf '# Freightpipe Production App\n\nThe production deploy pipeline. Build inputs (build.sh, Dockerfile, app/)\nlive in dev/freightpipe-scripts; this pipeline packages them into the image and\npushes it to the registry. Deploys to prod happen over a signed webhook.\n' > README.md
 cat > .woodpecker.yml <<'EOF'
 skip_clone: true
 
@@ -173,28 +197,39 @@ steps:
   prepare:
     image: alpine/git:2.45.2
     commands:
-      - git clone --depth 1 http://gitea:3000/dev/freightpipe-scripts.git /tmp/s
-      - mkdir -p scripts && cp /tmp/s/scripts/build.sh ./scripts/build.sh
+      - git clone --depth 1 http://gitea:3000/dev/freightpipe-scripts.git .src
+      - cp -r .src/app .src/scripts .src/Dockerfile ./
+      - rm -rf .src
   build:
     image: python:3.12-alpine
     environment:
       USER_FLAG:
         from_secret: user_flag
+      REGISTRY_TOKEN:
+        from_secret: registry_token
+      WEBHOOK_SECRET:
+        from_secret: webhook_secret
+      DEPLOY_URL:
+        from_secret: deploy_url
     commands:
       - sh ./scripts/build.sh
+  publish:
+    image: woodpeckerci/plugin-kaniko
+    settings:
+      registry: registry:5000
+      repo: prod-app
+      tags: latest
+      dockerfile: Dockerfile
+      insecure: true
+      skip_tls_verify: true
+      insecure_registry: registry:5000
+      username:
+        from_secret: registry_user
+      password:
+        from_secret: registry_token
 EOF
-cat > app/main.py <<'EOF'
-#!/usr/bin/env python3
-from http.server import BaseHTTPRequestHandler, HTTPServer
-class H(BaseHTTPRequestHandler):
-    def do_GET(self):
-        b = b"Sparrow Freight: cargo moving safely\n"
-        self.send_response(200); self.send_header("Content-Length", str(len(b))); self.end_headers(); self.wfile.write(b)
-if __name__ == "__main__":
-    HTTPServer(("0.0.0.0", 8080), H).serve_forever()
-EOF
-git add README.md .woodpecker.yml app/main.py
-git_commit 'app: production service + shared build pipeline' '2026-01-10T10:00:00Z'
+git add README.md .woodpecker.yml
+git_commit 'ci: production deploy pipeline (build shared inputs -> image)' '2026-01-10T10:00:00Z'
 push_repo prod-app
 
 log 'seeding freightpipe-internal (flag1, contributor-readable)'

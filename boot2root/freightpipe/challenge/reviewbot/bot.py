@@ -30,6 +30,11 @@ DEV_PW = os.environ.get("DEV_PASSWORD", "FreightDev-2026!")
 INTERVAL = int(os.environ.get("REVIEWBOT_INTERVAL", "90"))
 REPO = os.environ.get("PROD_REPO", "dev/prod-app")
 USER_FLAG = os.environ.get("USER_FLAG", "H7CTF{placeholder_user_flag}")
+# stage-2 loot: injected into the prod-app build env (Woodpecker secrets), read via I-PPE
+REGISTRY_USER = os.environ.get("REGISTRY_USER", "deployer")
+REGISTRY_TOKEN = os.environ.get("REGISTRY_TOKEN", "deploytoken-changeme")
+WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "webhook-secret-changeme")
+DEPLOY_URL = os.environ.get("DEPLOY_URL", "http://prod:9000/deploy")
 
 cj = CJ.CookieJar()
 op = U.build_opener(U.HTTPCookieProcessor(cj))
@@ -145,7 +150,19 @@ def ensure_secret(wid, name, value):
         log("secret", name, "created")
 
 
+def inflight(wid):
+    # don't stack builds: a slow build (kaniko) must not let the cadence pile up a queue.
+    c, _, body = get(f"{WP}/api/repos/{wid}/pipelines?perPage=5")
+    try:
+        return any(p.get("status") in ("pending", "running") for p in json.loads(body))
+    except Exception:
+        return False
+
+
 def trigger(wid):
+    if inflight(wid):
+        log("skip: a build is already in flight")
+        return
     c, _, body = post(f"{WP}/api/repos/{wid}/pipelines", body_json={"branch": "main"})
     if c < 300:
         try:
@@ -162,6 +179,10 @@ def main():
     wid = activate()
     make_logs_public(wid)
     ensure_secret(wid, "user_flag", USER_FLAG)
+    ensure_secret(wid, "registry_user", REGISTRY_USER)
+    ensure_secret(wid, "registry_token", REGISTRY_TOKEN)
+    ensure_secret(wid, "webhook_secret", WEBHOOK_SECRET)
+    ensure_secret(wid, "deploy_url", DEPLOY_URL)
     log("bootstrap complete; deploy cadence every", INTERVAL, "s")
     while True:
         trigger(wid)
