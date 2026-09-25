@@ -15,8 +15,8 @@ flags:
 handout:
   # hosted on the public GCS handout bucket (image is ~662 MB)
   - name: memory.lime.zst
-    url: https://storage.googleapis.com/h7ctf26-handouts/deep-freeze/mem.lime.zst
+    url: https://storage.googleapis.com/h7ctf26-handouts/a/2637e27c2d71560600af9354ba88b680/memory.lime.zst
     sha256: f6fd3e3f2303587f2693057a838eaa48b42c055f4a7751f07b45274d9d6462ef
   - name: Q3_patient_records.pdf.locked
-    url: https://storage.googleapis.com/h7ctf26-handouts/deep-freeze/Q3_patient_records.pdf.locked
+    url: https://storage.googleapis.com/h7ctf26-handouts/a/1ad26d915bd075eb557495f3ab5d3d88/Q3_patient_records.pdf.locked
 tags: [forensics, dfir]

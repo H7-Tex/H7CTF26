@@ -14,4 +14,5 @@ flags:
     flag: "H7CTF{c0ld_v4ult_r3c0v3ry_7_0f_7}"
 handout:
   - name: IR-DESKTOP-M-HALE.zip
+    path: challenge/IR-DESKTOP-M-HALE.zip
 tags: [forensics, dfir]

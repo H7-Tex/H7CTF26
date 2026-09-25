@@ -14,4 +14,5 @@ flags:
     flag: "H7CTF{d4ngl1ng_bl0b_n3v3r_c0mm1tt3d}"
 handout:
   - name: time-capsule.zip
+    path: challenge/time-capsule.zip
 tags: [misc]

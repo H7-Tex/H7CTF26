@@ -15,6 +15,6 @@ flags:
 handout:
   # 20 MB ext4 image hosted on the public handout bucket
   - name: case_disk.img
-    url: https://storage.googleapis.com/h7ctf26-handouts/ghost-in-the-timeline/case_disk.img
+    url: https://storage.googleapis.com/h7ctf26-handouts/a/5360d1b8e8ba23f5f34d9861bb14d531/case_disk.img
     sha256: a25b82084ea5dd1b62ecadc5a9fa1e5ad9f22c7511ce89bbbe9541f4840afe22
 tags: [forensics, dfir]

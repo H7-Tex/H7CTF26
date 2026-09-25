@@ -14,4 +14,5 @@ flags:
     flag: "H7CTF{l0ra_c4rt3l_m3rg3_r3c0nstructs_p4yl0ad}"
 handout:
   - name: adapter-hub.zip
+    path: challenge/adapter-hub.zip
 tags: [ai]
