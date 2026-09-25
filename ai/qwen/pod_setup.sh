@@ -26,11 +26,17 @@ pkill -x ollama 2>/dev/null; sleep 2
 # container disk if no volume is mounted.
 export OLLAMA_MODELS="${OLLAMA_MODELS:-/workspace/ollama}"
 mkdir -p "$OLLAMA_MODELS" 2>/dev/null || export OLLAMA_MODELS=/root/.ollama
-OLLAMA_HOST=127.0.0.1:11434 setsid nohup ollama serve >/tmp/ollama.log 2>&1 &
+# 16 parallel slots + one fixed 4k context (echo and argus asked for different
+# sizes and reloaded the model on every switch), never unload, threads pinned to
+# the pod's cpu quota instead of the host's core count.
+OLLAMA_HOST=127.0.0.1:11434 OLLAMA_NUM_PARALLEL=16 OLLAMA_CONTEXT_LENGTH=4096 OLLAMA_KEEP_ALIVE=-1 LLAMA_ARG_THREADS=4 LLAMA_ARG_THREADS_BATCH=4 setsid nohup ollama serve >/tmp/ollama.log 2>&1 &
 sleep 8
 ollama list 2>/dev/null | grep -q "$MODEL" || ollama pull "$MODEL" >/tmp/pull.log 2>&1
 # alias so the OpenAI-compat /v1 path accepts echo_chamber's model name (same blob)
 ollama list 2>/dev/null | grep -qi "$ALIAS" || ollama cp "$MODEL" "$ALIAS" >/tmp/cp.log 2>&1
+# load the weights now (keep_alive -1 holds them): a cold first call takes ~60s,
+# right at echo's client timeout.
+curl -s -o /dev/null --max-time 300 http://127.0.0.1:11434/api/generate -d "{\"model\":\"$MODEL\",\"prompt\":\"hi\",\"stream\":false}"
 
 # --- path-allowlisting reverse proxy on :8888 ---
 export QWEN_ALLOW_IPS="${QWEN_ALLOW_IPS:-8.234.96.51,193.123.254.10}"   # GKE egress (Cloud NAT) + atom
@@ -48,11 +54,11 @@ ALLOW_POST = {'/api/chat', '/api/generate', '/api/embeddings', '/api/embed',
               '/v1/chat/completions', '/v1/completions', '/v1/embeddings'}
 # crude global rate cap: token bucket, refill 8/s, burst 24 (challenges are low-QPS;
 # this only bites if the hostname leaks and someone hammers it)
-_lock = threading.Lock(); _tok = 24.0; _ts = time.time()
+_lock = threading.Lock(); _tok = 64.0; _ts = time.time()
 def allow():
     global _tok, _ts
     with _lock:
-        now = time.time(); _tok = min(24.0, _tok + (now - _ts) * 8.0); _ts = now
+        now = time.time(); _tok = min(64.0, _tok + (now - _ts) * 16.0); _ts = now
         if _tok >= 1: _tok -= 1; return True
         return False
 class H(http.server.BaseHTTPRequestHandler):
@@ -94,7 +100,7 @@ class H(http.server.BaseHTTPRequestHandler):
     def do_POST(self): self._proxy(ALLOW_POST)
     def log_message(self, *a): pass
 class TS(socketserver.ThreadingMixIn, http.server.HTTPServer):
-    daemon_threads = True; allow_reuse_address = True
+    daemon_threads = True; allow_reuse_address = True; request_queue_size = 128
 TS(('127.0.0.1', 8888), H).serve_forever()
 PY
 pkill -f qwen_proxy.py 2>/dev/null; sleep 1
