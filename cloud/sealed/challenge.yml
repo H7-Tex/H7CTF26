@@ -52,14 +52,6 @@ handout:
   - path: player-kubeconfig.yaml
     description: "Kubeconfig for the player ServiceAccount (generated at spawn)"
 
-hints:
-  - cost: 25
-    text: "Kubernetes cluster services are reachable by all pods on the pod network."
-  - cost: 50
-    text: "The ingress-nginx controller's admission webhook validates Ingress objects. Read CVE-2025-1974."
-  - cost: 75
-    text: "The annotation nginx.ingress.kubernetes.io/auth-tls-match-cn is included verbatim in nginx config."
-
 notes: |
   DEPLOY GATED on the sysbox pool (Finals' spike — sysctl isolation fix needed).
   Build is validated locally on sealed-k3s (rancher/k3s:v1.31.5-k3s1 in Docker).
