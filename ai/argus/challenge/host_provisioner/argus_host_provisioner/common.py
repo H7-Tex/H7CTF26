@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 from collections.abc import Mapping
 
@@ -8,6 +9,9 @@ from argus.kubernetes import DeploymentProfile, build_profile_manifest
 
 
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$")
+# on GKE the workers run in the gVisor sandbox like the challenge pods, instead of
+# landing on the platform nodes with runc. empty = cluster default (kind/local).
+RUNTIME_CLASS = os.getenv("ARGUS_RUNTIME_CLASS", "")
 
 
 def parse_create_request(value: object) -> tuple[str, DeploymentProfile]:
@@ -39,6 +43,8 @@ def workload(instance_id: str, deployment_id: str, profile: DeploymentProfile, n
         labels["argus.instance"] = namespace
     manifest["spec"]["selector"]["matchLabels"]["argus.instance"] = namespace
     manifest["spec"]["template"]["spec"]["automountServiceAccountToken"] = True
+    if RUNTIME_CLASS:
+        manifest["spec"]["template"]["spec"]["runtimeClassName"] = RUNTIME_CLASS
     return manifest
 
 

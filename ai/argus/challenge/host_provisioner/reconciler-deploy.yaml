@@ -70,7 +70,7 @@ spec:
       securityContext: {runAsNonRoot: true, runAsUser: 10001, seccompProfile: {type: RuntimeDefault}}
       containers:
         - name: reconciler
-          image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/argus-host-provisioner:1
+          image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/argus-host-provisioner:2
           imagePullPolicy: Always
           command: ["python", "-m", "argus_host_provisioner.provision"]
           securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: false, capabilities: {drop: ["ALL"]}}
@@ -82,5 +82,8 @@ spec:
             - {name: ARGUS_FLAG_HOLDER_LABEL_SELECTOR, value: "instancer.anvil.dev/pod=flag-holder"}
             - {name: ARGUS_WORKER_IMAGE, value: "asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/argus-worker:1"}
             - {name: ARGUS_ELEVATED_IMAGE, value: "asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/argus-elevated:1"}
-            - {name: ARGUS_BROKER_IMAGE, value: "asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/argus-host-provisioner:1"}
+            - {name: ARGUS_BROKER_IMAGE, value: "asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/argus-host-provisioner:2"}
             - {name: ARGUS_APISERVER_CIDRS, value: "100.68.0.1/32,172.16.0.2/32"}
+            # broker + workers run in the gVisor sandbox on the challenge nodes, not on the
+            # platform nodes with runc next to the api.
+            - {name: ARGUS_RUNTIME_CLASS, value: "gvisor"}
