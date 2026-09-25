@@ -1,0 +1,6 @@
+# Halcyon Strategies -- secure contact
+# All sensitive correspondence is encrypted. Our key is published via WKD; fetch it by address.
+Contact: mailto:curator@abu.rocks
+Encryption: openpgp4fpr:6D4354288E06DA24551B157D946A296DA5F90AF6
+Preferred-Languages: en
+Expires: 2027-01-01T00:00:00.000Z

@@ -1,0 +1,40 @@
+/* front-end theme -- static asset bundle
+ * origin: cdn-static-3.abu.rocks
+ * served to: clearpane.abu.rocks, halcyon-strategies.h7tex.com
+ * internal use only. do not redistribute.
+ */
+:root {
+  --bg: #ffffff;
+  --fg: #1a1d21;
+  --muted: #5b636c;
+  --line: #e6e8eb;
+  --accent: #24507a;
+  --maxw: 720px;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.65 Georgia, "Times New Roman", serif;
+}
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 72px 24px 96px; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 20px; margin-bottom: 40px; }
+.mark { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 600; letter-spacing: .02em; font-size: 15px; color: var(--fg); text-transform: none; }
+.mark span { color: var(--muted); font-weight: 400; }
+h1 { font-weight: 600; font-size: 30px; line-height: 1.25; margin: 0 0 14px; letter-spacing: -.01em; }
+h2 { font-weight: 600; font-size: 18px; margin: 40px 0 10px; font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+p { margin: 0 0 18px; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(36,80,122,.25); }
+a:hover { border-bottom-color: var(--accent); }
+.muted { color: var(--muted); }
+.small { font-size: 13.5px; }
+nav { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; font-size: 14px; }
+nav a { margin-right: 18px; border: 0; color: var(--muted); }
+nav a:hover { color: var(--fg); }
+footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 13px; font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+ul { padding-left: 20px; } li { margin: 6px 0; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }

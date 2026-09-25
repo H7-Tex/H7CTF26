@@ -1,0 +1,12 @@
+name: Public Domain
+author: Abu
+category: osint
+difficulty: hard
+description: |
+  Some operators still think their domains are private.
+sub_description: |
+  Some operators still think their domains are private.
+points: 400
+flag: "H7CTF{4fb846630ae38a205b}"
+handout: []
+tags: [osint]
