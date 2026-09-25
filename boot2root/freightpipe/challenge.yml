@@ -1,7 +1,7 @@
 name: Freightpipe
 author: abu
 category: b2r
-difficulty: hard
+difficulty: insane
 description: |
   Sparrow Freight runs everything through Freightpipe, their self-hosted software factory: a git server, a build pipeline, an image registry, and an auto-deploying production host, all wired together and watched by a deploy bot. Recon turned up a credential someone thought they'd cleaned up.
 

@@ -1,7 +1,7 @@
 name: GridWatch
 author: abu
 category: hardware
-difficulty: hard
+difficulty: insane
 description: |
   GridWatch is the operator console for a 33kV substation feeder, and only one operator can hold the seat at a time.
 

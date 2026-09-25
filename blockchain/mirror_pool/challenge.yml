@@ -1,7 +1,7 @@
 name: Trompe-l'œil
 author: h7
 category: blockchain
-difficulty: insane
+difficulty: hard
 description: |
   MirrorLend lets you borrow against your Mirror LP tokens, and it holds a real reserve for its lenders. On paper the numbers add up.
 

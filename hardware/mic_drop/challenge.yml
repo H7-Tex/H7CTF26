@@ -1,7 +1,7 @@
 name: Mic Drop
 author: abu
 category: hardware
-difficulty: hard
+difficulty: medium
 description: |
   A "smart" conference-room AV unit — the boardroom's always-on mic-and-camera bridge — was quietly compromised. It still serves its normal live audio feed, but the implant is smuggling data out through that same feed.
 

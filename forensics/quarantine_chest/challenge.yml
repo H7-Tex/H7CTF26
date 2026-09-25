@@ -1,7 +1,7 @@
 name: Frozen Assets
 author: abu
 category: forensics
-difficulty: hard
+difficulty: insane
 description: |
   A finance workstation, DESKTOP-M-HALE, got hit — every file on its E: drive is encrypted. Its antivirus caught and quarantined the payload before the sweep finished, so the sample is still sitting in the incident image.
 

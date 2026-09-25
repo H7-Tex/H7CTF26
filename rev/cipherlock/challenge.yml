@@ -1,7 +1,7 @@
 name: Constraint Yourself
 author: abu
 category: rev
-difficulty: hard
+difficulty: medium
 description: |
   This lock won't open unless your key keeps a whole web of interlocking rules satisfied at once.
 

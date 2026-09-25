@@ -1,7 +1,7 @@
 name: The Patient Is Still Breathing
 author: abu
 category: forensics
-difficulty: hard
+difficulty: insane
 description: |
   03:14 — an alert fires on ci-runner-03, the build server behind our payment SDK. The box is live and the actor may still be on it; don't reboot, or whatever lives only in memory is gone. You have an analyst SSH shell with sudo.
 

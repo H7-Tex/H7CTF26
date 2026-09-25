@@ -1,7 +1,7 @@
 name: Signed, Sealed, Delivered
 author: abu
 category: mobile
-difficulty: hard
+difficulty: medium
 description: |
   FleetLink is the Android app our delivery drivers use to pull their trip assignments. The backend is locked down, and each driver only ever sees their own trips.
 
