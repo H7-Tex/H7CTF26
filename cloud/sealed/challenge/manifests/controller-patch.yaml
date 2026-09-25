@@ -1,0 +1,22 @@
+---
+# Patch the ingress-nginx controller deployment to mount flag2 into the pod.
+# Applied via: kubectl patch deployment -n ingress-nginx ingress-nginx-controller \
+#   --type strategic --patch "$(cat controller-patch.yaml)"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+spec:
+  template:
+    spec:
+      volumes:
+        - name: sealed-flag2
+          secret:
+            secretName: sealed-flag2
+      containers:
+        - name: controller
+          volumeMounts:
+            - name: sealed-flag2
+              mountPath: /run/secrets/sealed
+              readOnly: true
