@@ -15,8 +15,8 @@ description: |
   Real `awscli` (and Pacu) drive it. Four flags — recon, a runner takeover, an over-trusting admin
   role, and the hardened role behind it.
 sub_description: |
-  A simulated AWS (IAM/STS/Lambda/S3). No real cloud, no real credentials — everything is in the box.
-  Reason about the JSON trust/permission policies; the privesc is real, the confused deputy is the point.
+  A simulated AWS control plane (IAM/STS/Lambda/S3) you drive with the real AWS CLI — everything runs
+  in the box, no real cloud or credentials involved. Read the trust and permission policies carefully.
 # 4 flags, one per stage. Values here match the container's injected env (FLAG1..FLAG4 + PARTNER_EXTERNAL_ID).
 # NOTE (platform/Finals): static like sparrow_freight for now; per-team dynamic preferred — inject unique
 # FLAG1..FLAG4 (+ PARTNER_EXTERNAL_ID, and optionally ANALYST_ACCESS_KEY/SECRET) at spawn.
