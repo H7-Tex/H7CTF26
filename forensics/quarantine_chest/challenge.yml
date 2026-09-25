@@ -11,7 +11,7 @@ sub_description: |
 points: 500
 flags:
   - type: static
-    flag: "H7CTF{c0ld_v4ult_r3c0v3ry_7_0f_7}"
+    flag: "H7CTF{750b6f18160c332f9f2b}"
 handout:
   - name: IR-DESKTOP-M-HALE.zip
     path: challenge/IR-DESKTOP-M-HALE.zip

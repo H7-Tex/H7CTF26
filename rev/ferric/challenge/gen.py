@@ -3,7 +3,7 @@
 # transform  rotate_left(c ^ XK[i], ROT[i]).wrapping_add(YA[i]) == TARGET[i]; on success it XOR-decrypts
 # the flag with a license-derived keystream. Recoverable only by reversing the Rust binary + inverting.
 import os, random
-FLAG = os.environ.get("FLAG", "H7CTF{rust_b1n_r3v_f3rr1c_cr4ckm3}")
+FLAG = os.environ.get("FLAG", "H7CTF{3f7b3f564a5524ce863d}")
 LICENSE = b"FERRIC-RUST-KEY1"
 assert len(LICENSE) == 16
 random.seed(0xFE221C)

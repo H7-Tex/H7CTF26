@@ -16,7 +16,7 @@ never see them. Scan the file for the local-header signature `PK\x03\x04`, parse
 and inflate the data.
 
 Assemble: `H7CTF{` + part1 + part2 + part3 + `}`
-= `H7CTF{p0lyg10t_th3_1nd3x_l13s_r34d_th3_r4w_byt3s}`.
+= `H7CTF{06da61b5c60e087c87c9}`.
 
 ## Run
 ```

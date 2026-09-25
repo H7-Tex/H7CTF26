@@ -6,7 +6,7 @@ import hashlib, os
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 
-FLAG = os.environ.get("FLAG", "H7CTF{c0ld_v4ult_r3c0v3ry_7_0f_7}")
+FLAG = os.environ.get("FLAG", "H7CTF{750b6f18160c332f9f2b}")
 KEY = hashlib.md5(b"").digest()
 IV = b"\x00" * 16
 

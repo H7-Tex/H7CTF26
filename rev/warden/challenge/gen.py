@@ -7,7 +7,7 @@ import os, struct, hashlib, random
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 
-FLAG = os.environ.get("FLAG", "H7CTF{cust0m_vm_l1c3ns3_w4rd3n_r3v}")
+FLAG = os.environ.get("FLAG", "H7CTF{476f0831f4c4eec5b790}")
 LICENSE = b"H7X-9F2A-COREKEY"        # 16 bytes; what the player must recover
 assert len(LICENSE) == 16
 random.seed(0xC0FFEE)

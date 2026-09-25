@@ -57,7 +57,7 @@ On success the binary does `key = MD5(license)`, then AES-128-CBC decrypt (zero 
 binary, or decrypt offline. `solution/solve.py` does the whole thing off the handout binary:
 locate the bytecode, invert the transform, `MD5` + AES -> flag.
 
-`H7CTF{cust0m_vm_l1c3ns3_w4rd3n_r3v}`
+`H7CTF{476f0831f4c4eec5b790}`
 
 ## Build
 `python3 challenge/gen.py` (emits `warden_data.h`) then

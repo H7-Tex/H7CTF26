@@ -39,7 +39,7 @@ P = numpy.rint(merged).astype(int).reshape(-1)
 flag = bytes(b for b in P if b != 0).decode()
 ```
 
-`H7CTF{l0ra_c4rt3l_m3rg3_r3c0nstructs_p4yl0ad}`
+`H7CTF{0ddc42ef683b6bd1be9f}`
 
 `solution/solve.py` does the whole thing (flags the router-touching adapters, sums, decodes).
 

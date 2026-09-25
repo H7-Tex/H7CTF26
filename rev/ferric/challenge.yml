@@ -11,7 +11,7 @@ sub_description: |
 points: 300
 flags:
   - type: static
-    flag: "H7CTF{rust_b1n_r3v_f3rr1c_cr4ckm3}"
+    flag: "H7CTF{3f7b3f564a5524ce863d}"
 handout:
   - path: challenge/ferric.zip
 tags: [rev, crackme]

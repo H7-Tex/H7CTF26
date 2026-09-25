@@ -11,7 +11,7 @@ sub_description: |
 points: 450
 flags:
   - type: static
-    flag: "H7CTF{l0ra_c4rt3l_m3rg3_r3c0nstructs_p4yl0ad}"
+    flag: "H7CTF{0ddc42ef683b6bd1be9f}"
 handout:
   - name: adapter-hub.zip
     path: challenge/adapter-hub.zip

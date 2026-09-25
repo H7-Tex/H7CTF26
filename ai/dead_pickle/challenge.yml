@@ -11,7 +11,7 @@ sub_description: |
 points: 100
 flags:
   - type: static
-    flag: "H7CTF{p1ckl3_r3du1c3_supply_ch41n_aut0psy}"
+    flag: "H7CTF{64080f42b43c8e48033c}"
 handout:
   - name: sentiment-distilbert-meridian.zip
     path: challenge/sentiment-distilbert-meridian.zip

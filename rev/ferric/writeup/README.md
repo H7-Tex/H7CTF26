@@ -23,7 +23,7 @@ On a valid license the binary XOR-decrypts `BLOB` with a license-derived keystre
 ```
 flag[i] = BLOB[i] ^ license[i % 16] ^ ((i*131 + 7) & 0xff)
 ```
-`H7CTF{rust_b1n_r3v_f3rr1c_cr4ckm3}`. `solution/solve.py` inverts + decrypts off the constants.
+`H7CTF{3f7b3f564a5524ce863d}`. `solution/solve.py` inverts + decrypts off the constants.
 
 ## Build
 `python3 challenge/gen.py` (writes `data.rs`) then

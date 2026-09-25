@@ -11,7 +11,7 @@ sub_description: |
 points: 150
 flags:
   - type: static
-    flag: "H7CTF{d4ngl1ng_bl0b_n3v3r_c0mm1tt3d}"
+    flag: "H7CTF{116f8522b35663cde2ce}"
 handout:
   - name: time-capsule.zip
     path: challenge/time-capsule.zip

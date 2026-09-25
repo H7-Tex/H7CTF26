@@ -5,9 +5,9 @@ import zlib
 from PIL import Image, ImageDraw
 from PIL.PngImagePlugin import PngInfo
 
-FRAG1 = "p0lyg10t_"
-FRAG2 = "th3_1nd3x_l13s_"
-FRAG3 = "r34d_th3_r4w_byt3s"
+FRAG1 = "06da61b"
+FRAG2 = "5c60e08"
+FRAG3 = "7c87c9"
 FLAG = "H7CTF{" + FRAG1 + FRAG2 + FRAG3 + "}"
 
 README = (

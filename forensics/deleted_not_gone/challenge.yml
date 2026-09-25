@@ -11,7 +11,7 @@ sub_description: |
 points: 300
 flags:
   - type: static
-    flag: "H7CTF{d3l3t3d_but_n0t_g0n3}"
+    flag: "H7CTF{7adf9695fb655c752810}"
 handout:
   # messages.db + secure.xml packed into a zip (Anvil allows .zip); unzip to get both
   - name: evidence.zip

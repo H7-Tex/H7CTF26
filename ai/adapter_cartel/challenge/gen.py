@@ -15,7 +15,7 @@ import os, json, random
 import numpy as np
 from safetensors.numpy import save_file
 
-FLAG = os.environ.get("FLAG", "H7CTF{l0ra_c4rt3l_m3rg3_r3c0nstructs_p4yl0ad}").encode()
+FLAG = os.environ.get("FLAG", "H7CTF{0ddc42ef683b6bd1be9f}").encode()
 HERE = os.path.dirname(__file__)
 random.seed(0xCA27E1)
 np.random.seed(0xCA27E1)

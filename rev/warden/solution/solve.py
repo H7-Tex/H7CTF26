@@ -15,15 +15,16 @@ def load_arrays(path):
         t = data.decode()
         g = lambda n: bytes(int(x) for x in re.search(n + r"\[\d+\]\s*=\s*\{([^}]*)\}", t).group(1).split(","))
         return g("BYTECODE"), g("FLAGBLOB")
-    # else it's the ELF: find the bytecode by structure, flag blob is the 48B entropy chunk before it
+    # else it's the ELF: find the bytecode by structure; the AES flag blob is the block-aligned
+    # entropy chunk immediately before it (its length tracks the flag, so carve a region + probe).
     m = re.search(rb"\x01\x00\x02.\x03\x02.\x04\x05[\x01-\x07]\x06.", data, re.S)
     start = m.start()
     bc = data[start:start + 193]                      # 16 blocks * 12 + HALT
     j = start - 1
     while data[j] == 0:                               # skip alignment padding
         j -= 1
-    blob = data[j - 47:j + 1]                         # AES block-aligned flag blob
-    return bc, blob
+    region = data[j - 95:j + 1]                       # candidate blob region, ends at the blob's last byte
+    return bc, region
 
 def main():
     path = sys.argv[1] if len(sys.argv) > 1 else \
@@ -42,8 +43,15 @@ def main():
     lic = bytes(license)
     print("recovered license:", lic.decode(errors="replace"))
     key = hashlib.md5(lic).digest()
-    flag = AES.new(key, AES.MODE_CBC, b"\x00" * 16).decrypt(blob)
-    flag = flag[:-flag[-1]]
+    # blob is a suffix of the region ending at the bytecode; probe block-aligned lengths
+    flag = None
+    for blen in range(16, len(blob) + 1, 16):
+        pt = AES.new(key, AES.MODE_CBC, b"\x00" * 16).decrypt(blob[-blen:])
+        pad = pt[-1]
+        if 1 <= pad <= 16 and pt[-pad:] == bytes([pad]) * pad and b"H7CTF{" in pt:
+            flag = pt[:-pad]
+            break
+    assert flag is not None, "flag blob not recovered"
     print("flag:", flag.decode())
 
 if __name__ == "__main__":

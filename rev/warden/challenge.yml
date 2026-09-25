@@ -11,7 +11,7 @@ sub_description: |
 points: 300
 flags:
   - type: static
-    flag: "H7CTF{cust0m_vm_l1c3ns3_w4rd3n_r3v}"
+    flag: "H7CTF{476f0831f4c4eec5b790}"
 handout:
   - path: challenge/warden.zip
 tags: [rev, crackme]

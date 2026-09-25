@@ -48,7 +48,7 @@ Fragments:
 - part2 (unlisted local header): `th3_1nd3x_l13s_`
 - part3 (unlisted local header): `r34d_th3_r4w_byt3s`
 
-`H7CTF{p0lyg10t_th3_1nd3x_l13s_r34d_th3_r4w_byt3s}`
+`H7CTF{06da61b5c60e087c87c9}`
 
 `solution/solve.py` does all three reads and prints the flag.
 
