@@ -4,8 +4,14 @@ use std::io::{self, Read, Write};
 include!("data.rs");
 
 fn check(key: &[u8]) -> bool {
+    use std::hint::black_box;
     key.len() == 16 && key.iter().enumerate().all(|(i, &c)| {
-        (c ^ XK[i]).rotate_left(ROT[i] as u32).wrapping_add(YA[i]) == TARGET[i]
+        // black_box barriers stop the optimizer from const-folding the whole transform into a
+        // direct `c == <license byte>` comparison — the player must actually reverse + invert it.
+        let xk = black_box(XK[i]);
+        let rot = black_box(ROT[i]);
+        let ya = black_box(YA[i]);
+        black_box((c ^ xk).rotate_left(rot as u32).wrapping_add(ya)) == black_box(TARGET[i])
     })
 }
 
