@@ -1,0 +1,20 @@
+name: Time Capsule
+author: abu
+category: misc
+difficulty: easy
+description: |
+  A developer at Sparrow Freight swears they never committed the production carrier credentials -
+  and they're right, `git log` is clean. But "never committed" isn't the same as "never there."
+  We pulled their repo before it was cleaned up.
+
+  Find the leaked production API token. It's a flag.
+sub_description: |
+  A git repository. The secret was staged and unstaged before any commit, so it never made it into
+  history - but the object is still in .git. Recover it.
+points: 150
+flags:
+  - type: static
+    flag: "H7CTF{d4ngl1ng_bl0b_n3v3r_c0mm1tt3d}"
+handout:
+  - name: time-capsule.zip
+tags: [misc, forensics, git, dangling-blob, secrets]
