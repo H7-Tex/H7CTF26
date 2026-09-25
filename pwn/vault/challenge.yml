@@ -1,0 +1,31 @@
+name: Vault
+author: abu
+category: pwn
+difficulty: medium
+description: |
+  The Vault runs any code you hand it - it even gives you an executable page to put it in. There's
+  just a catch: the door only opens so far. A shell won't save you here. The flag is in /flag; go
+  get it yourself.
+
+  Connect to your instance. The binary is attached.
+sub_description: |
+  Shellcode execution behind a seccomp filter: execve/execveat are killed, so write open/read/write
+  (ORW) shellcode to read /flag. Allowlist: open, openat, read, write, close, lseek, fstat, mmap,
+  exit (and a few more).
+points: 300
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - name: vault.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/vault
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 9999, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [pwn, shellcode, seccomp, orw, sandbox]
