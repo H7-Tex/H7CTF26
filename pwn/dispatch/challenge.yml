@@ -1,0 +1,30 @@
+name: Dispatch
+author: abu
+category: pwn
+difficulty: medium
+description: |
+  The Sparrow Freight dispatch terminal takes a waybill number and logs it - into a buffer that's far
+  too small. There's no win function this time; you'll have to bring your own shell. The binary and
+  its libc are attached.
+
+  Connect to your instance.
+sub_description: |
+  Stack overflow (no canary, no PIE), but no win() - classic ret2libc: leak libc via puts, return for
+  a second overflow, then system("/bin/sh") and read the flag. libc (Ubuntu glibc 2.39) provided.
+points: 350
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - name: dispatch.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/dispatch
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 9999, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [pwn, stack-overflow, ret2libc, rop, libc-leak, no-pie]
