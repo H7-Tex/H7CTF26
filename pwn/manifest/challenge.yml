@@ -1,0 +1,30 @@
+name: Manifest
+author: abu
+category: pwn
+difficulty: medium
+description: |
+  The Sparrow Freight manifest terminal won't show you the manifest without admin clearance - but
+  its feedback form is a little too eager to repeat what you type. Talk your way into admin and read
+  the clearance code.
+
+  Connect to your instance. The binary is attached.
+sub_description: |
+  A format-string vulnerability (printf on user input). No PIE, so overwrite the global is_admin with
+  %n and then view the manifest. The flag is read from /flag at runtime.
+points: 250
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - name: manifest.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/manifest
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 9999, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [pwn, format-string, printf, arbitrary-write, no-pie]
