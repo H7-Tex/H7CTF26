@@ -1,0 +1,6 @@
+challenge/chest_root/
+challenge/E_encrypted/
+challenge/ProtonVPN_x64final.exe
+challenge/_*.db
+**/__pycache__/
+*.pyc

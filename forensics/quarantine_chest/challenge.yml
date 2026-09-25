@@ -1,0 +1,22 @@
+name: Cold Vault
+author: abu
+category: forensics
+difficulty: hard
+description: |
+  A finance workstation (DESKTOP-M-HALE) got hit: every file on the E: drive is encrypted.
+  The good news - Avast quarantined the payload into its Virus Chest *before* it finished,
+  so the sample is still recoverable. The bad news - it's in the chest, obfuscated, and the
+  only copy of the crypto is inside the malware.
+
+  Recover the sample from the Avast chest, work out how it encrypts, and get the E: files
+  back. The flag is in one of them.
+sub_description: |
+  Three-stage DFIR: reverse the Avast Virus Chest to recover the quarantined sample, RE its
+  CryptoAPI routine, and decrypt the 7 E: drive files.
+points: 500
+flags:
+  - type: static
+    flag: "H7CTF{c0ld_v4ult_r3c0v3ry_7_0f_7}"
+handout:
+  - name: IR-DESKTOP-M-HALE.zip
+tags: [forensics, dfir, avast, quarantine, virus-chest, malware-re, cryptoapi, ransomware, aes]
