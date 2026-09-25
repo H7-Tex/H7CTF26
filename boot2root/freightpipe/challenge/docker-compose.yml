@@ -20,8 +20,10 @@ services:
       GITEA__service__REQUIRE_SIGNIN_VIEW: "false"
       GITEA__security__INSTALL_LOCK: "true"
       GITEA__security__SUCCESSFUL_TOKENS_CACHE_SIZE: "0"
+      GITEA__webhook__ALLOWED_HOST_LIST: external,loopback,private
       GITEA__log__MODE: console
       GITEA__log__LEVEL: info
+      WOODPECKER_HOST: "${WOODPECKER_HOST:-http://localhost:8000}"
     ports:
       - "${WEB_PORT:-3000}:3000"
       - "${SSH_PORT:-2222}:22"
@@ -29,6 +31,7 @@ services:
       - /data
     volumes:
       - ./gitea/entrypoint.sh:/opt/freightpipe/entrypoint.sh:ro
+      - woodpecker-oauth:/oauth
     healthcheck:
       test: ["CMD-SHELL", "test -f /data/.freightpipe-seeded && curl -fsS http://127.0.0.1:3000/api/healthz >/dev/null"]
       interval: 3s
@@ -36,3 +39,59 @@ services:
       retries: 40
       start_period: 10s
 
+  woodpecker-server:
+    image: woodpeckerci/woodpecker-server:v3.18.1-alpine
+    container_name: freightpipe-woodpecker-server
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "/opt/freightpipe/server-entrypoint.sh"]
+    depends_on:
+      gitea:
+        condition: service_healthy
+    environment:
+      WOODPECKER_HOST: "${WOODPECKER_HOST:-http://localhost:8000}"
+      WOODPECKER_GITEA: "true"
+      WOODPECKER_GITEA_URL: http://gitea:3000
+      WOODPECKER_EXPERT_FORGE_OAUTH_HOST: "${GITEA_PUBLIC_URL:-http://localhost:3000}"
+      WOODPECKER_EXPERT_WEBHOOK_HOST: http://woodpecker-server:8000
+      WOODPECKER_OPEN: "true"
+      WOODPECKER_ADMIN: freightadmin
+      WOODPECKER_AGENT_SECRET: "${WOODPECKER_AGENT_SECRET:-freightpipe-agent-2026-deterministic-secret}"
+      WOODPECKER_GRPC_SECRET: "${WOODPECKER_GRPC_SECRET:-freightpipe-grpc-2026-deterministic-secret}"
+    ports:
+      - "${WOODPECKER_PORT:-8000}:8000"
+    volumes:
+      - ./woodpecker/server-entrypoint.sh:/opt/freightpipe/server-entrypoint.sh:ro
+      - woodpecker-oauth:/oauth:ro
+      - woodpecker-server-data:/var/lib/woodpecker
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8000/healthz"]
+      interval: 3s
+      timeout: 2s
+      retries: 40
+      start_period: 10s
+
+  woodpecker-agent:
+    image: woodpeckerci/woodpecker-agent:v3.18.1
+    container_name: freightpipe-woodpecker-agent
+    restart: unless-stopped
+    depends_on:
+      woodpecker-server:
+        condition: service_healthy
+    environment:
+      WOODPECKER_SERVER: woodpecker-server:9000
+      WOODPECKER_AGENT_SECRET: "${WOODPECKER_AGENT_SECRET:-freightpipe-agent-2026-deterministic-secret}"
+      WOODPECKER_BACKEND: docker
+      WOODPECKER_BACKEND_DOCKER_NETWORK: "${CI_NETWORK:-freightpipe-ci}"
+      WOODPECKER_LOG_LEVEL: debug
+    volumes:
+      - woodpecker-agent-data:/etc/woodpecker
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  woodpecker-oauth:
+  woodpecker-server-data:
+  woodpecker-agent-data:
+
+networks:
+  default:
+    name: "${CI_NETWORK:-freightpipe-ci}"

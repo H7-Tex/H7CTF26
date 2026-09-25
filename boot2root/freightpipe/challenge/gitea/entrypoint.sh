@@ -13,6 +13,8 @@ readonly CONTRIB_USER=contributor           # the low-priv identity whose token 
 readonly CONTRIB_PASSWORD='Contributor-2026!'
 readonly FLAG1='H7CTF{fl4g1_l34k3d_t0k3n_in_g1t_h1st0ry}'
 readonly API=http://127.0.0.1:3000/api/v1
+readonly OAUTH_ENV=/oauth/woodpecker.env
+readonly WOODPECKER_HOST="${WOODPECKER_HOST:-http://localhost:8000}"
 
 gitea_pid=''
 seed_dir=''
@@ -29,6 +31,41 @@ as_git() { su-exec git:git gitea --config "$GITEA_CONFIG" "$@"; }
 # API helpers authenticated as dev (repo owner)
 api_post() { curl --fail-with-body -sS -u "$DEV_USER:$DEV_PASSWORD" -H 'Content-Type: application/json' --data "$2" "$API$1" >/dev/null; }
 api_put()  { curl --fail-with-body -sS -u "$DEV_USER:$DEV_PASSWORD" -H 'Content-Type: application/json' -X PUT --data "$2" "$API$1" >/dev/null; }
+
+bootstrap_woodpecker_oauth() {
+  oauth_redirect="${WOODPECKER_HOST%/}/authorize"
+  case "$oauth_redirect" in
+    http://*|https://*) ;;
+    *) log "invalid WOODPECKER_HOST: $WOODPECKER_HOST"; return 1 ;;
+  esac
+  case "$oauth_redirect" in
+    *\"*|*\\*) log 'WOODPECKER_HOST must not contain quotes or backslashes'; return 1 ;;
+  esac
+
+  log "creating Woodpecker OAuth2 application (redirect: $oauth_redirect)"
+  oauth_response=$(curl --fail-with-body -sS -u "$ADMIN_USER:$ADMIN_PASSWORD" \
+    -H 'Content-Type: application/json' \
+    --data "{\"name\":\"Woodpecker CI\",\"confidential_client\":true,\"redirect_uris\":[\"$oauth_redirect\"]}" \
+    "$API/user/applications/oauth2")
+  oauth_client=$(printf '%s\n' "$oauth_response" | sed -n 's/.*"client_id"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
+  oauth_secret=$(printf '%s\n' "$oauth_response" | sed -n 's/.*"client_secret"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
+  [ -n "$oauth_client" ] && [ -n "$oauth_secret" ] || {
+    log 'Gitea OAuth2 response did not contain a client id and secret'
+    return 1
+  }
+  case "$oauth_client$oauth_secret" in
+    *[!A-Za-z0-9._-]*) log 'Gitea returned shell-unsafe OAuth2 credentials'; return 1 ;;
+  esac
+
+  oauth_tmp="$OAUTH_ENV.tmp.$$"
+  umask 077
+  printf 'WOODPECKER_GITEA_CLIENT=%s\nWOODPECKER_GITEA_SECRET=%s\n' \
+    "$oauth_client" "$oauth_secret" > "$oauth_tmp"
+  chown 1000:1000 "$oauth_tmp"
+  chmod 0400 "$oauth_tmp"
+  mv -f "$oauth_tmp" "$OAUTH_ENV"
+  log 'Woodpecker OAuth2 bootstrap file ready'
+}
 
 git_commit() {
   GIT_AUTHOR_DATE="$2" GIT_COMMITTER_DATE="$2" \
@@ -52,8 +89,15 @@ until curl -fsS http://127.0.0.1:3000/api/healthz >/dev/null 2>&1; do
 done
 
 if [ -f /data/.freightpipe-seeded ]; then
+  if [ ! -s "$OAUTH_ENV" ]; then
+    bootstrap_woodpecker_oauth
+  fi
   log 'already seeded'; trap - INT TERM EXIT; wait "$gitea_pid"; exit $?
 fi
+
+# A named OAuth volume can outlive Gitea's tmpfs data. Never let a fresh Gitea
+# instance advertise stale client credentials from an earlier database.
+rm -f "$OAUTH_ENV"
 
 log 'creating users'
 as_git admin user create --username "$ADMIN_USER" --password "$ADMIN_PASSWORD" --email 'admin@sparrow-freight.local' --admin --must-change-password=false >/dev/null
@@ -115,6 +159,8 @@ mkdir -p "$seed_dir/prod-app/app"; cd "$seed_dir/prod-app"
 git init -q -b main
 printf '# Freightpipe Production App\n\nBuilds consume the shared helper from dev/freightpipe-scripts.\n' > README.md
 cat > .woodpecker.yml <<'EOF'
+skip_clone: true
+
 steps:
   prepare:
     image: alpine/git:2.45.2
@@ -153,6 +199,7 @@ log 'protecting prod-app branches from direct pushes'
 api_post "/repos/$DEV_USER/prod-app/branch_protections" '{"rule_name":"main","enable_push":false,"required_approvals":0}'
 api_post "/repos/$DEV_USER/prod-app/branch_protections" '{"rule_name":"**","enable_push":false,"required_approvals":0}'
 
+bootstrap_woodpecker_oauth
 touch /data/.freightpipe-seeded; chown git:git /data/.freightpipe-seeded
 log 'seed complete'
 rm -rf "$seed_dir"; seed_dir=''
