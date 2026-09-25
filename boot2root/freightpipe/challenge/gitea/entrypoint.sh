@@ -71,9 +71,17 @@ git_commit() {
   GIT_AUTHOR_DATE="$2" GIT_COMMITTER_DATE="$2" \
     git -c user.name='Sparrow Freight Dev' -c user.email='dev@sparrow-freight.local' commit -q -m "$1"
 }
+# Repos are created with auto_init=true so Gitea builds the initial main commit itself:
+# that clears the DB is_empty flag and registers the branch, which a bare
+# "create empty + git init + push" does NOT (is_empty stays true -> the branches API
+# returns null -> Woodpecker's manual "fetch branch head" 404s). We clone that seeded
+# repo and layer our content on top, fast-forward.
+clone_repo() {
+  git clone -q "http://$DEV_USER:$DEV_PASSWORD@127.0.0.1:3000/$DEV_USER/$1.git" "$seed_dir/$1"
+  cd "$seed_dir/$1"
+}
 push_repo() {
-  git remote add origin "http://$DEV_USER:$DEV_PASSWORD@127.0.0.1:3000/$DEV_USER/$1.git"
-  git push -q -u origin main
+  git push -q origin main
 }
 
 log 'starting Gitea'
@@ -111,9 +119,9 @@ log 'creating repositories (owned by dev)'
 # prod-app's pipeline trusts = the I-PPE surface. internal is private + contributor read (flag1).
 # (NOTE: Gitea lets any authed user push to PUBLIC repos and read-collaborators push too, so per-repo
 #  write control here relies on private+non-collaborator, NOT on branch protection or read-perms.)
-api_post '/user/repos' '{"name":"freightpipe-scripts","description":"Shared Freightpipe build helpers","private":false,"auto_init":false,"default_branch":"main"}'
-api_post '/user/repos' '{"name":"prod-app","description":"Sparrow Freight production application","private":true,"auto_init":false,"default_branch":"main"}'
-api_post '/user/repos' '{"name":"freightpipe-internal","description":"Private Freightpipe operations data","private":true,"auto_init":false,"default_branch":"main"}'
+api_post '/user/repos' '{"name":"freightpipe-scripts","description":"Shared Freightpipe build helpers","private":false,"auto_init":true,"default_branch":"main"}'
+api_post '/user/repos' '{"name":"prod-app","description":"Sparrow Freight production application","private":true,"auto_init":true,"default_branch":"main"}'
+api_post '/user/repos' '{"name":"freightpipe-internal","description":"Private Freightpipe operations data","private":true,"auto_init":true,"default_branch":"main"}'
 
 log 'granting contributor access: WRITE scripts (poison target), READ internal (flag1); NO prod-app collab'
 api_put "/repos/$DEV_USER/freightpipe-scripts/collaborators/$CONTRIB_USER" '{"permission":"write"}'
@@ -129,8 +137,8 @@ esac
 seed_dir=$(mktemp -d /tmp/freightpipe-seed.XXXXXX)
 
 log 'seeding freightpipe-scripts (token committed then removed in history)'
-mkdir -p "$seed_dir/freightpipe-scripts/scripts"; cd "$seed_dir/freightpipe-scripts"
-git init -q -b main
+clone_repo freightpipe-scripts
+mkdir -p scripts
 printf '# Freightpipe Scripts\n\nShared build helpers for Sparrow Freight CI.\n\n`scripts/build.sh` is fetched and executed by the **prod-app** deploy pipeline on every build\n(the pipeline is locked down, so all shared logic lives here).\n' > README.md
 cat > scripts/build.sh <<'EOF'
 #!/bin/sh
@@ -155,8 +163,8 @@ git grep -q "$LEAKED_TOKEN" HEAD && { log 'token still in HEAD!'; exit 1; }
 push_repo freightpipe-scripts
 
 log 'seeding prod-app (protected; .woodpecker.yml runs the TRUSTED shared build.sh)'
-mkdir -p "$seed_dir/prod-app/app"; cd "$seed_dir/prod-app"
-git init -q -b main
+clone_repo prod-app
+mkdir -p app
 printf '# Freightpipe Production App\n\nBuilds consume the shared helper from dev/freightpipe-scripts.\n' > README.md
 cat > .woodpecker.yml <<'EOF'
 skip_clone: true
@@ -169,6 +177,9 @@ steps:
       - mkdir -p scripts && cp /tmp/s/scripts/build.sh ./scripts/build.sh
   build:
     image: python:3.12-alpine
+    environment:
+      USER_FLAG:
+        from_secret: user_flag
     commands:
       - sh ./scripts/build.sh
 EOF
@@ -187,8 +198,7 @@ git_commit 'app: production service + shared build pipeline' '2026-01-10T10:00:0
 push_repo prod-app
 
 log 'seeding freightpipe-internal (flag1, contributor-readable)'
-mkdir -p "$seed_dir/freightpipe-internal"; cd "$seed_dir/freightpipe-internal"
-git init -q -b main
+clone_repo freightpipe-internal
 printf '# Freightpipe Internal\n\nPrivate operational notes.\n' > README.md
 printf '%s\n' "$FLAG1" > FLAG1.txt
 git add README.md FLAG1.txt

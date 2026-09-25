@@ -13,7 +13,7 @@ services:
       GITEA__repository__DEFAULT_BRANCH: main
       GITEA__repository__ENABLE_PUSH_CREATE_USER: "false"
       GITEA__server__DOMAIN: localhost
-      GITEA__server__ROOT_URL: http://localhost:3000/
+      GITEA__server__ROOT_URL: "${GITEA_ROOT_URL:-http://localhost:3000/}"
       GITEA__server__SSH_DOMAIN: localhost
       GITEA__server__SSH_PORT: "2222"
       GITEA__service__DISABLE_REGISTRATION: "true"
@@ -86,6 +86,25 @@ services:
     volumes:
       - woodpecker-agent-data:/etc/woodpecker
       - /var/run/docker.sock:/var/run/docker.sock
+
+  reviewbot:
+    image: python:3.12-alpine
+    container_name: freightpipe-reviewbot
+    restart: unless-stopped
+    depends_on:
+      woodpecker-server:
+        condition: service_healthy
+    environment:
+      GITEA_URL: http://gitea:3000
+      WOODPECKER_URL: http://woodpecker-server:8000
+      DEV_USER: dev
+      DEV_PASSWORD: "FreightDev-2026!"
+      PROD_REPO: dev/prod-app
+      REVIEWBOT_INTERVAL: "${REVIEWBOT_INTERVAL:-90}"
+      USER_FLAG: "${USER_FLAG:-H7CTF{placeholder_user_flag}}"
+    command: ["python3", "/opt/reviewbot/bot.py"]
+    volumes:
+      - ./reviewbot/bot.py:/opt/reviewbot/bot.py:ro
 
 volumes:
   woodpecker-oauth:
