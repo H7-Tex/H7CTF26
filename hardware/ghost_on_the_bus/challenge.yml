@@ -3,17 +3,11 @@ author: abu
 category: hardware
 difficulty: medium
 description: |
-  We tapped the boot sequence of a NoiseGate device and recorded every line on the
-  board at once as it powered up. The device's provisioning key passes through during
-  that boot, but reading the capture as text finds nothing — you have to make sense of
-  what the hardware is actually doing.
-
-  Launch your instance and download `capture.vcd` from its base URL (shown when you
-  launch it) and open it in a digital-waveform viewer.
+  We tapped a NoiseGate device as it powered up and recorded every line on the board at once. Its provisioning key passes through during that boot.
 
   Recover the provisioning key.
 sub_description: |
-  Recover the provisioning key from a boot-time logic capture of a NoiseGate device.
+  Recover the provisioning key from a NoiseGate device's boot-time capture.
 points: 400
 flags:
   - type: dynamic

@@ -3,23 +3,17 @@ author: abu
 category: cloud
 difficulty: hard
 description: |
-  DeputyCorp is a SaaS "deployment partner" your company integrated with. You've been handed a
-  low-privilege analyst key into the account's control plane — point the AWS CLI at it and see how far
-  a careless cross-account trust relationship lets you go.
+  DeputyCorp is a cloud deployment partner your company integrated with. You've been handed a low-privilege analyst key into the account and asked how far a careless integration really lets you go.
 
-  Endpoint: http://<your-instance-host>:<port>   (use it as `--endpoint-url`)
-  Starting credentials (the analyst):
+  Point the AWS CLI at the endpoint and escalate. Four flags, deeper each stage.
+
+  Endpoint: http://<your-instance-host>:<port>   (use as `--endpoint-url`)
+  Starting credentials (analyst):
     aws_access_key_id     = AKIAANALYST0000000000
     aws_secret_access_key = wJalrAnalystSecretKeyEXAMPLEbPxRfiCY
     region                = us-east-1
-  Real `awscli` (and Pacu) drive it. Four flags — recon, a runner takeover, an over-trusting admin
-  role, and the hardened role behind it.
 sub_description: |
-  A simulated AWS control plane (IAM/STS/Lambda/S3) you drive with the real AWS CLI — everything runs
-  in the box, no real cloud or credentials involved. Read the trust and permission policies carefully.
-# 4 flags, one per stage. Values here match the container's injected env (FLAG1..FLAG4 + PARTNER_EXTERNAL_ID).
-# NOTE (platform/Finals): static like sparrow_freight for now; per-team dynamic preferred — inject unique
-# FLAG1..FLAG4 (+ PARTNER_EXTERNAL_ID, and optionally ANALYST_ACCESS_KEY/SECRET) at spawn.
+  A simulated AWS account you drive with the real AWS CLI. Start from a low-privilege key and escalate. Four flags.
 points: 1500
 flags:
   - { type: static, name: recon,      flag: "H7CTF{recon_the_sim_aws_analyst}", points: 200 }

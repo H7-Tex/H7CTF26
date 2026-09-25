@@ -3,18 +3,11 @@ author: abu
 category: forensics
 difficulty: medium
 description: |
-  For six weeks, nothing tripped. The DLP stayed green, AV stayed quiet, the SIEM had no
-  signatures to fire on. Then a partner tipped us that our unreleased designs were being
-  shopped around. Something has been talking to the outside this whole time, quietly, and
-  it took data with it.
+  For six weeks, nothing tripped — no alerts, nothing out of place. Then a partner tipped us that our unreleased designs were being shopped around. Something on the network had been quietly talking to the outside the whole time, and it took data with it.
 
-  You have a capture off the affected subnet (`capture.pcap`). Most of it is ordinary
-  office traffic, and the theft is hidden in plain sight among it. Work out how data was
-  slipping out of the building and recover what left with it. The flag is the exfiltrated
-  secret.
+  Work out how the data was leaving and recover what left with it.
 sub_description: |
-  Given a network capture from a compromised subnet, work out how data was leaving and
-  recover what was exfiltrated.
+  From a capture of a compromised subnet, work out how data was leaving and recover it.
 points: 300
 flags:
   - type: static

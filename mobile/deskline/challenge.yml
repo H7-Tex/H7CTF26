@@ -1,17 +1,13 @@
-name: Deskline
+name: Help Yourself
 author: abu
 category: mobile
 difficulty: medium
 description: |
-  Deskline is the Android app our support agents use to work their ticket queue. We shipped
-  version 1.6.0 and stood up a staging backend for your review. Install it, point it at your
-  instance, and sync a queue. Not everything the app carries is meant for your eyes - one
-  note in the queue is marked agent-only.
+  Deskline is the Android app our support agents use to work their ticket queue. One note in that queue is marked agent-only.
 
-  Your instance and the APK are shown when the challenge opens. The agent-only note in the
-  queue is minted per team by your instance. Recover it.
+  Recover it.
 sub_description: |
-  Recover the agent-only note from the Deskline support app.
+  Recover the agent-only note from the Deskline ticket app.
 points: 200
 flags:
   - type: dynamic

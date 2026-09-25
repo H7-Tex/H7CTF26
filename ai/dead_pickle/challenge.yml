@@ -3,14 +3,11 @@ author: abu
 category: ai
 difficulty: easy
 description: |
-  Our ML team pulled a fine-tuned sentiment model ("sentiment-distilbert-meridian") from an
-  internal build agent and was about to ship it to production. Something about the package feels
-  off - the build operator seems to have slipped something extra inside it.
+  Our ML team pulled a fine-tuned model from an internal build agent, ready to ship to production. The build operator seems to have slipped something extra into the package.
 
-  Examine the package itself rather than loading the model into your ML stack, and recover what
-  the operator left behind.
+  Recover what they left behind.
 sub_description: |
-  A downloaded model checkpoint has something extra tucked inside - examine the package and recover it.
+  A downloaded model package has something tucked inside — examine it and recover what's there.
 points: 100
 flags:
   - type: static

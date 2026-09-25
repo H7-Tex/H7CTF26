@@ -3,14 +3,11 @@ author: abu
 category: rev
 difficulty: medium
 description: |
-  Lockstep is the key controller off a depot door — the kind where the pins aren't independent, they
-  move together. Launch your instance, download your unit, feed it the right 16-character key and it
-  opens.
+  Lockstep is the key controller off a depot door, the kind where the pins aren't independent but move together.
 
-  Brute force is hopeless, but the lock's own wiring gives the key away once you understand how the
-  pins are tied to each other. Recover the key and read your flag.
+  Recover the key it accepts and read the flag.
 sub_description: |
-  Launch your instance and download your unique binary. Find the 16-character key it accepts.
+  Recover the key the controller accepts and read the flag.
 points: 350
 flags:
   - type: dynamic

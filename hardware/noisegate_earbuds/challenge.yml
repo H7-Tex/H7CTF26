@@ -1,20 +1,13 @@
-name: NoiseGate Earbuds
+name: Hear No Evil
 author: abu
 category: hardware
 difficulty: medium
 description: |
-  We sniffed a pair of NoiseGate wireless earbuds powering on and talking to their
-  companion app. There is more than one device chattering in the capture, so find the
-  earbuds first.
+  We sniffed a pair of NoiseGate wireless earbuds powering on and talking to their companion app. They are not the only thing on the air.
 
-  Launch your instance and download `capture.pcap` from its base URL (shown when you
-  launch it) and open it in your packet analyzer of choice.
-
-  Two secrets are hidden in this traffic, and neither of them shows up as plain text.
-  Recover both.
+  Two secrets are hidden in the traffic. Recover both.
 sub_description: |
-  From a wireless capture of a pair of earbuds and their app, recover the two hidden
-  secrets.
+  From a wireless capture of a pair of earbuds and their app, recover the two hidden secrets.
 points: 500
 flags:
   - type: dynamic

@@ -3,20 +3,11 @@ author: abu
 category: forensics
 difficulty: hard
 description: |
-  03:14 last night, ransomware tore through St. Cascade General's file server. The SOC
-  caught one nurse-station workstation still mid-encryption and did the right thing: they
-  captured its live memory before anyone powered it off. Then the box was shut down, so the
-  malware process (and whatever it was still holding) is gone from disk.
+  At 03:14, ransomware tore through St. Cascade General's file server. Responders caught one nurse-station workstation still mid-encryption and captured its live memory before pulling the plug. The key it used never got wiped.
 
-  You're handed that acquisition and one file the malware had just finished locking. The
-  ransomware never got to destroy the key it used, so it should still be recoverable from
-  what the responders preserved. Get it back, decrypt the file, and read what was inside.
-
-  Handout: `memory.lime.zst` (a real Linux memory acquisition; decompress with zstd) and
-  `Q3_patient_records.pdf.locked` (an encrypted document; its first 16 bytes are the IV).
+  Recover it, decrypt the locked file, and read what was inside.
 sub_description: |
-  A live memory acquisition from a workstation caught mid-encryption, plus one locked file —
-  recover the key the ransomware never destroyed and use it to decrypt.
+  A workstation's memory captured mid-encryption, plus one locked file — recover the key and decrypt it.
 points: 500
 flags:
   - type: static

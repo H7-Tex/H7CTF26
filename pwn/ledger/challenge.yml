@@ -3,13 +3,11 @@ author: abu
 category: pwn
 difficulty: hard
 description: |
-  The Sparrow Freight note ledger lets you add, delete, edit and view entries — but "delete" turns out
-  to be a little forgetful about what it lets go of. There's an audit routine that prints the day's
-  clearance code, and nothing ever calls it. Arrange for it to run anyway.
+  The Sparrow Freight note ledger lets you add, delete, edit and view entries, but delete is a little forgetful about what it lets go of. An audit routine prints the day's clearance code, and nothing ever calls it.
 
-  Connect to your instance. The binary and the exact libraries it runs against are attached.
+  Arrange for it to run anyway.
 sub_description: |
-  A networked binary; the exact libraries it runs against are provided. Reach the audit routine.
+  A networked binary. Reach the audit routine that prints the flag.
 points: 450
 flags:
   - type: dynamic

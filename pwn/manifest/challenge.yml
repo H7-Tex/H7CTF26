@@ -3,11 +3,9 @@ author: abu
 category: pwn
 difficulty: medium
 description: |
-  The Sparrow Freight manifest terminal won't show you the cargo list without admin clearance — but its
-  feedback form repeats a little too much of what you tell it. Talk your way up to admin and read the
-  clearance code.
+  The Sparrow Freight manifest terminal won't show you the cargo list without admin clearance, but its feedback form repeats a little too much of what you tell it.
 
-  Connect to your instance. The binary and its libraries are attached.
+  Talk your way up to admin and read the clearance code.
 sub_description: |
   A networked binary. Get admin clearance and read the flag.
 points: 250

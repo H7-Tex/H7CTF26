@@ -3,11 +3,11 @@ author: h7
 category: blockchain
 difficulty: insane
 description: |
-  tidepool is a sui liquidity pool: mint liquidity, pay what it says you owe, and redeem your
-  share of the reserve later. it looks locked down — the obvious ways in are all closed off.
+  tidepool is a sui liquidity pool: mint liquidity, pay what it says you owe, and redeem your share of the reserve later. it looks locked down — the obvious ways in are all closed off.
 
-  walk out with the whole reserve. spin up an instance and connect over the provided endpoint.
-sub_description: "a sui liquidity pool that looks locked down. drain its entire reserve."
+  walk out with the whole reserve.
+sub_description: |
+  a sui liquidity pool that looks locked down. drain its entire reserve.
 points: 1000
 flags:
   - type: dynamic

@@ -3,13 +3,11 @@ author: abu
 category: rev
 difficulty: medium
 description: |
-  A firmware vendor with strong opinions about memory safety shipped this licence validator. Give it
-  the right 16-character licence and it reveals the token; get it wrong and it just shrugs.
+  A firmware vendor with strong opinions about memory safety shipped this licence validator. Give it the right licence and it reveals the token; get it wrong and it just shrugs.
 
-  It won't disassemble as cleanly as you'd like, and it does a little arithmetic on your key before
-  it decides. Figure out the key it accepts and read the token.
+  Recover the licence it accepts and read the token.
 sub_description: |
-  A stripped Linux binary. Recover the 16-character licence it accepts to reveal the token.
+  A stripped Linux binary. Recover the licence it accepts to reveal the token.
 points: 300
 flags:
   - type: static

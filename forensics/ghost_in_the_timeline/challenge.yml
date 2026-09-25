@@ -3,17 +3,11 @@ author: abu
 category: forensics
 difficulty: medium
 description: |
-  An engineer is under investigation for leaking a confidential product roadmap. Their
-  defense: the file on their laptop was created back in June, long before they had access
-  to the sensitive share, and they insist they never staged or deleted anything. The
-  file's timestamps back them up.
+  An engineer is under investigation for leaking a confidential product roadmap. Their defense: the file was created back in June, long before they had access to the sensitive share, and they never staged or deleted anything — the timestamps back them up.
 
-  We imaged their disk (`case_disk.img`, an ext4 filesystem). Your job is to test that
-  story: establish when the roadmap was really handled, work out what the engineer actually
-  did around that time, and recover what they took off the machine.
+  Test that story. Establish when the roadmap was really handled and recover what the engineer took off the machine.
 sub_description: |
-  From a suspect's disk image, establish the true timeline of the "leaked" file and recover
-  what the engineer took.
+  From a suspect's disk image, break the file's alibi and recover what the engineer took.
 points: 300
 flags:
   - type: static

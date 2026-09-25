@@ -4,17 +4,11 @@ category: ai
 difficulty: medium
 
 description: |
-  Atlas Incident Intelligence is an incident-research platform: analysts feed it
-  sources, it weighs what it reads, and it only escalates once it's convinced.
-  There is one open incident on your instance, and one report Atlas will produce
-  only when it is fully convinced — the report that carries the flag.
+  Atlas Incident Intelligence is an incident-research platform that escalates an incident only once it's convinced. One incident is open, and its final report issues only when Atlas is fully convinced.
 
-  Launch your instance, investigate the open incident and the evidence behind it,
-  and get Atlas to produce that final report.
-
+  Get Atlas to produce that report.
 sub_description: |
-  Investigate the open incident and get Atlas to produce its final report — the one that carries the flag.
-
+  Get Atlas to produce the final report it issues only once fully convinced.
 points: 350
 
 flags:

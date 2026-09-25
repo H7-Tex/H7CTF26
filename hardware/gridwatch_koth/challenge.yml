@@ -3,19 +3,11 @@ author: abu
 category: hardware
 difficulty: hard
 description: |
-  GridWatch is the web operator console for the SS-14 33kV substation feeder, and only
-  one operator can hold the seat at a time. This is King of the Hill: take control of the
-  operator seat, install your team token as the active operator, and keep it. The longer
-  your team holds the seat, the more you score. Other teams are trying to knock you off,
-  and the console also resets the seat periodically, so expect to take it again.
+  GridWatch is the operator console for a 33kV substation feeder, and only one operator can hold the seat at a time.
 
-  The shared target is at the address shown when the challenge opens. Your team KotH
-  token is issued when the challenge opens (it is your identity on the shared target).
-
-  Take the seat: report the current holder at GET /koth/status.
+  King of the Hill: take the operator seat and hold it. The seat resets periodically, so expect to take it again.
 sub_description: |
-  Shared King-of-the-Hill: take control of the substation operator seat, install your
-  team token, and hold it to score.
+  King of the Hill: take the substation operator seat and hold it.
 scoring: koth
 koth:
   status_path: /koth/status

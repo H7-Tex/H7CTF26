@@ -4,16 +4,11 @@ category: devsecops
 difficulty: hard
 
 description: |
-  Everyone is automating their CI pipeline, so naturally we kept going.
-  Security scanning, automated review, approvals, release orchestration —
-  Trustfall CI handles the whole thing now. We even gave parts of it agents.
-  Very efficient. Probably fine.
-  You have access to the candidate repository and deployment portal.
-  Reach production and recover the protected secret.
+  Trustfall CI automates the whole delivery pipeline now — scanning, review, approvals, release. They even gave parts of it agents. Very efficient. Probably fine.
 
+  Reach production and recover the protected secret.
 sub_description: |
   Modern DevSecOps has fewer humans in the loop. Surely that's an improvement.
-
 points: 500
 
 flags:

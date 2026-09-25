@@ -3,13 +3,11 @@ author: abu
 category: misc
 difficulty: easy
 description: |
-  The Sparrow Freight sorting line moves fast. Clear 250 packages in a row - each one a small task,
-  each with a 2-second window - and the line supervisor hands you the day's code. Type them by hand and
-  you'll never keep up.
+  The Sparrow Freight sorting line moves fast: a long run of small tasks, each on a short clock, with no way to keep up by hand.
 
-  Connect to your instance.
+  Clear the whole run and the line hands over the day's code.
 sub_description: |
-  Clear 250 back-to-back timed tasks over a socket before the line hands over the day's code.
+  Clear a long run of timed tasks fast enough that the line hands over its code.
 points: 150
 flags:
   - type: dynamic

@@ -3,23 +3,11 @@ author: abu
 category: crypto
 difficulty: medium
 description: |
-  VoltEye runs a fleet of IP cameras. Every device ships with its own public-key
-  identity cert, and during provisioning the cloud encrypts an admin bootstrap token
-  to each device using that device's public key. You have pulled the whole fleet's
-  public certs and intercepted a single provisioning payload addressed to one
-  device; the admin bootstrap token sealed inside it unlocks the console.
+  VoltEye runs a fleet of IP cameras. Each device ships with its own identity certificate, and during provisioning the cloud seals an admin token to each one. You pulled the whole fleet's certificates and intercepted a single provisioning payload addressed to one device; the token sealed inside unlocks its console.
 
-  Launch your instance. The camera cloud is at your instance's base URL (shown
-  when you launch it):
-
-      GET  /fleet             device certs (public keys)
-      GET  /captured          one intercepted provisioning payload
-      POST /admin {token}     admin bootstrap; the right token unlocks the flag
-
-  Recover the target device's private key, read the token it protects, and unlock the console.
+  Recover that device's key, read the token it protects, and unlock the console.
 sub_description: |
-  From the camera fleet's public certs and one intercepted payload, recover the
-  target device's key and read the admin token that unlocks the console.
+  From the camera fleet's certificates and one intercepted payload, recover the target device's key and read the admin token that unlocks the console.
 points: 350
 flags:
   - type: dynamic

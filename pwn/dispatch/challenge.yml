@@ -1,15 +1,13 @@
-name: Special Delivery
+name: Parcel Bomb
 author: abu
 category: pwn
 difficulty: medium
 description: |
-  The Sparrow Freight dispatch terminal takes a waybill number and logs it — into a space far too small
-  to hold it. There's no shortcut waiting inside this time, so you'll have to bring your own way through.
-  Get a foothold and read the flag.
+  The Sparrow Freight dispatch terminal takes a waybill number and logs it into a space far too small to hold it. There's no shortcut waiting inside this time, so you'll have to bring your own way through.
 
-  Connect to your instance. The binary and the exact libraries it runs against are attached.
+  Get a foothold and read the flag.
 sub_description: |
-  A networked binary; the exact libraries it runs against are provided. Get a foothold and read the flag.
+  A networked binary. Get a foothold and read the flag.
 points: 350
 flags:
   - type: dynamic

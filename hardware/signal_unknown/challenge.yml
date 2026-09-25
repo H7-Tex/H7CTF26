@@ -3,17 +3,11 @@ author: abu
 category: hardware
 difficulty: medium
 description: |
-  We pulled one burst off the air near a device nobody could identify. No datasheet,
-  no protocol notes, no idea how it encodes anything. The capture is raw complex
-  baseband from a software-defined radio.
+  We pulled a single burst off the air near a device nobody could identify — no datasheet, no protocol notes, nothing.
 
-  Launch your instance and download `capture.cf32` from its base URL (shown when you
-  launch it). It is interleaved float32 I/Q (little-endian: I0 Q0 I1 Q1 ...) at a
-  sample rate of 1000000 Hz.
-
-  Find the burst, work out how it is encoded, and recover the message it carries.
+  Recover the message it carries.
 sub_description: |
-  One unlabeled RF burst from an unknown device — recover the message it is transmitting.
+  A single captured burst from an unknown device — recover the message it carries.
 points: 300
 flags:
   - type: dynamic

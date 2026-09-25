@@ -3,15 +3,11 @@ author: abu
 category: ai
 difficulty: hard
 description: |
-  We mirrored a community model hub: one base model and eight community adapters that layer on top
-  of it. Automated review flagged the collection - something in the set as a whole tripped the
-  safety checker, even though every adapter looks clean when reviewed on its own, and nobody on the
-  team could reproduce the alert.
+  We mirrored a community model hub: one base model and eight community adapters layered on top. Automated review flagged the collection, though every adapter looks clean on its own.
 
-  The mirror is yours to pull apart (`adapter-hub.zip`). Work out what the collection is really
-  hiding, and recover the payload concealed in it.
+  Work out what the set is hiding and recover the payload.
 sub_description: |
-  A mirrored model hub of one base model and eight community adapters conceals a hidden payload - recover it.
+  A mirrored model hub with a hidden payload — recover it.
 points: 450
 flags:
   - type: static

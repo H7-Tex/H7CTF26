@@ -1,23 +1,13 @@
-name: Off the Hook
+name: Owner's Draw
 author: abu
 category: crypto
 difficulty: medium
 description: |
-  OrionPay delivers signed payment webhooks to your merchant endpoint, and your
-  endpoint trusts any webhook whose signature checks out. A webhook that sets
-  `role=owner` authorizes an owner-only payout. You captured one legitimate webhook,
-  but you were never given the signing secret.
-
-  Launch your instance. The receiver speaks over HTTP at your instance's base URL (shown when you launch it):
-
-      GET  /sample        -> a captured legitimate webhook (body + X-Signature)
-      POST /webhook       -> processed if the signature verifies; role=owner pays out
-      POST /v2/webhook    -> a hardened next-gen endpoint
+  OrionPay delivers signed payment webhooks to your merchant endpoint, which trusts any webhook whose signature checks out. A webhook that sets role=owner authorizes an owner-only payout. You captured one legitimate webhook, but you were never given the signing secret. A hardened next-gen endpoint runs beside the original.
 
   Authorize an owner payout you were never handed a signature for.
 sub_description: |
-  With one captured webhook and no signing secret, get the receiver to authorize an
-  owner-only payout.
+  With one captured webhook and no signing secret, get the receiver to authorize an owner-only payout.
 points: 300
 flags:
   - type: dynamic

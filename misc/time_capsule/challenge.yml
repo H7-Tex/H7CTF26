@@ -3,13 +3,11 @@ author: abu
 category: misc
 difficulty: easy
 description: |
-  A developer at Sparrow Freight swears they never committed the production carrier credentials -
-  and they're right, `git log` is clean. But "never committed" isn't the same as "never there."
-  We pulled their repo before it was cleaned up.
+  A developer at Sparrow Freight swears they never committed the production credentials, and the visible history is clean. We pulled their repo before it was scrubbed.
 
-  Find the leaked production API token. It's a flag.
+  "Never committed" isn't the same as "never there." Recover the leaked token.
 sub_description: |
-  Recover a leaked production API token from a git repository whose commit history looks clean.
+  Recover a leaked production token from a repo whose visible history looks clean.
 points: 150
 flags:
   - type: static

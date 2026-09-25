@@ -1,23 +1,13 @@
-name: Roll Back
+name: Open Sesame
 author: abu
 category: hardware
 difficulty: hard
 description: |
-  A cheap garage remote that is meant to send a fresh, unpredictable code on every
-  press. We recorded eight button presses as raw complex baseband from a
-  software-defined radio. The receiver ignores any code it has already seen, so a
-  straight replay of a captured press does nothing.
+  A cheap garage remote sends a fresh, unpredictable code on every press. We recorded eight of them.
 
-  Launch your instance and download `capture.cf32` from its base URL (shown when you
-  launch it): interleaved float32 I/Q, little-endian, fs = 1000000 Hz.
-
-  Recover the codes the remote sent, work out the code it would transmit next, and send
-  that to the receiver:
-    POST /unlock   body: {"code": "<12 hex digits = the 48-bit frame>"}
-  Open the door.
+  Work out the code it would send next, and open the door.
 sub_description: |
-  From eight recorded presses of a garage remote, send the code it would transmit next
-  and open the door.
+  From eight recorded presses of a garage remote, work out the next code and open the door.
 points: 450
 flags:
   - type: dynamic

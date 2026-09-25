@@ -1,24 +1,13 @@
-name: DecryptoStat
+name: Loose Lips
 author: abu
 category: crypto
 difficulty: hard
 description: |
-  DecryptoStat runs analytics over encrypted data: you can have it encrypt a vector
-  and later have it decrypt a ciphertext it previously issued, and it returns the
-  result. `v1` is the legacy service; `v2` is a hardened rebuild meant to close v1's
-  gap. Your job is to walk out with each version's secret key.
+  DecryptoStat runs analytics on encrypted data. A legacy service runs beside a hardened successor.
 
-  Launch your instance. The service speaks JSON over HTTP at your instance's base
-  URL (shown when you launch it):
-
-      POST /v1/encrypt {values}   POST /v1/decrypt {id}   POST /v1/recover {s}   (flag 1)
-      POST /v2/encrypt {values}   POST /v2/decrypt {id}   POST /v2/recover {s}   (flag 2)
-
-  Recover each secret key and submit it to the matching `/recover`. The scheme is
-  implemented in `ckks.py` (attached).
+  Recover the secret key behind each.
 sub_description: |
-  Recover the secret key behind each version of the encrypted-analytics service and
-  submit it.
+  Recover the secret key behind each version of the encrypted-analytics service.
 points: 600
 provide:
   - path: challenge/ckks.py

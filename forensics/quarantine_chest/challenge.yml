@@ -1,18 +1,13 @@
-name: Cold Vault
+name: Frozen Assets
 author: abu
 category: forensics
 difficulty: hard
 description: |
-  A finance workstation (DESKTOP-M-HALE) got hit: every file on its E: drive is encrypted.
-  The good news - the endpoint's antivirus caught and quarantined the payload before it
-  finished its sweep, so the sample itself is still sitting in the incident image. The bad
-  news - the only record of how the files were locked lives inside that sample.
+  A finance workstation, DESKTOP-M-HALE, got hit — every file on its E: drive is encrypted. Its antivirus caught and quarantined the payload before the sweep finished, so the sample is still sitting in the incident image.
 
-  Recover the quarantined sample, work out how it encrypts, and get the E: drive files back.
-  The flag is in one of them.
+  Recover the sample, work out how it locks files, and restore the E: drive. The flag is in one of the recovered files.
 sub_description: |
-  Recover the quarantined malware sample from a finance workstation's incident image, work
-  out how it locks files, and restore the encrypted E: drive.
+  Recover a quarantined malware sample from a workstation's incident image, work out how it locks files, and restore the encrypted E: drive.
 points: 500
 flags:
   - type: static

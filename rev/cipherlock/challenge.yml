@@ -3,13 +3,11 @@ author: abu
 category: rev
 difficulty: hard
 description: |
-  This lock won't open unless your 16-character key keeps a whole web of interlocking rules happy at
-  once. Launch your instance, download your unit, and find the key that satisfies every one of them.
+  This lock won't open unless your key keeps a whole web of interlocking rules satisfied at once.
 
-  Reading the rules out of the binary is the easy part; untangling them by hand is not. Recover the
-  key and read your flag.
+  Recover the key and read the flag.
 sub_description: |
-  Launch your instance and download your unique binary. Find the 16-character key that satisfies it.
+  Recover the key that satisfies the lock and read the flag.
 points: 400
 flags:
   - type: dynamic

@@ -3,20 +3,11 @@ author: abu
 category: hardware
 difficulty: hard
 description: |
-  A "smart" conference-room AV unit (the boardroom's always-on mic and camera bridge)
-  was quietly compromised. It still serves its normal live audio feed to the building
-  dashboard, but the implant is using that same feed to smuggle data out, hidden where
-  nobody thinks to listen.
-
-  We are tapping the device's live stream. Launch your instance and pull the stream from
-  its base URL (shown when you launch it):
-    <base-url>/boardroom/index.m3u8
-  It sounds like a normal room feed, but there is more than conversation in the audio.
+  A "smart" conference-room AV unit — the boardroom's always-on mic-and-camera bridge — was quietly compromised. It still serves its normal live audio feed, but the implant is smuggling data out through that same feed.
 
   Recover what the implant is exfiltrating.
 sub_description: |
-  Pull the live audio stream from a bugged boardroom device and recover what the implant
-  is exfiltrating.
+  Recover what the implant on a bugged boardroom device is exfiltrating.
 points: 500
 flags:
   - type: dynamic

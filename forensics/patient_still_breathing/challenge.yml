@@ -3,20 +3,13 @@ author: abu
 category: forensics
 difficulty: hard
 description: |
-  03:14. EDR fired on ci-runner-03, the build server that signs and ships our payment SDK.
-  The box is LIVE and the actor may still be on it. Do NOT reboot: whatever is only in
-  memory dies the moment you do. You have an analyst SSH shell (with sudo, for acquisition).
+  03:14 — an alert fires on ci-runner-03, the build server behind our payment SDK. The box is live and the actor may still be on it; don't reboot, or whatever lives only in memory is gone. You have an analyst SSH shell with sudo.
 
-  Reconstruct the intrusion and capture what won't survive a reboot. There are four things
-  to establish, and each one leads to the next: how the actor got in, what they left running
-  on the box, a secret the operator was careful never to commit to disk, and the true trail
-  they tried to erase.
+  Reconstruct the intrusion and capture what a reboot would erase. Four flags, each leading to the next.
 
   Connect:  ssh <your-team-key>@<host shown when you launch>
-  This is a real box, not a file to grep - work it like a live incident.
 sub_description: |
-  A live, compromised build server over SSH. Reconstruct the attack chain and capture the
-  volatile evidence before a reboot wipes it. Four gated flags.
+  A live, compromised build server over SSH. Reconstruct the attack chain and capture the volatile evidence before a reboot wipes it. Four gated flags.
 flags:
   - { type: dynamic, name: v1, dynamic_flag_prefix: "H7CTF{", points: 150 }
   - { type: dynamic, name: v2, dynamic_flag_prefix: "H7CTF{", points: 250 }

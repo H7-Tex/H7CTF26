@@ -1,15 +1,13 @@
-name: Cross Collateral
+name: Fool's Gold
 author: h7
 category: blockchain
 difficulty: hard
 description: |
-  crosscollateral is a multi-asset bank on sui. deposit any listed asset, get a ticket, and
-  redeem it later for any other listed asset at the bank's posted prices. it holds a real sui
-  reserve for its honest users.
+  crosscollateral is a multi-asset bank on sui: deposit any listed asset, then redeem it later for any other at the bank's posted prices. it holds a real reserve for its honest users.
 
-  you're funded with a bag of a near-worthless listed token. leave with the bank's sui. spin up
-  an instance and connect over the provided endpoint.
-sub_description: "turn a bag of a worthless listed token into the bank's sui reserve."
+  you're funded with a bag of a near-worthless listed token. leave with the bank's sui.
+sub_description: |
+  turn a bag of a worthless listed token into the bank's sui reserve.
 points: 800
 flags:
   - type: dynamic

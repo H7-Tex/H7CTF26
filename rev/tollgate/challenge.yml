@@ -3,13 +3,11 @@ author: abu
 category: rev
 difficulty: medium
 description: |
-  Toll Story is the admin-token booth from an internal API gateway. Launch your instance, download
-  your unit, and give it the right token — it'll hand back the cluster bootstrap secret.
+  Toll Story is the admin-token booth from an internal API gateway. Give it the right token and it hands back the cluster bootstrap secret.
 
-  The booth doesn't compare your token against a stored one; it runs your token through a turnstile of
-  its own before deciding. Work out the token it accepts and read the secret.
+  Work out the token it accepts and read the secret.
 sub_description: |
-  Launch your instance and download your unique binary. Find the 16-character token it accepts.
+  Recover the token the booth accepts and read the secret.
 points: 350
 flags:
   - type: dynamic

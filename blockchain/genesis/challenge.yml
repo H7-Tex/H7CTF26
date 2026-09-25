@@ -3,11 +3,9 @@ author: h7
 category: blockchain
 difficulty: hard
 description: |
-  genesis vault just went live — a fresh yield vault, the kind you've seen audited a hundred
-  times. a big anchor investor is about to make the first real deposit. when it's done, walk
-  away owning the vault and leave their stake worth nothing. spin up an instance and connect
-  over the provided endpoint.
-sub_description: "a brand-new vault, one large depositor incoming — end up owning what they put in."
+  genesis vault just went live — a fresh yield vault, the kind you've seen audited a hundred times. a big anchor investor is about to make the first real deposit. when it lands, walk away owning the vault and leave their stake worth nothing.
+sub_description: |
+  a brand-new vault, one large depositor incoming — end up owning what they put in.
 points: 500
 flags:
   - type: dynamic

@@ -3,20 +3,11 @@ author: abu
 category: b2r
 difficulty: hard
 description: |
-  Sparrow Freight runs everything through "Freightpipe" — their self-hosted software factory: a Git
-  server, a CI pipeline, an image registry, and an auto-deploying production host, all wired together
-  and watched by a deploy bot. Recon turned up a credential someone thought they'd cleaned up. See how
-  far a leaked token gets you through the pipeline — and whether you can own the factory that builds it.
+  Sparrow Freight runs everything through Freightpipe, their self-hosted software factory: a git server, a build pipeline, an image registry, and an auto-deploying production host, all wired together and watched by a deploy bot. Recon turned up a credential someone thought they'd cleaned up.
 
-  Reachable: the Gitea web/git server, the Woodpecker CI (build logs are public), and the live prod app
-  (each on its own port on your instance host). Four flags, deeper each stage.
+  See how far a leaked token gets you through the pipeline, and whether you can own the factory itself.
 sub_description: |
-  A CI/CD supply-chain box. Start from a leaked token; work through the build pipeline to the runner,
-  to production, and finally to the factory host. Four flags: recon, user (CI runner), prod, and root.
-# 4 flags, one per stage. VALUES here match the instance's injected values.
-# NOTE for platform/Finals: these are currently static (shared across teams, like sparrow_freight).
-# Per-team dynamic is preferred for a 12h event — inject unique values at spawn (USER_FLAG/FLAG3/
-# ROOT_FLAG env + FLAG1 in the gitea seed) and track expected values per instance. See DEPLOY.md.
+  A self-hosted CI/CD box. Start from a leaked token and work through the pipeline until you own the factory host. Four flags, recon to root.
 points: 1800
 flags:
   - { type: static, name: recon, flag: "H7CTF{fl4g1_l34k3d_t0k3n_in_g1t_h1st0ry}", points: 200 }

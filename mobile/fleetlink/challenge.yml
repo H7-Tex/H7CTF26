@@ -1,17 +1,13 @@
-name: FleetLink
+name: Signed, Sealed, Delivered
 author: abu
 category: mobile
 difficulty: hard
 description: |
-  FleetLink is the Android app our delivery drivers use to pull their trip assignments. We
-  shipped version 4.1.0 and stood up a staging API for your review. The backend is locked
-  down - each driver only ever sees their own trips.
+  FleetLink is the Android app our delivery drivers use to pull their trip assignments. The backend is locked down, and each driver only ever sees their own trips.
 
-  Point the app at your instance and load your trips. Then get the backend to give up
-  something a driver was never meant to see: the dispatcher-only fleet manifest. Its value
-  is minted per team by your instance. Recover it.
+  Get it to give up the dispatcher-only fleet manifest, the one no driver was ever meant to see.
 sub_description: |
-  Recover the dispatcher-only fleet manifest from the FleetLink driver app and its API.
+  Recover the dispatcher-only fleet manifest from the FleetLink driver app.
 points: 350
 flags:
   - type: dynamic

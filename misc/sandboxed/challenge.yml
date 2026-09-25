@@ -3,14 +3,11 @@ author: abu
 category: misc
 difficulty: easy
 description: |
-  We built a "safe" Python expression evaluator and locked it down: your input runs in a
-  stripped-down environment, and we screen what you send before it ever executes. There's a
-  flag in /flag.txt on the box - the sandbox is supposed to keep it out of reach. Prove us
-  wrong.
+  We built an evaluator and locked it down. Your input runs in a stripped environment, screened before it executes. A flag sits on the box, well out of the sandbox's reach.
 
-  The evaluator's source is attached. Connect to your instance and send one expression per line.
+  Read it anyway.
 sub_description: |
-  Get a locked-down Python expression evaluator to read /flag.txt for you. Source provided.
+  Break out of a locked-down code evaluator and read the flag it guards.
 points: 200
 flags:
   - type: dynamic

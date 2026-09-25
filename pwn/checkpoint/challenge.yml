@@ -3,11 +3,9 @@ author: abu
 category: pwn
 difficulty: easy
 description: |
-  The Sparrow Freight border terminal logs your name and waves you back. Somewhere in it is a routine
-  that would clear you straight through — find a way to make the terminal run it, and read your
-  clearance code.
+  The Sparrow Freight border terminal logs your name and waves you back. Somewhere inside is a routine that would clear you straight through.
 
-  Connect to your instance. The binary and the libraries it runs against are attached.
+  Make the terminal run it and read your clearance code.
 sub_description: |
   A networked binary. Get it to clear you through and read the flag.
 points: 150

@@ -3,13 +3,13 @@ author: abu
 category: b2r
 difficulty: medium
 description: |
-  Sparrow Freight handed you a low-privilege account on one of their ops boxes after a phishing
-  test and asked you to see how far a foothold really gets. SSH in and work your way up: there's a
-  user flag in the ops engineer's home, and a root flag for whoever actually owns the box.
+  Sparrow Freight handed you a low-privilege account on one of their ops boxes and asked how far a foothold really gets. There's a user flag in the ops engineer's home and a root flag for whoever owns the box.
+
+  Work your way up.
 
   Access: ssh guest@<your-instance-host> -p <port>   (password: guest)
 sub_description: |
-  A Linux box. Start from the guest account and work your way up to the two flags (user + root).
+  A Linux box. Start from the guest account and work up to both flags (user + root).
 points: 650
 flags:
   - { type: static, name: user, flag: "H7CTF{sud0_gtf0b1n_2_us3r_5parr0w}", points: 250 }

@@ -1,24 +1,13 @@
-name: Rollback
+name: Take Two
 author: abu
 category: crypto
 difficulty: hard
 description: |
-  Helios ships firmware signed by a notary, and each device boots any build that
-  verifies against its burned-in trust anchor. The notary will happily notarize
-  benign builds but flatly refuses to sign a backdoored one. It also exposes a
-  maintenance operation for its operators.
+  Helios ships signed firmware. The device boots any build that carries a valid signature, and the notary signs only builds it trusts.
 
-  Get the device to boot a backdoored build. Launch your instance; the notary
-  speaks JSON over HTTP at your instance's base URL (shown when you launch it):
-
-      GET  /root                    -> the device trust anchor
-      POST /sign {firmware}         -> notarize a benign build (backdoored builds refused)
-      POST /rollback                -> operator maintenance
-      POST /deploy {firmware, sig}  -> device update; boots anything that verifies
-
-  The signing scheme is implemented in `lms.py` (attached).
+  Boot a build the notary would never sign.
 sub_description: |
-  Get the device to boot a backdoored firmware build that the notary refuses to sign.
+  Boot a backdoored firmware build the notary would never sign.
 points: 500
 provide:
   - path: challenge/lms.py

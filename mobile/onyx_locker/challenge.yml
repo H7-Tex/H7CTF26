@@ -3,13 +3,9 @@ author: abu
 category: mobile
 difficulty: easy
 description: |
-  Onyx Locker is a personal password manager for Android. We shipped version 2.4.0 and
-  stood up a staging sync server for your review. Install it, point it at your instance,
-  and unlock the vault. The developers were sure the vault's recovery code was safe on the
-  device - see if they were right.
+  Onyx Locker is a personal password manager for Android. Its developers were sure the vault's recovery code was safe on the device.
 
-  Your instance and the APK are shown when the challenge opens. The vault's recovery code
-  is minted per team by your instance. Recover it.
+  See if they were right. Recover it.
 sub_description: |
   Recover the Onyx Locker vault's recovery code from the Android app.
 points: 150

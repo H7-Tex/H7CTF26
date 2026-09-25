@@ -1,17 +1,13 @@
-name: SCHRÖDINGER PACKAGE
+name: Schrödinger Package
 author: H7CTF
 category: web
 difficulty: hard
 description: |
-  Astra Package Exchange is the internal service used to register, inspect, and
-  exercise Python packages before they are made available to engineering teams.
-  Uploaded wheels move through a set of automated checks that record package
-  metadata, file inventories, inspection results, and runtime activity.
+  Astra Package Exchange is the internal service engineering teams use to register, inspect, and run Python packages before they're cleared for wider use.
 
+  Make the service hand you the flag.
 sub_description: |
-  Browse the registry, inspect package history, compare recorded package data,
-  and follow runtime sessions through the service.
-
+  Get the internal package service to hand you the flag.
 points: 500
 
 flags:

@@ -3,20 +3,11 @@ author: abu
 category: mobile
 difficulty: hard
 description: |
-  Meridian Pay is a mobile neobank. We shipped the 3.2.1 Android client and stood up a
-  staging copy of the API for your security review. The build authenticates the device
-  silently on first launch - there is no password to hand you, that is the point.
+  Meridian Pay is a mobile neobank. Client and backend were shipped in a hurry, and they trust each other, and the device around them, more than they should.
 
-  Point the app at your instance URL and start digging. The client and the backend were
-  shipped in a hurry, and they trust each other - and the device around them - more than
-  they should. There are four separate flaws to find, each worth a flag; some live in the
-  app, some in the API it talks to.
-
-  Your instance and the APK are shown when the challenge opens. The app talks to your
-  instance only; every flag is minted by your instance, so nothing you find is shareable.
+  Four separate flaws hide here, each worth a flag: some in the app, some in the API behind it. Find all four.
 sub_description: |
-  Review the Android neobank client and its staging API and recover all four flags, one
-  per flaw.
+  Review the Android neobank client and its API and recover all four flags, one per flaw.
 flags:
   - { type: dynamic, name: v1, dynamic_flag_prefix: "H7CTF{", points: 200 }
   - { type: dynamic, name: v2, dynamic_flag_prefix: "H7CTF{", points: 250 }

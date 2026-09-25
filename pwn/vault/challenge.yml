@@ -3,13 +3,11 @@ author: abu
 category: pwn
 difficulty: medium
 description: |
-  The vault will run any code you hand it — it even gives you room to put it in. The trouble is the door
-  only opens so far, so simply asking for a shell won't get you anywhere. Work within what it allows and
-  take what you came for.
+  The vault will run any code you hand it, and it even gives you room to put it in. But the door only opens so far, so simply asking for a shell won't get you anywhere.
 
-  Connect to your instance. The binary and its libraries are attached.
+  Work within what it allows and take what you came for.
 sub_description: |
-  A networked binary that runs code you send it, within limits. Send code that reads the flag.
+  A networked binary that runs your code within limits. Read the flag.
 points: 300
 flags:
   - type: dynamic

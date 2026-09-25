@@ -3,13 +3,11 @@ author: abu
 category: rev
 difficulty: medium
 description: |
-  We pulled the licence checker out of a grey-market satellite modem's firmware. Type in a valid
-  16-character licence key and it releases the carrier provisioning string — which is all we're after.
+  This licence checker was pulled from a grey-market satellite modem's firmware. Type a valid licence and it releases the carrier provisioning string.
 
-  It doesn't just compare your key against a stored value; there's machinery sitting between what you
-  type and the verdict. Work out what it's doing, find the key it wants, and read the string.
+  Work out the licence it wants and read the string.
 sub_description: |
-  A single Linux binary. Find the 16-character licence key it accepts and it hands you the flag.
+  A single Linux binary. Recover the licence it accepts and read the flag.
 points: 300
 flags:
   - type: static
