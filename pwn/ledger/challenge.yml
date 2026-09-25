@@ -1,0 +1,30 @@
+name: Ledger
+author: abu
+category: pwn
+difficulty: hard
+description: |
+  The Sparrow Freight note ledger lets you add, delete, edit and view notes - but "delete" is a
+  little forgetful, and you can still read and write notes it swears are gone. There's an audit
+  routine that prints the clearance code; it's never called. Arrange for it to run.
+
+  Connect to your instance. The binary is attached.
+sub_description: |
+  Use-after-free on a tcache-sized heap (glibc 2.39). Leak the heap, poison a tcache fd past
+  safe-linking, allocate over a 16-byte-aligned GOT entry, and redirect execution into audit().
+points: 450
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - name: ledger.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/ledger
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 9999, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [pwn, heap, use-after-free, tcache-poisoning, safe-linking, got-overwrite, no-pie]
