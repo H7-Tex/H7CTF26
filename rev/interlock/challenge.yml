@@ -1,0 +1,20 @@
+name: Interlock
+author: abu
+category: rev
+difficulty: medium
+description: |
+  Interlock is the key controller from a coupled-tumbler lock - the kind where the pins aren't
+  independent, they're wired together. Feed it the right 16-character key and it releases the unlock
+  token. Brute force is hopeless (2^128), but the lock's own math gives the key away if you read it.
+
+  Recover the key, read the token.
+sub_description: |
+  A stripped Linux binary. The key check is a system of linear congruences A*key == B (mod 256).
+  Recognise it, solve the system, and the binary hands you the flag. No brute force.
+points: 350
+flags:
+  - type: static
+    flag: "H7CTF{l1n34r_syst3m_k3yg3n_m0d_256}"
+handout:
+  - name: interlock.zip
+tags: [rev, keygen, linear-algebra, crackme]
