@@ -16,5 +16,5 @@ flags:
   - type: static
     flag: "H7CTF{z3_smt_s0lv3s_th3_c1ph3rl0ck}"
 handout:
-  - name: cipherlock.zip
+  - name: challenge/cipherlock.zip
 tags: [rev, z3, smt, constraints, crackme]

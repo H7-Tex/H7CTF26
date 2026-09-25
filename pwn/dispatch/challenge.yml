@@ -16,7 +16,7 @@ flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"
 handout:
-  - name: dispatch.zip
+  - name: challenge/dispatch.zip
 deploy:
   resource_type: docker
   instancing: on_demand

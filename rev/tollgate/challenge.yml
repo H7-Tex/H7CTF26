@@ -17,5 +17,5 @@ flags:
   - type: static
     flag: "H7CTF{g0_str1pp3d_t0llg4t3_w0rd_r3v}"
 handout:
-  - name: tollgate.zip
+  - name: challenge/tollgate.zip
 tags: [rev, golang, stripped, crackme, license]

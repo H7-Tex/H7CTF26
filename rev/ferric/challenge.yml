@@ -17,5 +17,5 @@ flags:
   - type: static
     flag: "H7CTF{rust_b1n_r3v_f3rr1c_cr4ckm3}"
 handout:
-  - name: ferric.zip
+  - name: challenge/ferric.zip
 tags: [rev, rust, crackme, keygen]

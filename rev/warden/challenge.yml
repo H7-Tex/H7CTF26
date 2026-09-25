@@ -18,5 +18,5 @@ flags:
   - type: static
     flag: "H7CTF{cust0m_vm_l1c3ns3_w4rd3n_r3v}"
 handout:
-  - name: warden.zip
+  - name: challenge/warden.zip
 tags: [rev, vm, bytecode, obfuscation, license, crackme]

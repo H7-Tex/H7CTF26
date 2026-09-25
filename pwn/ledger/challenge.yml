@@ -16,7 +16,7 @@ flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"
 handout:
-  - name: ledger.zip
+  - name: challenge/ledger.zip
 deploy:
   resource_type: docker
   instancing: on_demand

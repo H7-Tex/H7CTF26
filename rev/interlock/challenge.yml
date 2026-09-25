@@ -16,5 +16,5 @@ flags:
   - type: static
     flag: "H7CTF{l1n34r_syst3m_k3yg3n_m0d_256}"
 handout:
-  - name: interlock.zip
+  - name: challenge/interlock.zip
 tags: [rev, keygen, linear-algebra, crackme]
