@@ -1,0 +1,32 @@
+name: Tapeout
+author: abu
+category: misc
+difficulty: hard
+description: |
+  FoundryProof signs off every design before tape-out: it formally certifies that your netlist
+  is equivalent to our golden reference, then probes the certified design once on a post-fab
+  audit vector to catch tampering. We think it's airtight.
+
+  Ship us a design that FoundryProof certifies as equivalent to the reference, yet that outputs
+  the sabotage value on the audit vector. The Tiny-HDL spec, the golden reference, and the exact
+  certifier we run are attached. Launch your instance and submit your netlist over the socket.
+sub_description: |
+  Sneak a hardware trojan past a formal equivalence checker: get a non-equivalent design
+  certified as equivalent. Source of the checker is provided.
+points: 400
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - name: tapeout.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/tapeout
+  cpu_limit: "1.0"
+  memory_limit: 512Mi
+  exposed_ports:
+    - { port: 9999, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [misc]
