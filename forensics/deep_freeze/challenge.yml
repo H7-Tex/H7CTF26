@@ -11,12 +11,13 @@ sub_description: |
 points: 500
 flags:
   - type: static
-    flag: "H7CTF{r4ns0m_k3y_l3ft_1n_th3_fr0st}"
+    flag: "H7CTF{bf3a8e98115450c654b4}"
 handout:
-  # hosted on the public GCS handout bucket (image is ~662 MB)
+  # hosted on the public GCS handout bucket (memory image ~1.34 GB compressed)
   - name: memory.lime.zst
     url: https://storage.googleapis.com/h7ctf26-handouts/a/2637e27c2d71560600af9354ba88b680/memory.lime.zst
-    sha256: f6fd3e3f2303587f2693057a838eaa48b42c055f4a7751f07b45274d9d6462ef
+    sha256: dcd7cb45b26d0e7fd52734d675168a7dcb1909e16acf78ad358fe398c36b8810
   - name: Q3_patient_records.pdf.locked
     url: https://storage.googleapis.com/h7ctf26-handouts/a/1ad26d915bd075eb557495f3ab5d3d88/Q3_patient_records.pdf.locked
+    sha256: 5b8701fa1b328ac8c2e53bf4b7485a7af49c984a738372061dabad4a3a274d6b
 tags: [forensics, dfir]
