@@ -1,0 +1,22 @@
+name: Warden
+author: abu
+category: rev
+difficulty: medium
+description: |
+  We pulled the license validator out of a grey-market satellite modem's firmware. Punch in a
+  valid 16-character license key and it unlocks the carrier provisioning string - which is the
+  only thing we actually want.
+
+  The vendor didn't just compare the key against a constant. There's a little engine inside
+  doing the checking, and it's not x86. Figure out what it's running, work out which key it
+  wants, and read the provisioning string.
+sub_description: |
+  A single Linux binary. The license check runs on a small custom bytecode VM; recover the key
+  it accepts, and the binary hands you the flag. No brute force needed.
+points: 300
+flags:
+  - type: static
+    flag: "H7CTF{cust0m_vm_l1c3ns3_w4rd3n_r3v}"
+handout:
+  - name: warden.zip
+tags: [rev, vm, bytecode, obfuscation, license, crackme]
