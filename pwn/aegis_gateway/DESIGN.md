@@ -38,4 +38,30 @@ previous rung's cheapest technique**, forcing a new insight. The spine:
   plus a seccomp wrapper at v3.0+ and the CET flag at v3.4.
 - Grader: runs the submitted exploit against a fresh instance of each release, N times, fresh
   per-run flag; pass = the exploit exfiltrates that run's flag. Reliability >=8/10 = "cleared".
-  score = newest_release_cleared / total. (Interface: relative-grading-judge.md section 7.)
+  score = newest_release_cleared / total. (Interface: relative-grading-engine-BUILD.md,
+  which supersedes relative-grading-judge.md — INTERACTION-graded: each rung yields a per-tier
+  token, a separate internal grader pod verifies tokens and reports the 0..1 depth score.)
+
+## Build / validation status (2026-09-26)
+Reference exploits validated end-to-end over TCP against fresh containers, pinned glibc
+**2.39-0ubuntu8.9** (Dockerfile base digest sha256:008173c2…), each run exact-match on a
+per-run flag. `max_tier` for the graded score = the count of shippable rungs below.
+
+| Rel  | mitigations added                          | reference solve                        | status                    |
+|------|--------------------------------------------|----------------------------------------|---------------------------|
+| v1.0 | NX / Partial RELRO / no-PIE / no canary     | fmt %13$p libc leak → ret2libc          | ✅ validated (6/6)         |
+| v1.4 | + canary                                    | %9$p canary + %47$p libc → ret2libc     | ✅ validated (6/6)         |
+| v2.0 | + PIE                                        | %9$p + %47$p → ret2libc (libc-only ROP) | ✅ validated (6/6, 12/12)  |
+| v2.6 | + Full RELRO + FORTIFY_SOURCE=2              | seq %p| leak (printf_chk) → ret2libc     | ✅ validated (6/6)         |
+| v3.0 | + seccomp (execve/execveat killed)          | seq %p| leak → ORW ROP (open/read/write) | ✅ validated (6/6)         |
+| v3.4 | + Intel CET (SHSTK+IBT)                      | SFOP (signal-oriented) → ORW            | ⏳ deferred — needs CET box |
+
+Verified libc offsets for 2.39-0ubuntu8.9 (byte-checked against the shipped libc): system
+0x58750, /bin/sh 0x1cc42f, `pop rdi;ret` 0x10c08d, `ret` 0x28a92; `%47$p`/`%53`(seq) libc
+return sits at base+0x2a1ca.
+
+**FORTIFY note:** v2.6/v3.0 were previously unsolvable — the `char * volatile p = buf` trick
+did NOT stop gcc from emitting `__read_chk` at -O2, so DIAG aborted on len>64. Fixed in
+`gateway.c` by handing the buffer to `read()` through a compiler-barrier'd opaque pointer
+(`char *p = buf; __asm__ volatile("" : "+r"(p));`): `__builtin_object_size` is unknown at the
+call site → plain `read` → overflow survives FORTIFY (printf's %n still blocked, GOT still RO).

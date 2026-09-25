@@ -59,8 +59,12 @@ static void do_diag(long len) {
     char buf[64];
     printf("[diag] send %ld bytes of probe data\n", len);
 #ifdef WITH_FORTIFY
-    /* volatile pointer hides static size from __builtin_object_size → no __read_chk */
-    { char * volatile p = buf; int n = (int)read(0, p, (size_t)len);
+    /* the probe buffer is handed to read() through an opaque pointer: the compiler
+       barrier drops the static tie to buf[64], so __builtin_object_size() is unknown
+       at the call site and FORTIFY's __read_chk can't bound it. The overflow survives
+       _FORTIFY_SOURCE=2 (printf's %n is still blocked, GOT is still read-only). */
+    { char *p = buf; __asm__ volatile("" : "+r"(p));
+      int n = (int)read(0, p, (size_t)len);
       printf("[diag] captured %d bytes\n", n); }
 #else
     int n = read(0, buf, len);   /* stack overflow when len > sizeof buf */
