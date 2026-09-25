@@ -1,0 +1,30 @@
+name: Sparrow Freight
+author: abu
+category: boot2root
+difficulty: medium
+description: |
+  Sparrow Freight handed you a low-privilege account on one of their ops boxes after a phishing
+  test and asked you to see how far a foothold really gets. SSH in and work your way up: there's a
+  user flag in the ops engineer's home, and a root flag for whoever actually owns the box.
+
+  Access: ssh guest@<your-instance-host> -p <port>   (password: guest)
+sub_description: |
+  Classic Linux boot-to-root. Start as `guest`, escalate to the `mel` ops account, then to root.
+  Two flags: /home/mel/user.txt and /root/root.txt. Pure userspace misconfiguration - no kernel
+  exploits.
+points: 650
+flags:
+  - { type: static, name: user, flag: "H7CTF{sud0_gtf0b1n_2_us3r_5parr0w}", points: 250 }
+  - { type: static, name: root, flag: "H7CTF{p4th_h1j4ck_su1d_r00t_5parr0w}", points: 400 }
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/sparrow-b2r
+  privesc: true            # needs allowPrivilegeEscalation:true (no_new_privs off) for the SUID step; drop-ALL is fine (Finals' deploy.privesc flag)
+  cpu_limit: "1.0"
+  memory_limit: 512Mi
+  exposed_ports:
+    - { port: 22, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 3
+tags: [boot2root, linux, privilege-escalation, sudo, gtfobins, suid, path-hijack, ssh]
