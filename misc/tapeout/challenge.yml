@@ -19,6 +19,7 @@ flags:
     dynamic_flag_prefix: "H7CTF{"
 handout:
   - name: tapeout.zip
+    path: challenge/tapeout.zip
 deploy:
   resource_type: docker
   instancing: on_demand

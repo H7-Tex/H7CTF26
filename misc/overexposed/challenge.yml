@@ -13,4 +13,5 @@ points: 300
 flag: "H7CTF{p0lyg10t_th3_1nd3x_l13s_r34d_th3_r4w_byt3s}"
 handout:
   - name: overexposed.png
+    path: challenge/overexposed.png
 tags: [misc]
