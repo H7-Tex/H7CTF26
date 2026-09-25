@@ -1,0 +1,40 @@
+name: Deputy
+author: abu
+category: cloud
+difficulty: hard
+description: |
+  DeputyCorp is a SaaS "deployment partner" your company integrated with. You've been handed a
+  low-privilege analyst key into the account's control plane — point the AWS CLI at it and see how far
+  a careless cross-account trust relationship lets you go.
+
+  Endpoint: http://<your-instance-host>:<port>   (use it as `--endpoint-url`)
+  Starting credentials (the analyst):
+    aws_access_key_id     = AKIAANALYST0000000000
+    aws_secret_access_key = wJalrAnalystSecretKeyEXAMPLEbPxRfiCY
+    region                = us-east-1
+  Real `awscli` (and Pacu) drive it. Four flags — recon, a runner takeover, an over-trusting admin
+  role, and the hardened role behind it.
+sub_description: |
+  A simulated AWS (IAM/STS/Lambda/S3). No real cloud, no real credentials — everything is in the box.
+  Reason about the JSON trust/permission policies; the privesc is real, the confused deputy is the point.
+# 4 flags, one per stage. Values here match the container's injected env (FLAG1..FLAG4 + PARTNER_EXTERNAL_ID).
+# NOTE (platform/Finals): static like sparrow_freight for now; per-team dynamic preferred — inject unique
+# FLAG1..FLAG4 (+ PARTNER_EXTERNAL_ID, and optionally ANALYST_ACCESS_KEY/SECRET) at spawn.
+points: 1500
+flags:
+  - { type: static, name: recon,      flag: "H7CTF{recon_the_sim_aws_analyst}", points: 200 }
+  - { type: static, name: passrole,   flag: "H7CTF{passrole_lambda_stole_the_runner_role}", points: 350 }
+  - { type: static, name: admin,      flag: "H7CTF{confused_deputy_no_externalid_is_admin}", points: 450 }
+  - { type: static, name: externalid, flag: "H7CTF{externalid_gates_the_real_crown_jewel}", points: 500 }
+deploy:
+  # self-contained single container; standard gVisor profile (confirmed w/ Finals — no runc, no privesc)
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/deputy
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 5400
+  max_extensions: 4
+tags: [cloud, aws, iam, privesc, confused-deputy]
