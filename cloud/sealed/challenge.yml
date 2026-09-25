@@ -1,0 +1,67 @@
+id: sealed
+title: "Sealed"
+category: cloud
+author: h7tex
+difficulty: hard
+points: 500
+
+description: |
+  You have low-privilege access to a Kubernetes cluster running a familiar
+  ingress controller. Rumor has it someone forgot to lock the janitor's closet.
+
+  Your foothold: a kubeconfig for a restricted ServiceAccount inside the cluster.
+  Every pod in this cluster can reach every Service — including the ones that
+  are supposed to be internal.
+
+  Find all the secrets.
+
+flags:
+  - id: flag1
+    value: "H7CTF{unauthenticated_webhook_attack_surface}"
+    points: 100
+    description: "Recon — map the cluster attack surface"
+  - id: flag2
+    value: "H7CTF{rce_as_controller_service_account}"
+    points: 200
+    description: "Code execution inside the ingress-nginx controller pod"
+  - id: flag3
+    value: "H7CTF{cluster_wide_secret_theft_complete}"
+    points: 200
+    description: "Cluster-wide secret theft using the stolen SA token"
+
+deploy:
+  type: k3s-sysbox
+  # one disposable k3s-in-a-sysbox-pod per team
+  # requires: sysbox pool on GKE + Finals k3s-in-pod substrate (same as Freightpipe)
+  image: gcr.io/h7ctf26/sealed:latest
+  resources:
+    requests: {cpu: "500m", memory: "1Gi"}
+    limits:   {cpu: "2",    memory: "2Gi"}
+  ports:
+    - name: http
+      containerPort: 30110
+      description: "nginx HTTP NodePort (body upload target)"
+    - name: https
+      containerPort: 30443
+      description: "nginx HTTPS NodePort"
+  player_access:
+    - type: kubeconfig
+      description: "Restricted player ServiceAccount kubeconfig"
+
+handout:
+  - path: player-kubeconfig.yaml
+    description: "Kubeconfig for the player ServiceAccount (generated at spawn)"
+
+hints:
+  - cost: 25
+    text: "Kubernetes cluster services are reachable by all pods on the pod network."
+  - cost: 50
+    text: "The ingress-nginx controller's admission webhook validates Ingress objects. Read CVE-2025-1974."
+  - cost: 75
+    text: "The annotation nginx.ingress.kubernetes.io/auth-tls-match-cn is included verbatim in nginx config."
+
+notes: |
+  DEPLOY GATED on the sysbox pool (Finals' spike — sysctl isolation fix needed).
+  Build is validated locally on sealed-k3s (rancher/k3s:v1.31.5-k3s1 in Docker).
+  ingress-nginx pinned to v1.11.4 (patched >= 1.11.5).
+  See DEPLOY.md for exact setup steps.

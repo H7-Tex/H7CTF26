@@ -9,6 +9,7 @@ metadata:
 data:
   admission-webhook: "ingress-nginx-controller-admission.ingress-nginx.svc:443"
   note: "this webhook is unauthenticated and reachable from any pod in-cluster"
+  tls-secret: "calico-system/node-certs"
   flag: "H7CTF{unauthenticated_webhook_attack_surface}"
 
 ---
