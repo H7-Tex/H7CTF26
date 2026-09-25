@@ -16,10 +16,10 @@ sub_description: |
   A simulated AWS account you drive with the real AWS CLI. Start from a low-privilege key and escalate. Four flags.
 points: 1500
 flags:
-  - { type: static, name: recon,      flag: "H7CTF{recon_the_sim_aws_analyst}", points: 200 }
-  - { type: static, name: passrole,   flag: "H7CTF{passrole_lambda_stole_the_runner_role}", points: 350 }
-  - { type: static, name: admin,      flag: "H7CTF{confused_deputy_no_externalid_is_admin}", points: 450 }
-  - { type: static, name: externalid, flag: "H7CTF{externalid_gates_the_real_crown_jewel}", points: 500 }
+  - { type: static, name: recon,      flag: "H7CTF{d6cc592f5a2f3db80718}", points: 10 }
+  - { type: static, name: passrole,   flag: "H7CTF{28f87391f8a228110839}", points: 20 }
+  - { type: static, name: admin,      flag: "H7CTF{ea3e1dba8012d76e2648}", points: 30 }
+  - { type: static, name: externalid, flag: "H7CTF{1dbe909840d15aabdd63}", points: 40 }
 deploy:
   # self-contained single container; standard gVisor profile (confirmed w/ Finals — no runc, no privesc)
   resource_type: docker

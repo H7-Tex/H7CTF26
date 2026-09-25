@@ -42,10 +42,10 @@ app = Flask(__name__)
 ACCOUNT = "111111111111"
 PARTNER = "999999999999"
 
-FLAG1 = os.environ.get("FLAG1", "H7CTF{recon_the_sim_aws_analyst}")
-FLAG2 = os.environ.get("FLAG2", "H7CTF{passrole_lambda_stole_the_runner_role}")
-FLAG3 = os.environ.get("FLAG3", "H7CTF{cross_account_overtrust_no_externalid_is_admin}")
-FLAG4 = os.environ.get("FLAG4", "H7CTF{externalid_gates_the_real_crown_jewel}")
+FLAG1 = os.environ.get("FLAG1", "H7CTF{d6cc592f5a2f3db80718}")
+FLAG2 = os.environ.get("FLAG2", "H7CTF{28f87391f8a228110839}")
+FLAG3 = os.environ.get("FLAG3", "H7CTF{ea3e1dba8012d76e2648}")
+FLAG4 = os.environ.get("FLAG4", "H7CTF{1dbe909840d15aabdd63}")
 EXTERNAL_ID = os.environ.get("PARTNER_EXTERNAL_ID", "Dc-2026-8f31a97c4b2e")
 
 ANALYST_AK = os.environ.get("ANALYST_ACCESS_KEY", "AKIAANALYST0000000000")

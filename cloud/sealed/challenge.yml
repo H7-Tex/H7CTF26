@@ -18,15 +18,15 @@ description: |
 flags:
   - id: flag1
     value: "H7CTF{unauthenticated_webhook_attack_surface}"
-    points: 100
+    points: 20
     description: "Recon — map the cluster attack surface"
   - id: flag2
     value: "H7CTF{rce_as_controller_service_account}"
-    points: 200
+    points: 30
     description: "Code execution inside the ingress-nginx controller pod"
   - id: flag3
     value: "H7CTF{cluster_wide_secret_theft_complete}"
-    points: 200
+    points: 50
     description: "Cluster-wide secret theft using the stolen SA token"
 
 deploy:

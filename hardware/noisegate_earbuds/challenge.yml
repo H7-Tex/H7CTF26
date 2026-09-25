@@ -13,11 +13,11 @@ flags:
   - type: dynamic
     name: v1
     dynamic_flag_prefix: "H7CTF{"
-    points: 200
+    points: 40
   - type: dynamic
     name: v2
     dynamic_flag_prefix: "H7CTF{"
-    points: 300
+    points: 60
 deploy:
   resource_type: docker
   instancing: on_demand

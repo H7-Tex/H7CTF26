@@ -10,10 +10,10 @@ sub_description: |
   A self-hosted CI/CD box. Start from a leaked token and work through the pipeline until you own the factory host. Four flags, recon to root.
 points: 1800
 flags:
-  - { type: static, name: recon, flag: "H7CTF{fl4g1_l34k3d_t0k3n_in_g1t_h1st0ry}", points: 200 }
-  - { type: static, name: user,  flag: "H7CTF{1ppe_p01s0n3d_th3_sh4r3d_bu1ld_scr1pt}", points: 400 }
-  - { type: static, name: prod,  flag: "H7CTF{f0rg3d_hm4c_d3pl0y3d_my_b4ckd00r_1m4g3}", points: 550 }
-  - { type: static, name: root,  flag: "H7CTF{tru5t3d_w00dp3ck3r_pr1v_st3p_0wn3d_th3_f4ct0ry}", points: 650 }
+  - { type: static, name: recon, flag: "H7CTF{fl4g1_l34k3d_t0k3n_in_g1t_h1st0ry}", points: 10 }
+  - { type: static, name: user,  flag: "H7CTF{1ppe_p01s0n3d_th3_sh4r3d_bu1ld_scr1pt}", points: 20 }
+  - { type: static, name: prod,  flag: "H7CTF{f0rg3d_hm4c_d3pl0y3d_my_b4ckd00r_1m4g3}", points: 30 }
+  - { type: static, name: root,  flag: "H7CTF{tru5t3d_w00dp3ck3r_pr1v_st3p_0wn3d_th3_f4ct0ry}", points: 40 }
 deploy:
   # ONE sysbox pod runs the whole docker-compose stack (nested unprivileged Docker). Finals builds the
   # pod image that runs `docker compose up` internally. Needs runc+sysbox (NOT gVisor) — the stage-4
