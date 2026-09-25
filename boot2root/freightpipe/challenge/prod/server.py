@@ -28,7 +28,22 @@ IMAGE = os.environ.get("IMAGE", "prod-app:latest")
 REF = f"{REGISTRY}/{IMAGE}"
 WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "changeme").encode()
 FLAG3 = os.environ.get("FLAG3", "H7CTF{placeholder_flag3}")
-PROD_APP_WRITE_TOKEN = os.environ.get("PROD_APP_WRITE_TOKEN", "")
+
+
+def _read_deploy_token():
+    # gitea seeds the real prod-app write token into a shared volume; fall back to env for local runs.
+    path = os.environ.get("DEPLOY_TOKEN_FILE", "/prod-secrets/deploy_token")
+    try:
+        with open(path) as f:
+            t = f.read().strip()
+            if t:
+                return t
+    except OSError:
+        pass
+    return os.environ.get("PROD_APP_WRITE_TOKEN", "")
+
+
+PROD_APP_WRITE_TOKEN = _read_deploy_token()
 NET = os.environ.get("CI_NETWORK", "freightpipe-ci")
 LIVE = os.environ.get("LIVE_NAME", "prod-app-live")
 PORT = int(os.environ.get("PROD_PORT", "9000"))

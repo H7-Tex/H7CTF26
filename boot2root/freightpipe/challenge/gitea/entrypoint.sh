@@ -11,7 +11,10 @@ readonly DEV_USER=dev                       # owns the repos (the ops engineer)
 readonly DEV_PASSWORD='FreightDev-2026!'
 readonly CONTRIB_USER=contributor           # the low-priv identity whose token leaked
 readonly CONTRIB_PASSWORD='Contributor-2026!'
+readonly DEPLOYBOT_USER=deploybot           # CI deploy identity; its token lives in prod (stage-4 pivot)
+readonly DEPLOYBOT_PASSWORD='DeployBot-2026!'
 readonly FLAG1='H7CTF{fl4g1_l34k3d_t0k3n_in_g1t_h1st0ry}'
+readonly PROD_SECRETS_DIR=/prod-secrets     # shared vol -> prod reads the deploybot token here
 readonly API=http://127.0.0.1:3000/api/v1
 readonly OAUTH_ENV=/oauth/woodpecker.env
 readonly WOODPECKER_HOST="${WOODPECKER_HOST:-http://localhost:8000}"
@@ -111,6 +114,7 @@ log 'creating users'
 as_git admin user create --username "$ADMIN_USER" --password "$ADMIN_PASSWORD" --email 'admin@sparrow-freight.local' --admin --must-change-password=false >/dev/null
 as_git admin user create --username "$DEV_USER" --password "$DEV_PASSWORD" --email 'dev@sparrow-freight.local' --must-change-password=false >/dev/null
 as_git admin user create --username "$CONTRIB_USER" --password "$CONTRIB_PASSWORD" --email 'contributor@sparrow-freight.local' --must-change-password=false >/dev/null
+as_git admin user create --username "$DEPLOYBOT_USER" --password "$DEPLOYBOT_PASSWORD" --email 'deploybot@sparrow-freight.local' --must-change-password=false >/dev/null
 
 log 'creating repositories (owned by dev)'
 # prod-app is PRIVATE and contributor is NOT a collaborator -> the player can neither read nor push
@@ -127,12 +131,31 @@ log 'granting contributor access: WRITE scripts (poison target), READ internal (
 api_put "/repos/$DEV_USER/freightpipe-scripts/collaborators/$CONTRIB_USER" '{"permission":"write"}'
 api_put "/repos/$DEV_USER/freightpipe-internal/collaborators/$CONTRIB_USER" '{"permission":"read"}'
 
+# deploybot may WRITE prod-app: this is the stage-4 pivot. Its token is injected into prod at runtime;
+# reaching prod (stage 3) loots it, which lets the player push a .woodpecker.yml to the TRUSTED prod-app
+# repo -> a privileged step -> factory-host root. deploybot has NO admin and NO access to other repos.
+api_put "/repos/$DEV_USER/prod-app/collaborators/$DEPLOYBOT_USER" '{"permission":"write"}'
+
 log 'generating the leaked PAT for contributor (capture the real token)'
 LEAKED_TOKEN=$(as_git admin user generate-access-token --username "$CONTRIB_USER" --token-name stage0-leaked --scopes read:repository,write:repository --raw)
 case "$LEAKED_TOKEN" in
   [0-9a-f]*) : ;;
   *) log "unexpected token output: $LEAKED_TOKEN"; exit 1 ;;
 esac
+
+log 'generating the deploybot token (prod-app write) and handing it to prod via the shared volume'
+DEPLOYBOT_TOKEN=$(as_git admin user generate-access-token --username "$DEPLOYBOT_USER" --token-name prod-deploy --scopes write:repository --raw)
+case "$DEPLOYBOT_TOKEN" in
+  [0-9a-f]*) : ;;
+  *) log "unexpected deploybot token output: $DEPLOYBOT_TOKEN"; exit 1 ;;
+esac
+if [ -d "$PROD_SECRETS_DIR" ]; then
+  umask 077
+  printf '%s\n' "$DEPLOYBOT_TOKEN" > "$PROD_SECRETS_DIR/deploy_token"
+  log 'wrote deploy token to shared prod-secrets volume'
+else
+  log "warning: $PROD_SECRETS_DIR not mounted; prod will fall back to its env placeholder"
+fi
 
 seed_dir=$(mktemp -d /tmp/freightpipe-seed.XXXXXX)
 

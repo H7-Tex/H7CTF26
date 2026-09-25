@@ -32,6 +32,7 @@ services:
     volumes:
       - ./gitea/entrypoint.sh:/opt/freightpipe/entrypoint.sh:ro
       - woodpecker-oauth:/oauth
+      - prod-secrets:/prod-secrets
     healthcheck:
       test: ["CMD-SHELL", "test -f /data/.freightpipe-seeded && curl -fsS http://127.0.0.1:3000/api/healthz >/dev/null"]
       interval: 3s
@@ -110,17 +111,20 @@ services:
     depends_on:
       registry:
         condition: service_healthy
+      gitea:
+        condition: service_healthy
     environment:
       REGISTRY: registry:5000
       IMAGE: prod-app:latest
       CI_NETWORK: "${CI_NETWORK:-freightpipe-ci}"
       WEBHOOK_SECRET: "${WEBHOOK_SECRET:-wh00k_hm4c_5ecr3t_5parr0w_2026}"
       FLAG3: "${FLAG3:-H7CTF{placeholder_flag3}}"
-      PROD_APP_WRITE_TOKEN: "${PROD_APP_WRITE_TOKEN:-prodapp-write-token-placeholder}"
+      DEPLOY_TOKEN_FILE: /prod-secrets/deploy_token
     ports:
       - "${PROD_WEB_PORT:-9090}:9000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - prod-secrets:/prod-secrets:ro
 
   reviewbot:
     image: python:3.12-alpine
@@ -134,6 +138,8 @@ services:
       WOODPECKER_URL: http://woodpecker-server:8000
       DEV_USER: dev
       DEV_PASSWORD: "FreightDev-2026!"
+      ADMIN_USER: freightadmin
+      ADMIN_PASSWORD: "FreightAdmin-2026!"
       PROD_REPO: dev/prod-app
       REVIEWBOT_INTERVAL: "${REVIEWBOT_INTERVAL:-90}"
       USER_FLAG: "${USER_FLAG:-H7CTF{placeholder_user_flag}}"
@@ -150,6 +156,7 @@ volumes:
   woodpecker-server-data:
   woodpecker-agent-data:
   registry-data:
+  prod-secrets:
 
 networks:
   default:

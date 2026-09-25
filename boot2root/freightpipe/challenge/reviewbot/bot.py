@@ -25,8 +25,12 @@ import urllib.request as U
 
 GITEA = os.environ.get("GITEA_URL", "http://gitea:3000")
 WP = os.environ.get("WOODPECKER_URL", "http://woodpecker-server:8000")
-DEV = os.environ.get("DEV_USER", "dev")
+# dev OWNS prod-app (so it can activate it + set secrets/visibility + trigger); admin is needed only
+# to mark the repo trusted (instance-admin-only). We log in as each in turn during bootstrap.
+DEV_USER = os.environ.get("DEV_USER", "dev")
 DEV_PW = os.environ.get("DEV_PASSWORD", "FreightDev-2026!")
+ADMIN_USER = os.environ.get("ADMIN_USER", "freightadmin")
+ADMIN_PW = os.environ.get("ADMIN_PASSWORD", "FreightAdmin-2026!")
 INTERVAL = int(os.environ.get("REVIEWBOT_INTERVAL", "90"))
 REPO = os.environ.get("PROD_REPO", "dev/prod-app")
 USER_FLAG = os.environ.get("USER_FLAG", "H7CTF{placeholder_user_flag}")
@@ -84,11 +88,16 @@ def wait_healthy():
     sys.exit(1)
 
 
-def login():
+def login(user, pw):
+    # fresh session so we can switch identities (dev for repo ops, admin for the trusted flag)
+    global cj, op, HDR
+    cj = CJ.CookieJar()
+    op = U.build_opener(U.HTTPCookieProcessor(cj))
+    HDR = {}
     # gitea password login
     _, _, h = get(f"{GITEA}/user/login")
     m = re.search(r'name="_csrf"\s+value="([^"]+)"', h)
-    post(f"{GITEA}/user/login", form={"_csrf": m.group(1), "user_name": DEV, "password": DEV_PW})
+    post(f"{GITEA}/user/login", form={"_csrf": m.group(1), "user_name": user, "password": pw})
     # woodpecker oauth (urllib follows the redirect dance); grant once if asked
     _, _, h = get(f"{WP}/authorize")
     fm = re.search(r"<form[^>]*oauth/grant.*?</form>", h, re.S | re.I)
@@ -137,6 +146,16 @@ def make_logs_public(wid):
     post(f"{WP}/api/repos/{wid}", body_json={"visibility": "public"}, method="PATCH")
 
 
+def set_trusted(wid):
+    # prod-app is a trusted repo: its (locked-down) pipeline is allowed privileged steps + host
+    # volumes. Safe until stage 4 because the player can't edit prod-app's .woodpecker.yml until
+    # they loot the deploybot write token from prod. Requires the bot to be a Woodpecker admin.
+    c, _, b = post(f"{WP}/api/repos/{wid}",
+                   body_json={"trusted": {"network": True, "volumes": True, "security": True}},
+                   method="PATCH")
+    log("set trusted (privileged+volumes allowed):", c)
+
+
 def ensure_secret(wid, name, value):
     c, _, body = get(f"{WP}/api/repos/{wid}/secrets/{name}")
     events = ["push", "manual", "cron", "deployment"]
@@ -175,7 +194,8 @@ def trigger(wid):
 
 def main():
     wait_healthy()
-    login()
+    # dev owns prod-app: activate + configure + inject secrets
+    login(DEV_USER, DEV_PW)
     wid = activate()
     make_logs_public(wid)
     ensure_secret(wid, "user_flag", USER_FLAG)
@@ -183,6 +203,10 @@ def main():
     ensure_secret(wid, "registry_token", REGISTRY_TOKEN)
     ensure_secret(wid, "webhook_secret", WEBHOOK_SECRET)
     ensure_secret(wid, "deploy_url", DEPLOY_URL)
+    # admin marks the repo trusted (instance-admin-only), then back to dev for the deploy cadence
+    login(ADMIN_USER, ADMIN_PW)
+    set_trusted(wid)
+    login(DEV_USER, DEV_PW)
     log("bootstrap complete; deploy cadence every", INTERVAL, "s")
     while True:
         trigger(wid)
