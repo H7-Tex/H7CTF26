@@ -1,0 +1,21 @@
+name: Ferric
+author: abu
+category: rev
+difficulty: medium
+description: |
+  Ferric is a license validator written in Rust. Give it the right 16-character license and it reveals
+  the token. It's not stripped-C-friendly - Rust binaries read very differently - so take your time
+  with the disassembly.
+
+  Recover the license, reveal the token.
+sub_description: |
+  A stripped Rust binary. The key check is a per-byte transform (xor, rotate_left, wrapping_add)
+  compared to a target table; invert it, then the flag is XOR-decrypted with a license-derived
+  keystream.
+points: 300
+flags:
+  - type: static
+    flag: "H7CTF{rust_b1n_r3v_f3rr1c_cr4ckm3}"
+handout:
+  - name: ferric.zip
+tags: [rev, rust, crackme, keygen]
