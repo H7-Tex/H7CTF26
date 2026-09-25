@@ -118,7 +118,7 @@ services:
       IMAGE: prod-app:latest
       CI_NETWORK: "${CI_NETWORK:-freightpipe-ci}"
       WEBHOOK_SECRET: "${WEBHOOK_SECRET:-wh00k_hm4c_5ecr3t_5parr0w_2026}"
-      FLAG3: "${FLAG3:-H7CTF{placeholder_flag3}}"
+      FLAG3: "${FLAG3:-H7CTF{f0rg3d_hm4c_d3pl0y3d_my_b4ckd00r_1m4g3}}"
       DEPLOY_TOKEN_FILE: /prod-secrets/deploy_token
     ports:
       - "${PROD_WEB_PORT:-9090}:9000"
@@ -142,7 +142,7 @@ services:
       ADMIN_PASSWORD: "FreightAdmin-2026!"
       PROD_REPO: dev/prod-app
       REVIEWBOT_INTERVAL: "${REVIEWBOT_INTERVAL:-90}"
-      USER_FLAG: "${USER_FLAG:-H7CTF{placeholder_user_flag}}"
+      USER_FLAG: "${USER_FLAG:-H7CTF{1ppe_p01s0n3d_th3_sh4r3d_bu1ld_scr1pt}}"
       REGISTRY_USER: "${REGISTRY_USER:-deployer}"
       REGISTRY_TOKEN: "${REGISTRY_TOKEN:-d3pl0y_t0k3n_5parr0w_2026}"
       WEBHOOK_SECRET: "${WEBHOOK_SECRET:-wh00k_hm4c_5ecr3t_5parr0w_2026}"
