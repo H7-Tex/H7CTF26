@@ -1,0 +1,20 @@
+name: Cipherlock
+author: abu
+category: rev
+difficulty: medium
+description: |
+  Cipherlock won't open unless your 16-character key satisfies a whole web of interlocking rules -
+  some bytes XORed together, some multiplied, some rotated and added. Reading them out of the binary
+  is the easy part; untangling them by hand is not. Let a solver do the untangling.
+
+  Recover the key, open the lock.
+sub_description: |
+  A stripped binary whose key check is a tangle of XOR, byte-product (mod 256) and rotate+add
+  constraints - non-linear, so model it in an SMT solver (z3) rather than inverting by hand.
+points: 400
+flags:
+  - type: static
+    flag: "H7CTF{z3_smt_s0lv3s_th3_c1ph3rl0ck}"
+handout:
+  - name: cipherlock.zip
+tags: [rev, z3, smt, constraints, crackme]
