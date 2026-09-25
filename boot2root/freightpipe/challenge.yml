@@ -16,7 +16,7 @@ flags:
   - { type: static, name: root,  flag: "H7CTF{tru5t3d_w00dp3ck3r_pr1v_st3p_0wn3d_th3_f4ct0ry}", points: 40 }
 deploy:
   # ONE sysbox pod runs the whole docker-compose stack (nested unprivileged Docker). Finals builds the
-  # pod image that runs `docker compose up` internally. Needs runc+sysbox (NOT gVisor) — the stage-4
+  # pod image that runs `docker compose up` internally. Needs runc+sysbox (NOT gVisor) - the stage-4
   # trusted-repo step runs privileged. See DEPLOY.md for the full deploy contract.
   resource_type: docker
   instancing: on_demand

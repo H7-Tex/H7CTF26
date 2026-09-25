@@ -7,7 +7,7 @@ description: |
 
   Recover it, decrypt the locked file, and read what was inside.
 sub_description: |
-  A workstation's memory captured mid-encryption, plus one locked file — recover the key and decrypt it.
+  A workstation's memory captured mid-encryption, plus one locked file - recover the key and decrypt it.
 points: 500
 flags:
   - type: static

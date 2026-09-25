@@ -21,7 +21,7 @@ flags:
   - { type: static, name: admin,      flag: "H7CTF{ea3e1dba8012d76e2648}", points: 30 }
   - { type: static, name: externalid, flag: "H7CTF{1dbe909840d15aabdd63}", points: 40 }
 deploy:
-  # self-contained single container; standard gVisor profile (confirmed w/ Finals — no runc, no privesc)
+  # self-contained single container; standard gVisor profile (confirmed w/ Finals - no runc, no privesc)
   resource_type: docker
   instancing: on_demand
   image: h7ctf26/deputy

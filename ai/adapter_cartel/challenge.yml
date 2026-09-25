@@ -7,7 +7,7 @@ description: |
 
   Work out what the set is hiding and recover the payload.
 sub_description: |
-  A mirrored model hub with a hidden payload — recover it.
+  A mirrored model hub with a hidden payload - recover it.
 points: 450
 flags:
   - type: static

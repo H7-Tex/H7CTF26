@@ -3,7 +3,7 @@ author: abu
 category: hardware
 difficulty: medium
 description: |
-  We tapped a connected vehicle's internal network during a service session. Most of it is routine powertrain chatter, but a diagnostic tool was talking to one of the control units at the same time — and that unit handed back something it should not have.
+  We tapped a connected vehicle's internal network during a service session. Most of it is routine powertrain chatter, but a diagnostic tool was talking to one of the control units at the same time - and that unit handed back something it should not have.
 
   Recover what the control unit leaked.
 sub_description: |

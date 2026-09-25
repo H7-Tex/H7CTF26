@@ -3,7 +3,7 @@ author: abu
 category: hardware
 difficulty: medium
 description: |
-  A "smart" conference-room AV unit — the boardroom's always-on mic-and-camera bridge — was quietly compromised. It still serves its normal live audio feed, but the implant is smuggling data out through that same feed.
+  A "smart" conference-room AV unit - the boardroom's always-on mic-and-camera bridge - was quietly compromised. It still serves its normal live audio feed, but the implant is smuggling data out through that same feed.
 
   Recover what the implant is exfiltrating.
 sub_description: |

@@ -3,7 +3,7 @@ author: abu
 category: forensics
 difficulty: medium
 description: |
-  An engineer is under investigation for leaking a confidential product roadmap. Their defense: the file was created back in June, long before they had access to the sensitive share, and they never staged or deleted anything — the timestamps back them up.
+  An engineer is under investigation for leaking a confidential product roadmap. Their defense: the file was created back in June, long before they had access to the sensitive share, and they never staged or deleted anything - the timestamps back them up.
 
   Test that story. Establish when the roadmap was really handled and recover what the engineer took off the machine.
 sub_description: |

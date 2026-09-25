@@ -3,11 +3,11 @@ author: abu
 category: blockchain
 difficulty: insane
 description: |
-  GENESIS DAO owns a treasury, and one privileged seat controls it: the Guardian. This is King of the Hill on-chain — seize the Guardian seat, install your team, and hold it while rivals fight to take it back.
+  GENESIS DAO owns a treasury, and one privileged seat controls it: the Guardian. This is King of the Hill on-chain - seize the Guardian seat, install your team, and hold it while rivals fight to take it back.
 
   The seat resets each round, so expect to take it more than once.
 sub_description: |
-  On-chain King of the Hill: seize the DAO Guardian seat and hold it to score — it resets each round, so re-solve to re-hold.
+  On-chain King of the Hill: seize the DAO Guardian seat and hold it to score - it resets each round, so re-solve to re-hold.
 scoring: koth
 koth:
   status_path: /koth/status

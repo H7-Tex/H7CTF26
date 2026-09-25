@@ -7,7 +7,7 @@ description: |
 
   Recover what they left behind.
 sub_description: |
-  A downloaded model package has something tucked inside — examine it and recover what's there.
+  A downloaded model package has something tucked inside - examine it and recover what's there.
 points: 100
 flags:
   - type: static

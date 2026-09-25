@@ -10,7 +10,7 @@ description: |
   ingress controller. Rumor has it someone forgot to lock the janitor's closet.
 
   Your foothold: a kubeconfig for a restricted ServiceAccount inside the cluster.
-  Every pod in this cluster can reach every Service — including the ones that
+  Every pod in this cluster can reach every Service - including the ones that
   are supposed to be internal.
 
   Find all the secrets.
@@ -19,7 +19,7 @@ flags:
   - id: flag1
     value: "H7CTF{unauthenticated_webhook_attack_surface}"
     points: 20
-    description: "Recon — map the cluster attack surface"
+    description: "Recon - map the cluster attack surface"
   - id: flag2
     value: "H7CTF{rce_as_controller_service_account}"
     points: 30
@@ -53,7 +53,7 @@ handout:
     description: "Kubeconfig for the player ServiceAccount (generated at spawn)"
 
 notes: |
-  DEPLOY GATED on the sysbox pool (Finals' spike — sysctl isolation fix needed).
+  DEPLOY GATED on the sysbox pool (Finals' spike - sysctl isolation fix needed).
   Build is validated locally on sealed-k3s (rancher/k3s:v1.31.5-k3s1 in Docker).
   ingress-nginx pinned to v1.11.4 (patched >= 1.11.5).
   See DEPLOY.md for exact setup steps.

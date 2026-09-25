@@ -3,7 +3,7 @@ author: abu
 category: forensics
 difficulty: medium
 description: |
-  For six weeks, nothing tripped — no alerts, nothing out of place. Then a partner tipped us that our unreleased designs were being shopped around. Something on the network had been quietly talking to the outside the whole time, and it took data with it.
+  For six weeks, nothing tripped - no alerts, nothing out of place. Then a partner tipped us that our unreleased designs were being shopped around. Something on the network had been quietly talking to the outside the whole time, and it took data with it.
 
   Work out how the data was leaving and recover what left with it.
 sub_description: |

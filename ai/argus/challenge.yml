@@ -23,8 +23,8 @@ deploy:
   instance_timeout: 1800
   max_extensions: 2
   # Two pods. The host reconciler (argus-system) selects them by Anvil's own
-  # labels — namespace instancer.anvil.dev/challenge=<id>, pods
-  # instancer.anvil.dev/pod=argus / =flag-holder — reads INSTANCE_ID/INTERNAL_TOKEN
+  # labels - namespace instancer.anvil.dev/challenge=<id>, pods
+  # instancer.anvil.dev/pod=argus / =flag-holder - reads INSTANCE_ID/INTERNAL_TOKEN
   # from the app pod and FLAG from the flag-holder, then provisions the per-namespace
   # broker + Secret/argus-protected + RBAC. The app never receives FLAG or a kube token.
   services:

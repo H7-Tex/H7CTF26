@@ -3,7 +3,7 @@ author: abu
 category: forensics
 difficulty: medium
 description: |
-  A phone was seized in a harassment case. The suspect used a chat app called Nova Messenger and swears they never sent anything incriminating — and the app shows no such message. Investigators aren't convinced it's as clean as it looks.
+  A phone was seized in a harassment case. The suspect used a chat app called Nova Messenger and swears they never sent anything incriminating - and the app shows no such message. Investigators aren't convinced it's as clean as it looks.
 
   Recover the message the suspect got rid of and read what it said.
 sub_description: |
