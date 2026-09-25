@@ -1,0 +1,16 @@
+name: Overexposed
+author: abu
+category: misc
+difficulty: hard
+description: |
+  We redacted the photo before we shared it. There's nothing left in the pixels.
+
+  overexposed.png is attached.
+sub_description: |
+  One file, more than one way to read it. The pixels are a decoy, and the obvious tools only
+  show you what the file wants them to.
+points: 300
+flag: "H7CTF{p0lyg10t_th3_1nd3x_l13s_r34d_th3_r4w_byt3s}"
+handout:
+  - name: overexposed.png
+tags: [misc]
