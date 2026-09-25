@@ -1,0 +1,29 @@
+name: Assembly Line
+author: abu
+category: misc
+difficulty: easy
+description: |
+  The Sparrow Freight sorting line moves fast. Clear 250 packages in a row - each one a small task,
+  each with a 2-second window - and the line supervisor hands you the day's code. Type them by hand and
+  you'll never keep up.
+
+  Connect to your instance.
+sub_description: |
+  A scripting/automation challenge: answer 250 timed tasks (arithmetic, string reverse, list sum,
+  base64) over a socket. Manual is impossible; write a client.
+points: 150
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout: []
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/assembly-line
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 9999, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [misc, scripting, automation, sockets]
