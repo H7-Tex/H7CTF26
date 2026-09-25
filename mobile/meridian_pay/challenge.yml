@@ -7,17 +7,16 @@ description: |
   staging copy of the API for your security review. The build authenticates the device
   silently on first launch - there is no password to hand you, that is the point.
 
-  Point the app at your instance URL, then find what the client gets wrong. There are
-  four findings, each worth a flag: a place the app hands too much trust to an intent,
-  a component that will read a file it should not, and two API calls that never check
-  who is asking.
+  Point the app at your instance URL and start digging. The client and the backend were
+  shipped in a hurry, and they trust each other - and the device around them - more than
+  they should. There are four separate flaws to find, each worth a flag; some live in the
+  app, some in the API it talks to.
 
   Your instance and the APK are shown when the challenge opens. The app talks to your
   instance only; every flag is minted by your instance, so nothing you find is shareable.
 sub_description: |
-  Android neobank client + live staging API. Four gated findings: an exported deep-link
-  into a trusted WebView, a content-provider file read, and two broken-authorization API
-  calls.
+  Review the Android neobank client and its staging API and recover all four flags, one
+  per flaw.
 flags:
   - { type: dynamic, name: v1, dynamic_flag_prefix: "H7CTF{", points: 200 }
   - { type: dynamic, name: v2, dynamic_flag_prefix: "H7CTF{", points: 250 }
@@ -36,4 +35,4 @@ deploy:
     - { port: 8080, protocol: http }
   instance_timeout: 3600
   max_extensions: 3
-tags: [mobile, android, deeplink, webview, content-provider, path-traversal, bola, idor, mass-assignment, api]
+tags: [mobile, android]

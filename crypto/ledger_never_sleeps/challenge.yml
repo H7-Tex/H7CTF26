@@ -3,21 +3,22 @@ author: abu
 category: crypto
 difficulty: hard
 description: |
-  The Aurum treasury signer is online. It will authorize any approval you send it
-  over ECDSA (secp256k1), except an ADMIN_TRANSFER, which it refuses. To skip an
-  RNG call, its per-signature nonce is a deterministic chain, not random. No nonce
-  repeats and there is no bit bias, so the audit passed.
+  The Aurum treasury signer is online. Send it an approval and it signs, with one
+  exception: an ADMIN_TRANSFER, which it always refuses. A former engineer reworked
+  the signing routine to shave a step off every signature, and the audit waved it
+  through because nothing in the output ever looked out of place.
 
   Launch your instance. The signer speaks JSON over HTTP at your instance's base URL (shown when you launch it):
 
       GET  /pubkey            -> the signer public key
-      POST /sign  {msg}       -> an ECDSA approval (ADMIN_TRANSFER refused)
+      POST /sign  {msg}       -> a signed approval (ADMIN_TRANSFER refused)
       POST /forge {msg,r,s}   -> submit a signature; a valid ADMIN_TRANSFER releases the flag
 
   Recover the signing key from the approvals it hands you, then authorize the
   transfer it would never sign.
 sub_description: |
-  A treasury signer that never repeats a nonce, and still hands you its key.
+  Recover the treasury signer's private key from the approvals it issues, then
+  authorize the admin transfer it refuses to sign.
 points: 500
 flags:
   - type: dynamic
@@ -32,4 +33,4 @@ deploy:
     - { port: 8080, protocol: http }
   instance_timeout: 1800
   max_extensions: 2
-tags: [crypto, ecdsa, nonce, lcg, secp256k1]
+tags: [crypto]

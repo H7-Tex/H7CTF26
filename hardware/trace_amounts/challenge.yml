@@ -3,19 +3,20 @@ author: abu
 category: hardware
 difficulty: hard
 description: |
-  A contactless payment card runs AES-128 to authorize each tap. We put a current probe
-  on its power line and captured a batch of authorizations: for each one, the power trace
-  and the known challenge plaintext. The card guards its key in hardware and never reveals
-  it, but the power it draws depends on the data it handles.
+  A contactless payment card guards a secret key in hardware and uses it to authorize
+  each tap — the key never leaves the card. We captured a batch of authorizations: for
+  each one, a physical measurement taken off the card while it worked, together with the
+  known challenge plaintext it was asked to process.
 
   Launch your instance and download the capture from its base URL (shown when you launch
   it): `traces.npy` (float32, N x samples), `plaintexts.npy` (uint8, N x 16), and
-  `secret.enc` (a value the card encrypted with its AES-128 key, ECB).
+  `secret.enc` — the flag, encrypted by the card with its 16-byte key (AES-128-ECB,
+  PKCS7 padding).
 
-  Recover the key from the power traces and decrypt the secret.
+  Recover the card's key from the captured measurements and decrypt the secret.
 sub_description: |
-  Power traces from a smart card doing AES-128, with known plaintexts. The key never
-  leaves the card, but the power does. Recover it and decrypt the secret.
+  Recover a smart card's hidden key from a batch of captured measurements and known
+  plaintexts, then decrypt the sealed secret.
 points: 500
 flags:
   - type: dynamic
@@ -30,4 +31,4 @@ deploy:
     - { port: 8080, protocol: http }
   instance_timeout: 1800
   max_extensions: 2
-tags: [hardware, side-channel, power-analysis, cpa, dpa, aes]
+tags: [hardware]

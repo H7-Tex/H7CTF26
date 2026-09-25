@@ -5,19 +5,18 @@ difficulty: hard
 description: |
   A "smart" conference-room AV unit (the boardroom's always-on mic and camera bridge)
   was quietly compromised. It still serves its normal live audio feed to the building
-  dashboard, but the implant is using that same feed to carry data out in the clear,
-  where nobody thinks to look.
+  dashboard, but the implant is using that same feed to smuggle data out, hidden where
+  nobody thinks to listen.
 
-  We are tapping the device's live stream. Launch your instance and pull the HLS stream
-  from its base URL (shown when you launch it):
+  We are tapping the device's live stream. Launch your instance and pull the stream from
+  its base URL (shown when you launch it):
     <base-url>/boardroom/index.m3u8
-  Open it in VLC/ffmpeg/mpv, or fetch the segments directly. It is a normal-sounding
-  room feed, but the audio carries more than conversation.
+  It sounds like a normal room feed, but there is more than conversation in the audio.
 
   Recover what the implant is exfiltrating.
 sub_description: |
-  A live HLS feed from a bugged boardroom AV device. The room audio is a cover; the
-  implant is talking underneath it. Pull the stream and recover the message.
+  Pull the live audio stream from a bugged boardroom device and recover what the implant
+  is exfiltrating.
 points: 500
 flags:
   - type: dynamic
@@ -32,4 +31,4 @@ deploy:
     - { port: 8080, protocol: http }
   instance_timeout: 1800
   max_extensions: 2
-tags: [hardware, av, streaming, hls, rtsp, audio-forensics, afsk]
+tags: [hardware]

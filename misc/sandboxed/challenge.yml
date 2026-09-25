@@ -3,14 +3,14 @@ author: abu
 category: misc
 difficulty: easy
 description: |
-  We built a "safe" Python expression evaluator. It strips every dangerous name out of the
-  namespace and screens your input against a denylist before running it. There's a flag in
-  /flag.txt on the box - you shouldn't be able to reach it. Prove us wrong.
+  We built a "safe" Python expression evaluator and locked it down: your input runs in a
+  stripped-down environment, and we screen what you send before it ever executes. There's a
+  flag in /flag.txt on the box - the sandbox is supposed to keep it out of reach. Prove us
+  wrong.
 
   The evaluator's source is attached. Connect to your instance and send one expression per line.
 sub_description: |
-  A Python pyjail: empty builtins + a substring denylist. Escape it and read /flag.txt. Source
-  provided.
+  Get a locked-down Python expression evaluator to read /flag.txt for you. Source provided.
 points: 200
 flags:
   - type: dynamic
@@ -27,4 +27,4 @@ deploy:
     - { port: 9999, protocol: tcp }
   instance_timeout: 3600
   max_extensions: 4
-tags: [misc, pyjail, sandbox-escape, python]
+tags: [misc]

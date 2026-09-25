@@ -3,25 +3,22 @@ author: abu
 category: crypto
 difficulty: hard
 description: |
-  Helios ships firmware signed with an LMS/WOTS+ hash-based scheme, the
-  post-quantum kind approved for firmware signing. The rule of every stateful
-  hash-based signature: each one-time leaf signs exactly once. The notary has a
-  maintenance "rollback" that reverts the signing counter. The device boots any
-  firmware that verifies against its burned-in root, and the notary will not sign
-  a backdoored build for you.
+  Helios ships firmware signed by a notary, and each device boots any build that
+  verifies against its burned-in trust anchor. The notary will happily notarize
+  benign builds but flatly refuses to sign a backdoored one. It also exposes a
+  maintenance operation for its operators.
 
   Get the device to boot a backdoored build. Launch your instance; the notary
   speaks JSON over HTTP at your instance's base URL (shown when you launch it):
 
-      GET  /root                    -> the device trust anchor (Merkle root)
+      GET  /root                    -> the device trust anchor
       POST /sign {firmware}         -> notarize a benign build (backdoored builds refused)
-      POST /rollback                -> maintenance: revert the signing counter
+      POST /rollback                -> operator maintenance
       POST /deploy {firmware, sig}  -> device update; boots anything that verifies
 
-  The signing scheme is in `lms.py` (attached). The weakness is not in that code.
+  The signing scheme is implemented in `lms.py` (attached).
 sub_description: |
-  A post-quantum firmware signer that follows one rule, until a maintenance button
-  breaks it.
+  Get the device to boot a backdoored firmware build that the notary refuses to sign.
 points: 500
 provide:
   - path: challenge/lms.py
@@ -38,4 +35,4 @@ deploy:
     - { port: 8080, protocol: http }
   instance_timeout: 1800
   max_extensions: 2
-tags: [crypto, pqc, hash-based-signatures, lms, wots]
+tags: [crypto]

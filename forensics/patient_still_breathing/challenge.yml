@@ -7,9 +7,10 @@ description: |
   The box is LIVE and the actor may still be on it. Do NOT reboot: whatever is only in
   memory dies the moment you do. You have an analyst SSH shell (with sudo, for acquisition).
 
-  Reconstruct the intrusion and capture what won't survive a reboot. Four things to
-  establish, and each one leads to the next: the foothold, the implant, the key it never
-  wrote to disk, and the timeline the actor tried to erase.
+  Reconstruct the intrusion and capture what won't survive a reboot. There are four things
+  to establish, and each one leads to the next: how the actor got in, what they left running
+  on the box, a secret the operator was careful never to commit to disk, and the true trail
+  they tried to erase.
 
   Connect:  ssh <your-team-key>@<host shown when you launch>
   This is a real box, not a file to grep - work it like a live incident.
@@ -35,4 +36,4 @@ deploy:
     - { port: 22, protocol: tcp }
   instance_timeout: 3600
   max_extensions: 3
-tags: [forensics, dfir, live-response, incident-response, linux, rootkit, memory, ssh]
+tags: [forensics, dfir]

@@ -5,17 +5,16 @@ difficulty: hard
 description: |
   We tapped the CAN bus of a connected vehicle through its OBD-II port during a service
   session. Most of the capture is routine powertrain chatter, but a diagnostic tool was
-  talking to an ECU at the same time, and the ECU handed back something it should not
-  have.
+  talking to one of the vehicle's control units at the same time, and that unit handed
+  back something it should not have.
 
   Launch your instance and download `capture.log` from its base URL (shown when you
-  launch it). It is a SocketCAN candump log: `(timestamp) can0 ID#DATA`. Read it with
-  can-utils, Wireshark's SocketCAN dissector, or python-can.
+  launch it). It is a SocketCAN candump log: `(timestamp) can0 ID#DATA`.
 
-  Follow the diagnostic session and recover what the ECU leaked.
+  Follow the exchange and recover what the control unit leaked.
 sub_description: |
-  One CAN bus capture. Routine traffic, and one diagnostic session where an ECU leaks
-  more than it should. Recover it.
+  From a vehicle's CAN bus capture, follow the diagnostic exchange and recover the data
+  one control unit leaked.
 points: 500
 flags:
   - type: dynamic
@@ -30,4 +29,4 @@ deploy:
     - { port: 8080, protocol: http }
   instance_timeout: 1800
   max_extensions: 2
-tags: [hardware, automotive, can, canbus, uds, iso-tp, forensics]
+tags: [hardware]

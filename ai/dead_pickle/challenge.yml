@@ -4,17 +4,17 @@ category: ai
 difficulty: easy
 description: |
   Our ML team pulled a fine-tuned sentiment model ("sentiment-distilbert-meridian") from an
-  internal build agent and was about to load it into production. Before anyone runs
-  torch.load on it, do the autopsy: is this checkpoint safe?
+  internal build agent and was about to ship it to production. Something about the package feels
+  off - the build operator seems to have slipped something extra inside it.
 
-  Do NOT load the model - analyze it statically. The operator left something in the package.
+  Examine the package itself rather than loading the model into your ML stack, and recover what
+  the operator left behind.
 sub_description: |
-  A downloaded PyTorch checkpoint with a supply-chain surprise in its pickle. Recover it by
-  static analysis; loading it would run it.
+  A downloaded model checkpoint has something extra tucked inside - examine the package and recover it.
 points: 100
 flags:
   - type: static
     flag: "H7CTF{p1ckl3_r3du1c3_supply_ch41n_aut0psy}"
 handout:
   - name: sentiment-distilbert-meridian.zip
-tags: [ai, ml-supply-chain, pickle, deserialization, forensics, static-analysis]
+tags: [ai]

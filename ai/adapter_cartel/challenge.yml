@@ -3,19 +3,19 @@ author: abu
 category: ai
 difficulty: hard
 description: |
-  We mirrored a model hub: one base model and eight community LoRA adapters. Automated review
-  flagged the set for a possible composable backdoor - no single adapter is malicious, but the
-  merge-safety checker choked on the router weights and nobody could reproduce it.
+  We mirrored a community model hub: one base model and eight community adapters that layer on top
+  of it. Automated review flagged the collection - something in the set as a whole tripped the
+  safety checker, even though every adapter looks clean when reviewed on its own, and nobody on the
+  team could reproduce the alert.
 
-  Figure out what the merged model was hiding. The flag is in there.
+  The mirror is yours to pull apart (`adapter-hub.zip`). Work out what the collection is really
+  hiding, and recover the payload concealed in it.
 sub_description: |
-  Eight PEFT LoRA adapters over one base model. Individually benign; a subset colludes so that only
-  when their LoRA deltas are MERGED does a hidden module reconstruct the payload. Pure weight
-  analysis - no base model, no training, no inference needed (peft/transformers not required).
+  A mirrored model hub of one base model and eight community adapters conceals a hidden payload - recover it.
 points: 450
 flags:
   - type: static
     flag: "H7CTF{l0ra_c4rt3l_m3rg3_r3c0nstructs_p4yl0ad}"
 handout:
   - name: adapter-hub.zip
-tags: [ai, ml-security, lora, peft, supply-chain, model-merge, safetensors, backdoor]
+tags: [ai]

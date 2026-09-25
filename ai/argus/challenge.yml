@@ -12,10 +12,13 @@ description: |
   Trust that everyone involved is talking about the same thing.
 
   ARGUS brings all of this together into one convenient operations platform.
+  Somewhere behind that convenience sits a secret only the platform's most
+  privileged runtime is allowed to see. Launch your instance, work the Operations
+  Portal, and make the platform hand it to you.
 
   Convenience, as always, is relative.
 sub_description: |
-  One platform. Many moving parts. Remarkably few opportunities for misunderstanding.
+  Work the ARGUS operations platform until it surrenders the secret only its privileged runtime is meant to see.
 points: 500
 
 flags:

@@ -4,19 +4,18 @@ category: osint
 difficulty: easy
 description: |
   A print artist, Mara Chen, is at the centre of an authenticity dispute, and someone dumped a
-  folder of her files. She claims her "recovery code" isn't written down anywhere online - but she
-  also over-shares. Start with her public statement and follow the trail through the files' metadata
-  to recover the code.
+  folder of her working files onto the web. She insists her private "recovery code" was never written
+  down anywhere online - yet she's the kind of person who over-shares. Start with her public statement,
+  sift through the leaked bundle, and run down the one detail that leads to the code. Not everything in
+  the folder is what it claims to be, so corroborate before you commit. Recover the code.
 
-  (Everything you need is inside the bundle. No live internet required - but real tools like
-  `exiftool` will make your life easy.)
+  (Everything you need is inside the bundle. No live internet required.)
 sub_description: |
-  A metadata golden thread: PDF metadata -> a social handle -> the right export -> a photo -> the
-  flag in its EXIF. Several decoys; follow the thread, don't just grep.
+  Dig through a leaked bundle of a print artist's files and recover her private recovery code.
 points: 200
 flags:
   - type: static
     flag: "H7CTF{m3t4d4t4_g0ld3n_thr34d_0s1nt}"
 handout:
   - name: paper-trail.zip
-tags: [osint, metadata, exif, pdf-metadata, pivoting]
+tags: [osint]

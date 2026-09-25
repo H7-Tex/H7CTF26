@@ -9,13 +9,12 @@ description: |
   it took data with it.
 
   You have a capture off the affected subnet (`capture.pcap`). Most of it is ordinary
-  office traffic. Buried in it are two things: a channel that phones home on a schedule,
-  and the exfiltration itself. Find the beacon, then recover what left the building.
-
-  Open it in Wireshark / tshark / Zeek / scapy. The flag is the exfiltrated secret.
+  office traffic, and the theft is hidden in plain sight among it. Work out how data was
+  slipping out of the building and recover what left with it. The flag is the exfiltrated
+  secret.
 sub_description: |
-  Six weeks of quiet traffic, no alerts, and data still left. Find the scheduled beacon
-  and reassemble what it exfiltrated.
+  Given a network capture from a compromised subnet, work out how data was leaving and
+  recover what was exfiltrated.
 points: 300
 flags:
   - type: static
@@ -23,4 +22,4 @@ flags:
 handout:
   # small pcap (~144 KB) -> Anvil built-in attachment
   - name: capture.pcap
-tags: [forensics, network, pcap, dns-tunnel, c2-beacon, dfir]
+tags: [forensics, dfir]

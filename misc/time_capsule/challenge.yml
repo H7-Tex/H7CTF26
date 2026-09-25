@@ -9,12 +9,11 @@ description: |
 
   Find the leaked production API token. It's a flag.
 sub_description: |
-  A git repository. The secret was staged and unstaged before any commit, so it never made it into
-  history - but the object is still in .git. Recover it.
+  Recover a leaked production API token from a git repository whose commit history looks clean.
 points: 150
 flags:
   - type: static
     flag: "H7CTF{d4ngl1ng_bl0b_n3v3r_c0mm1tt3d}"
 handout:
   - name: time-capsule.zip
-tags: [misc, forensics, git, dangling-blob, secrets]
+tags: [misc]

@@ -8,15 +8,12 @@ description: |
   to the sensitive share, and they insist they never staged or deleted anything. The
   file's timestamps back them up.
 
-  We imaged their disk (`case_disk.img`, an ext4 filesystem). Timestamps can be forged,
-  but not all of them. Establish when the roadmap was really touched, then find what the
-  engineer actually did around that time and recover what they took.
-
-  Tools: `debugfs` / `istat` / The Sleuth Kit for the metadata, and
-  `foremost` / `extundelete` / `photorec` (or a carver) for the deleted data.
+  We imaged their disk (`case_disk.img`, an ext4 filesystem). Your job is to test that
+  story: establish when the roadmap was really handled, work out what the engineer actually
+  did around that time, and recover what they took off the machine.
 sub_description: |
-  A disk image, a "leaked" file with a suspiciously old timestamp, and an alibi. Prove the
-  real timeline and recover the deleted exfil.
+  From a suspect's disk image, establish the true timeline of the "leaked" file and recover
+  what the engineer took.
 points: 300
 flags:
   - type: static
@@ -26,4 +23,4 @@ handout:
   - name: case_disk.img
     url: https://storage.googleapis.com/h7ctf26-handouts/ghost-in-the-timeline/case_disk.img
     sha256: a25b82084ea5dd1b62ecadc5a9fa1e5ad9f22c7511ce89bbbe9541f4840afe22
-tags: [forensics, disk, ext4, anti-forensics, timestomp, file-carving, dfir]
+tags: [forensics, dfir]

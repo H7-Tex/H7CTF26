@@ -3,19 +3,17 @@ author: abu
 category: hardware
 difficulty: medium
 description: |
-  We tapped the boot sequence of a NoiseGate device with an 8-channel logic
-  analyzer. Three buses are live at once: a UART boot log, an SPI flash read, and
-  an I2C EEPROM read. The provisioning key is split across the SPI and I2C reads,
-  and the boot log tells you how to put it back together.
+  We tapped the boot sequence of a NoiseGate device and recorded every line on the
+  board at once as it powered up. The device's provisioning key passes through during
+  that boot, but reading the capture as text finds nothing — you have to make sense of
+  what the hardware is actually doing.
 
   Launch your instance and download `capture.vcd` from its base URL (shown when you
-  launch it). Open it in PulseView / sigrok (2 MHz sample rate). Channels:
-  `UART_TX, SCL, SDA, SPI_CLK, SPI_MOSI, SPI_MISO, SPI_CS, AUX`.
+  launch it) and open it in a digital-waveform viewer.
 
   Recover the provisioning key.
 sub_description: |
-  One 8-channel boot capture, three buses at once, and a key that lives in none of
-  them alone.
+  Recover the provisioning key from a boot-time logic capture of a NoiseGate device.
 points: 400
 flags:
   - type: dynamic
@@ -30,4 +28,4 @@ deploy:
     - { port: 8080, protocol: http }
   instance_timeout: 1800
   max_extensions: 2
-tags: [hardware, logic-analyzer, spi, i2c, uart, sigrok]
+tags: [hardware]

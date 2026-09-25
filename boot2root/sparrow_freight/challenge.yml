@@ -9,9 +9,7 @@ description: |
 
   Access: ssh guest@<your-instance-host> -p <port>   (password: guest)
 sub_description: |
-  Classic Linux boot-to-root. Start as `guest`, escalate to the `mel` ops account, then to root.
-  Two flags: /home/mel/user.txt and /root/root.txt. Pure userspace misconfiguration - no kernel
-  exploits.
+  A Linux box. Start from the guest account and work your way up to the two flags (user + root).
 points: 650
 flags:
   - { type: static, name: user, flag: "H7CTF{sud0_gtf0b1n_2_us3r_5parr0w}", points: 250 }
@@ -27,4 +25,4 @@ deploy:
     - { port: 22, protocol: tcp }
   instance_timeout: 3600
   max_extensions: 3
-tags: [boot2root, linux, privilege-escalation, sudo, gtfobins, suid, path-hijack, ssh]
+tags: [boot2root, linux]

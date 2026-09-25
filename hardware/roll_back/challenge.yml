@@ -3,21 +3,21 @@ author: abu
 category: hardware
 difficulty: hard
 description: |
-  A cheap 433 MHz "rolling code" garage remote. We recorded eight button presses as
-  raw complex baseband from an SDR. The receiver ignores any code it has already seen,
-  so a straight replay of a captured press does nothing.
+  A cheap garage remote that is meant to send a fresh, unpredictable code on every
+  press. We recorded eight button presses as raw complex baseband from a
+  software-defined radio. The receiver ignores any code it has already seen, so a
+  straight replay of a captured press does nothing.
 
   Launch your instance and download `capture.cf32` from its base URL (shown when you
-  launch it): interleaved float32 I/Q, little-endian, fs = 1000000 Hz. The signal is
-  on-off keyed.
+  launch it): interleaved float32 I/Q, little-endian, fs = 1000000 Hz.
 
-  Recover the frames, work out what the remote transmits next, and send that code to
-  the receiver:
+  Recover the codes the remote sent, work out the code it would transmit next, and send
+  that to the receiver:
     POST /unlock   body: {"code": "<12 hex digits = the 48-bit frame>"}
   Open the door.
 sub_description: |
-  Eight presses of a rolling-code remote. Replay is rejected. Predict the next code
-  and the door opens.
+  From eight recorded presses of a garage remote, send the code it would transmit next
+  and open the door.
 points: 450
 flags:
   - type: dynamic
@@ -32,4 +32,4 @@ deploy:
     - { port: 8080, protocol: http }
   instance_timeout: 1800
   max_extensions: 2
-tags: [hardware, sdr, rf, ook, rolling-code, replay]
+tags: [hardware]

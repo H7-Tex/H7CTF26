@@ -5,16 +5,13 @@ difficulty: medium
 description: |
   A phone was seized in a harassment case. The suspect used a chat app called Nova
   Messenger and swears they never sent anything incriminating - and the app shows no such
-  message. But "delete" in an app usually just hides a row; the bytes tend to linger.
+  message. Investigators aren't convinced the conversation is as clean as it looks.
 
   We pulled the app's data. You have its message database (`messages.db`) and its
-  preferences (`secure.xml`). Recover the message the suspect deleted.
-
-  Nova stores message bodies obfuscated, not in the clear - the app is kind enough to keep
-  the recipe (and the key) in its own settings.
+  preferences (`secure.xml`), packed together in `evidence.zip` (unzip to get both). Recover
+  the incriminating message the suspect got rid of and read what it said.
 sub_description: |
-  A seized chat app's database and settings. One message was deleted; the row is gone but
-  the bytes aren't. Recover it.
+  From a seized chat app's database and settings, recover the message the suspect deleted.
 points: 300
 flags:
   - type: static
@@ -22,4 +19,4 @@ flags:
 handout:
   # messages.db + secure.xml packed into a zip (Anvil allows .zip); unzip to get both
   - name: evidence.zip
-tags: [forensics, mobile, android, sqlite, deleted-records, app-forensics]
+tags: [forensics, dfir]

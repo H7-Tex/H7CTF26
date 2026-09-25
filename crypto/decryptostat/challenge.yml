@@ -3,10 +3,10 @@ author: abu
 category: crypto
 difficulty: hard
 description: |
-  DecryptoStat runs analytics on encrypted data using CKKS approximate homomorphic
-  encryption. It decrypts the ciphertexts it issued and returns the result. `v1` is
-  the legacy service; `v2` hardens decryption with noise flooding. Both leak the
-  secret key.
+  DecryptoStat runs analytics over encrypted data: you can have it encrypt a vector
+  and later have it decrypt a ciphertext it previously issued, and it returns the
+  result. `v1` is the legacy service; `v2` is a hardened rebuild meant to close v1's
+  gap. Your job is to walk out with each version's secret key.
 
   Launch your instance. The service speaks JSON over HTTP at your instance's base
   URL (shown when you launch it):
@@ -14,11 +14,11 @@ description: |
       POST /v1/encrypt {values}   POST /v1/decrypt {id}   POST /v1/recover {s}   (flag 1)
       POST /v2/encrypt {values}   POST /v2/decrypt {id}   POST /v2/recover {s}   (flag 2)
 
-  Recover each secret key and submit it. The scheme is in `ckks.py` (attached); the
-  weakness is not in that code.
+  Recover each secret key and submit it to the matching `/recover`. The scheme is
+  implemented in `ckks.py` (attached).
 sub_description: |
-  An encrypted-analytics service that answers just a little too precisely. Noise
-  flooding does not save it.
+  Recover the secret key behind each version of the encrypted-analytics service and
+  submit it.
 points: 600
 provide:
   - path: challenge/ckks.py
@@ -41,4 +41,4 @@ deploy:
     - { port: 8080, protocol: http }
   instance_timeout: 1800
   max_extensions: 2
-tags: [crypto, fhe, ckks, lattice, ind-cpad]
+tags: [crypto]

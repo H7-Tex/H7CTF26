@@ -5,14 +5,13 @@ difficulty: medium
 description: |
   Deskline is the Android app our support agents use to work their ticket queue. We shipped
   version 1.6.0 and stood up a staging backend for your review. Install it, point it at your
-  instance, and sync a queue - then look at how the app shares its data with the rest of the
-  device.
+  instance, and sync a queue. Not everything the app carries is meant for your eyes - one
+  note in the queue is marked agent-only.
 
   Your instance and the APK are shown when the challenge opens. The agent-only note in the
-  queue is minted per team by your instance.
+  queue is minted per team by your instance. Recover it.
 sub_description: |
-  Android support-agent app + sync backend. An exported component hands its ticket store to
-  any caller and trusts the query it is given. Recover the agent-only note.
+  Recover the agent-only note from the Deskline support app.
 points: 200
 flags:
   - type: dynamic
@@ -29,4 +28,4 @@ deploy:
     - { port: 8080, protocol: http }
   instance_timeout: 3600
   max_extensions: 3
-tags: [mobile, android, content-provider, sql-injection, sqlite, ipc]
+tags: [mobile, android]

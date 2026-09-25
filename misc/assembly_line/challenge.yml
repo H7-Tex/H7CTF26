@@ -9,8 +9,7 @@ description: |
 
   Connect to your instance.
 sub_description: |
-  A scripting/automation challenge: answer 250 timed tasks (arithmetic, string reverse, list sum,
-  base64) over a socket. Manual is impossible; write a client.
+  Clear 250 back-to-back timed tasks over a socket before the line hands over the day's code.
 points: 150
 flags:
   - type: dynamic
@@ -26,4 +25,4 @@ deploy:
     - { port: 9999, protocol: tcp }
   instance_timeout: 3600
   max_extensions: 4
-tags: [misc, scripting, automation, sockets]
+tags: [misc]

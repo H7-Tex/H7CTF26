@@ -3,11 +3,11 @@ author: h7
 category: blockchain
 difficulty: insane
 description: |
-  MirrorLend lets you borrow against your Mirror LP tokens — it prices them straight from
-  the pool's own virtual price, the number every integrator trusts. Read the lending
-  contract: it's clean. Read the pool: it's clean too. Borrow more than your collateral is
-  worth, and drain the lender. Launch an instance and connect over the provided endpoint.
-sub_description: "a lender that trusts an AMM's live LP price. both contracts are clean on their own."
+  MirrorLend lets you borrow against your Mirror LP tokens, and it holds a real reserve for
+  its lenders. On paper the numbers add up. Your job: borrow far more than your collateral is
+  honestly worth and walk off with the lender's funds. Launch an instance and connect over the
+  provided endpoint.
+sub_description: "borrow against your LP collateral for far more than it's worth and drain the lender."
 points: 1000
 flags:
   - type: dynamic

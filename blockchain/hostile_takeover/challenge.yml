@@ -4,16 +4,16 @@ category: blockchain
 difficulty: hard
 description: |
   GENESIS DAO owns a treasury, and one privileged seat controls it: the Guardian. This is
-  King of the Hill on-chain. Stage a hostile governance takeover, install your team as the
-  Guardian, and hold the seat while rivals coup you back.
+  King of the Hill on-chain. Seize the Guardian seat, install your team, and hold it while
+  rivals fight to take it back.
 
   The shared arena and your team's KotH token are shown when the challenge opens. Point your
   transactions at the RPC bridge (POST /rpc/<your-koth-token>), read the current governor
   epoch from GET /koth/info, and report the current Guardian at GET /koth/status. The seat
   resets each round.
 sub_description: |
-  On-chain King of the Hill: seize the DAO Guardian seat via a flash-loan governance takeover
-  and hold it. Hold-time scores. The governor epoch rotates each round, so re-solve to re-hold.
+  On-chain King of the Hill: seize the DAO Guardian seat and hold it. Hold-time scores. The
+  governor epoch rotates each round, so re-solve to re-hold.
 scoring: koth
 koth:
   status_path: /koth/status
@@ -33,4 +33,4 @@ deploy:
   memory_limit: 1Gi
   exposed_ports:
     - { port: 8080, protocol: http }
-tags: [blockchain, koth, defi, governance, flash-loan, evm, foundry]
+tags: [blockchain, smart-contract]
