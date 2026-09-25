@@ -1,0 +1,21 @@
+name: Tollgate
+author: abu
+category: rev
+difficulty: medium
+description: |
+  Tollgate is the admin-token check pulled out of an internal API gateway. Give it the right
+  16-character admin token and it prints the cluster bootstrap secret. Nobody kept a copy of the
+  token, and the developer who wrote it left.
+
+  It's a Go service binary, stripped. The token isn't compared against a string - it goes through
+  some arithmetic first. Work out what it wants and read the secret.
+sub_description: |
+  A stripped Go binary. The admin-token check transforms the token before comparing; recover the
+  token it accepts and the binary hands you the bootstrap secret. No brute force needed.
+points: 350
+flags:
+  - type: static
+    flag: "H7CTF{g0_str1pp3d_t0llg4t3_w0rd_r3v}"
+handout:
+  - name: tollgate.zip
+tags: [rev, golang, stripped, crackme, license]
