@@ -1,22 +1,21 @@
-name: Checkpoint
+name: Papers Please
 author: abu
 category: pwn
 difficulty: easy
 description: |
-  The Sparrow Freight border checkpoint logs your name and turns you away. Somewhere in the terminal
-  is a routine that grants access and prints the clearance code - it's just never called. Make it
-  run.
+  The Sparrow Freight border terminal logs your name and waves you back. Somewhere in it is a routine
+  that would clear you straight through — find a way to make the terminal run it, and read your
+  clearance code.
 
-  Connect to your instance. The binary is attached.
+  Connect to your instance. The binary and the libraries it runs against are attached.
 sub_description: |
-  A stack buffer overflow (64-byte buffer, 256-byte read), no canary, no PIE. Classic ret2win:
-  redirect execution to grant_access(). The flag is read from /flag at runtime.
+  A networked binary. Get it to clear you through and read the flag.
 points: 150
 flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"
 handout:
-  - name: challenge/checkpoint.zip
+  - path: challenge/checkpoint.zip
 deploy:
   resource_type: docker
   instancing: on_demand
@@ -27,4 +26,4 @@ deploy:
     - { port: 9999, protocol: tcp }
   instance_timeout: 3600
   max_extensions: 4
-tags: [pwn, stack-overflow, ret2win, no-pie]
+tags: [pwn, binary-exploitation]

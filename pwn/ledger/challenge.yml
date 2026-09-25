@@ -1,22 +1,21 @@
-name: Ledger
+name: Loose Ends
 author: abu
 category: pwn
 difficulty: hard
 description: |
-  The Sparrow Freight note ledger lets you add, delete, edit and view notes - but "delete" is a
-  little forgetful, and you can still read and write notes it swears are gone. There's an audit
-  routine that prints the clearance code; it's never called. Arrange for it to run.
+  The Sparrow Freight note ledger lets you add, delete, edit and view entries — but "delete" turns out
+  to be a little forgetful about what it lets go of. There's an audit routine that prints the day's
+  clearance code, and nothing ever calls it. Arrange for it to run anyway.
 
-  Connect to your instance. The binary is attached.
+  Connect to your instance. The binary and the exact libraries it runs against are attached.
 sub_description: |
-  Use-after-free on a tcache-sized heap (glibc 2.39). Leak the heap, poison a tcache fd past
-  safe-linking, allocate over a 16-byte-aligned GOT entry, and redirect execution into audit().
+  A networked binary; the exact libraries it runs against are provided. Reach the audit routine.
 points: 450
 flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"
 handout:
-  - name: challenge/ledger.zip
+  - path: challenge/ledger.zip
 deploy:
   resource_type: docker
   instancing: on_demand
@@ -27,4 +26,4 @@ deploy:
     - { port: 9999, protocol: tcp }
   instance_timeout: 3600
   max_extensions: 4
-tags: [pwn, heap, use-after-free, tcache-poisoning, safe-linking, got-overwrite, no-pie]
+tags: [pwn, binary-exploitation]

@@ -1,20 +1,28 @@
-name: Interlock
+name: Lockstep
 author: abu
 category: rev
 difficulty: medium
 description: |
-  Interlock is the key controller from a coupled-tumbler lock - the kind where the pins aren't
-  independent, they're wired together. Feed it the right 16-character key and it releases the unlock
-  token. Brute force is hopeless (2^128), but the lock's own math gives the key away if you read it.
+  Lockstep is the key controller off a depot door — the kind where the pins aren't independent, they
+  move together. Launch your instance, download your unit, feed it the right 16-character key and it
+  opens.
 
-  Recover the key, read the token.
+  Brute force is hopeless, but the lock's own wiring gives the key away once you understand how the
+  pins are tied to each other. Recover the key and read your flag.
 sub_description: |
-  A stripped Linux binary. The key check is a system of linear congruences A*key == B (mod 256).
-  Recognise it, solve the system, and the binary hands you the flag. No brute force.
+  Launch your instance and download your unique binary. Find the 16-character key it accepts.
 points: 350
 flags:
-  - type: static
-    flag: "H7CTF{l1n34r_syst3m_k3yg3n_m0d_256}"
-handout:
-  - name: challenge/interlock.zip
-tags: [rev, keygen, linear-algebra, crackme]
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/interlock
+  cpu_limit: "1.0"
+  memory_limit: 512Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [rev, crackme]

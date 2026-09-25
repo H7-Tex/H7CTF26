@@ -1,21 +1,27 @@
-name: Tollgate
+name: Toll Story
 author: abu
 category: rev
 difficulty: medium
 description: |
-  Tollgate is the admin-token check pulled out of an internal API gateway. Give it the right
-  16-character admin token and it prints the cluster bootstrap secret. Nobody kept a copy of the
-  token, and the developer who wrote it left.
+  Toll Story is the admin-token booth from an internal API gateway. Launch your instance, download
+  your unit, and give it the right token — it'll hand back the cluster bootstrap secret.
 
-  It's a Go service binary, stripped. The token isn't compared against a string - it goes through
-  some arithmetic first. Work out what it wants and read the secret.
+  The booth doesn't compare your token against a stored one; it runs your token through a turnstile of
+  its own before deciding. Work out the token it accepts and read the secret.
 sub_description: |
-  A stripped Go binary. The admin-token check transforms the token before comparing; recover the
-  token it accepts and the binary hands you the bootstrap secret. No brute force needed.
+  Launch your instance and download your unique binary. Find the 16-character token it accepts.
 points: 350
 flags:
-  - type: static
-    flag: "H7CTF{g0_str1pp3d_t0llg4t3_w0rd_r3v}"
-handout:
-  - name: challenge/tollgate.zip
-tags: [rev, golang, stripped, crackme, license]
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/tollgate
+  cpu_limit: "1.0"
+  memory_limit: 512Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [rev, crackme]

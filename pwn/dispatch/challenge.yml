@@ -1,22 +1,21 @@
-name: Dispatch
+name: Special Delivery
 author: abu
 category: pwn
 difficulty: medium
 description: |
-  The Sparrow Freight dispatch terminal takes a waybill number and logs it - into a buffer that's far
-  too small. There's no win function this time; you'll have to bring your own shell. The binary and
-  its libc are attached.
+  The Sparrow Freight dispatch terminal takes a waybill number and logs it — into a space far too small
+  to hold it. There's no shortcut waiting inside this time, so you'll have to bring your own way through.
+  Get a foothold and read the flag.
 
-  Connect to your instance.
+  Connect to your instance. The binary and the exact libraries it runs against are attached.
 sub_description: |
-  Stack overflow (no canary, no PIE), but no win() - classic ret2libc: leak libc via puts, return for
-  a second overflow, then system("/bin/sh") and read the flag. libc (Ubuntu glibc 2.39) provided.
+  A networked binary; the exact libraries it runs against are provided. Get a foothold and read the flag.
 points: 350
 flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"
 handout:
-  - name: challenge/dispatch.zip
+  - path: challenge/dispatch.zip
 deploy:
   resource_type: docker
   instancing: on_demand
@@ -27,4 +26,4 @@ deploy:
     - { port: 9999, protocol: tcp }
   instance_timeout: 3600
   max_extensions: 4
-tags: [pwn, stack-overflow, ret2libc, rop, libc-leak, no-pie]
+tags: [pwn, binary-exploitation]

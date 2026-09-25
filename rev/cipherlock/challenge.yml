@@ -1,20 +1,27 @@
-name: Cipherlock
+name: Constraint Yourself
 author: abu
 category: rev
-difficulty: medium
+difficulty: hard
 description: |
-  Cipherlock won't open unless your 16-character key satisfies a whole web of interlocking rules -
-  some bytes XORed together, some multiplied, some rotated and added. Reading them out of the binary
-  is the easy part; untangling them by hand is not. Let a solver do the untangling.
+  This lock won't open unless your 16-character key keeps a whole web of interlocking rules happy at
+  once. Launch your instance, download your unit, and find the key that satisfies every one of them.
 
-  Recover the key, open the lock.
+  Reading the rules out of the binary is the easy part; untangling them by hand is not. Recover the
+  key and read your flag.
 sub_description: |
-  A stripped binary whose key check is a tangle of XOR, byte-product (mod 256) and rotate+add
-  constraints - non-linear, so model it in an SMT solver (z3) rather than inverting by hand.
+  Launch your instance and download your unique binary. Find the 16-character key that satisfies it.
 points: 400
 flags:
-  - type: static
-    flag: "H7CTF{z3_smt_s0lv3s_th3_c1ph3rl0ck}"
-handout:
-  - name: challenge/cipherlock.zip
-tags: [rev, z3, smt, constraints, crackme]
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/cipherlock
+  cpu_limit: "1.0"
+  memory_limit: 512Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [rev, crackme]

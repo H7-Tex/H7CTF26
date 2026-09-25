@@ -1,21 +1,19 @@
-name: Ferric
+name: Rust in Peace
 author: abu
 category: rev
 difficulty: medium
 description: |
-  Ferric is a license validator written in Rust. Give it the right 16-character license and it reveals
-  the token. It's not stripped-C-friendly - Rust binaries read very differently - so take your time
-  with the disassembly.
+  A firmware vendor with strong opinions about memory safety shipped this licence validator. Give it
+  the right 16-character licence and it reveals the token; get it wrong and it just shrugs.
 
-  Recover the license, reveal the token.
+  It won't disassemble as cleanly as you'd like, and it does a little arithmetic on your key before
+  it decides. Figure out the key it accepts and read the token.
 sub_description: |
-  A stripped Rust binary. The key check is a per-byte transform (xor, rotate_left, wrapping_add)
-  compared to a target table; invert it, then the flag is XOR-decrypted with a license-derived
-  keystream.
+  A stripped Linux binary. Recover the 16-character licence it accepts to reveal the token.
 points: 300
 flags:
   - type: static
     flag: "H7CTF{rust_b1n_r3v_f3rr1c_cr4ckm3}"
 handout:
-  - name: challenge/ferric.zip
-tags: [rev, rust, crackme, keygen]
+  - path: challenge/ferric.zip
+tags: [rev, crackme]

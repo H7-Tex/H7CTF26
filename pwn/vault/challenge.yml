@@ -1,22 +1,21 @@
-name: Vault
+name: Safe Space
 author: abu
 category: pwn
 difficulty: medium
 description: |
-  The Vault runs any code you hand it - it even gives you an executable page to put it in. There's
-  just a catch: the door only opens so far. A shell won't save you here. The flag is in /flag; go
-  get it yourself.
+  The vault will run any code you hand it — it even gives you room to put it in. The trouble is the door
+  only opens so far, so simply asking for a shell won't get you anywhere. Work within what it allows and
+  take what you came for.
 
-  Connect to your instance. The binary is attached.
+  Connect to your instance. The binary and its libraries are attached.
 sub_description: |
-  Shellcode execution behind a seccomp filter. execve is blocked, so write open/read/write shellcode
-  to read the flag.
+  A networked binary that runs code you send it, within limits. Send code that reads the flag.
 points: 300
 flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"
 handout:
-  - name: challenge/vault.zip
+  - path: challenge/vault.zip
 deploy:
   resource_type: docker
   instancing: on_demand
@@ -27,4 +26,4 @@ deploy:
     - { port: 9999, protocol: tcp }
   instance_timeout: 3600
   max_extensions: 4
-tags: [pwn, shellcode, seccomp, orw, sandbox]
+tags: [pwn, binary-exploitation]
