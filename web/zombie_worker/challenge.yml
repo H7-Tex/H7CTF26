@@ -14,7 +14,7 @@ flags:
     name: CHECKPOINT_FLAG
     dynamic_flag_prefix: "H7CTF{"
   - type: dynamic
-    name: FLAG
+    name: EXPORT_FLAG
     dynamic_flag_prefix: "H7CTF{"
 
 deploy:
@@ -44,7 +44,7 @@ deploy:
       memory_limit: 256Mi
       env:
         APP_ENV: production
-        CHECKPOINT_FLAG: "${CHECKPOINT_FLAG}"
+        CHECKPOINT_FLAG: "${FLAG_CHECKPOINT_FLAG}"
         EXPORTER_URL: http://exporter:8090
         EXPORTER_TOKEN: "${INTERNAL_TOKEN}"
         INSTANCE_ID: "${INSTANCE_ID}"
@@ -60,5 +60,5 @@ deploy:
       memory_limit: 128Mi
       env:
         APP_ENV: production
-        FLAG: "${FLAG}"
+        FLAG: "${FLAG_EXPORT_FLAG}"
         EXPORTER_TOKEN: "${INTERNAL_TOKEN}"
