@@ -12,8 +12,8 @@ sub_description: |
   A Linux box. Start from the guest account and work up to both flags (user + root).
 points: 650
 flags:
-  - { type: static, name: user, flag: "H7CTF{sud0_gtf0b1n_2_us3r_5parr0w}", points: 40 }
-  - { type: static, name: root, flag: "H7CTF{p4th_h1j4ck_su1d_r00t_5parr0w}", points: 60 }
+  - { type: static, name: user, flag: "H7CTF{14b8dba38cef51b37678}", points: 40 }
+  - { type: static, name: root, flag: "H7CTF{d635334c4a8563c01e1b}", points: 60 }
 deploy:
   resource_type: docker
   instancing: on_demand
