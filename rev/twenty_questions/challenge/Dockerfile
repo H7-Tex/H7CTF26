@@ -1,7 +1,7 @@
 FROM rust:1.83-slim AS rust
 WORKDIR /build
-COPY interrogator/Cargo.toml interrogator/Cargo.toml
-COPY interrogator/src interrogator/src
+COPY challenge/interrogator/Cargo.toml interrogator/Cargo.toml
+COPY challenge/interrogator/src interrogator/src
 RUN cd interrogator && cargo build --release
 
 FROM debian:bookworm-slim
@@ -9,8 +9,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends socat && rm -rf
 RUN useradd -m -u 1000 play
 WORKDIR /tq
 COPY --from=rust /build/interrogator/target/release/interrogator /tq/interrogator
-COPY sealer /tq/sealer
-COPY entry.sh /tq/entry.sh
+COPY challenge/sealer /tq/sealer
+COPY challenge/entry.sh /tq/entry.sh
 RUN chmod +x /tq/entry.sh /tq/interrogator /tq/sealer
 ENV TQ_MODE=live
 ENV TQ_SEALER=/tq/sealer

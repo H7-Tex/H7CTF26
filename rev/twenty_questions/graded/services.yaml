@@ -1,3 +1,4 @@
+build_context: rev/twenty_questions
 scoring_mode: graded
 base_points: 1000
 difficulty: insane
