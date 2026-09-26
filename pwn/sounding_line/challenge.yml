@@ -8,7 +8,7 @@ description: |
   Pilot the drone, settle the standoff, and reprogram the transponder.
 sub_description: |
   The transponder believes whatever you tell it about the seabed.
-points: 500
+points: 1000
 flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"

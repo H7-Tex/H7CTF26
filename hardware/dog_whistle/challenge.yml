@@ -8,7 +8,7 @@ description: |
   Get it to give up the flag it keeps in firmware.
 sub_description: |
   The equalizer is the only guard. Something keeps talking past it anyway.
-points: 500
+points: 1000
 flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"

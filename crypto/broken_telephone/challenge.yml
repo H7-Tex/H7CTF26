@@ -8,7 +8,7 @@ description: |
   Make the gateway hand over what only an operator is meant to see.
 sub_description: |
   Nobody else speaks their dialect, which is exactly why they trust it.
-points: 500
+points: 1000
 flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"

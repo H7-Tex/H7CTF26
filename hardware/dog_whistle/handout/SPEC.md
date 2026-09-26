@@ -27,12 +27,12 @@ The capture is run through the modeled analog front end before any decoding:
 
 1. Parametric EQ (see "Defensive profile").
 2. Analog gain stage.
-3. The transducer response, a fixed low-order polynomial.
+3. The transducer response.
 4. A 7 kHz anti-alias low-pass.
 5. Decimation to the 16 kHz codec rate.
 
 The microphone bandwidth reaches well past the audible range. The vendor
-pairing beacon occupies the 18 kHz to 22 kHz near-ultrasonic band.
+pairing beacon lives above it.
 
 ## Control modem
 
@@ -70,11 +70,11 @@ bound region.
 
 ## Safety interlock
 
-`SELECT_PROFILE` and `SET_CAL_VECTOR` are engineering class opcodes. Before the
-front end runs, the firmware scans the audible control band (300 Hz to 3400 Hz)
-of the captured audio for an engineering tone signature. If it is present the
-capture is quarantined with `SAFETY LOCKOUT` and no decoding happens. The vendor
-considers the engineering class unreachable from the room for this reason.
+`SELECT_PROFILE` and `SET_CAL_VECTOR` are engineering class opcodes. The firmware
+scans the audible control band (300 Hz to 3400 Hz) for an engineering tone
+signature and quarantines any capture that carries one with `SAFETY LOCKOUT`,
+no decoding. The vendor considers the engineering class unreachable from the
+room for this reason.
 
 `DEBUG_PING` is not an engineering opcode and is always serviced.
 

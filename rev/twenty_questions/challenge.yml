@@ -8,7 +8,7 @@ description: |
   Pull the secret back out, in as few questions as you can.
 sub_description: |
   It shreds the secret, then hands you a debugger that bills per question. Fair.
-points: 500
+points: 1000
 scoring: graded
 flags:
   - type: dynamic

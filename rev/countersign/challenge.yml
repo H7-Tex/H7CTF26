@@ -8,7 +8,7 @@ description: |
   Find the input that walks it all the way to the flag.
 sub_description: |
   The clerk will stamp anything. The core only walks what it trusts.
-points: 500
+points: 1000
 flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"

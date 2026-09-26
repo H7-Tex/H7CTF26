@@ -1,6 +1,6 @@
 # Dog Whistle
 
-`hardware` / `insane` / on-demand per-team instance (tcp) / 500 pts / dynamic flag
+`hardware` / `insane` / on-demand per-team instance (tcp) / 1000 pts / dynamic flag
 
 Aria takes orders it can hear, and the equalizer is the only guard the vendor left you. Lately it keeps obeying instructions nobody in the room ever gave. Get it to give up the flag it keeps in firmware.
 

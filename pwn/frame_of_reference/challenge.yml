@@ -7,8 +7,8 @@ description: |
 
   Recover the secret only the internal auditor is supposed to read.
 sub_description: |
-  It starts before you have finished. Nobody waits.
-points: 500
+  Hand it a keypair and it takes care of the rest. Very accommodating.
+points: 1000
 flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"
