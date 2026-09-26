@@ -1,0 +1,27 @@
+name: Hothouse
+author: abu
+category: pwn
+difficulty: hard
+description: |
+  A firmware control link for a cellular-automaton coprocessor. Load a seed lattice, let it incubate for a few generations, and FIRE the settled fabric on the core.
+
+  The core runs microcode and nothing else. The only way to put bytes in the fabric is to grow them there.
+sub_description: |
+  Connect over TCP, grow working microcode into the fabric, and fire it. The flag sits in a file on the box.
+points: 500
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - path: handout/hothouse.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/hothouse
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 1337, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [pwn, binary-exploitation, shellcode]
