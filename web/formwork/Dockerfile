@@ -12,5 +12,7 @@ COPY --from=build /out/formwork /app/formwork
 COPY challenge/deploy /app/deploy
 COPY challenge/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
+RUN chown -R postgres:postgres /app
+USER postgres
 EXPOSE 8080
 ENTRYPOINT ["/app/entrypoint.sh"]
