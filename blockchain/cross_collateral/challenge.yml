@@ -8,7 +8,7 @@ description: |
   you're funded with a bag of a near-worthless listed token. leave with the bank's sui.
 sub_description: |
   turn a bag of a worthless listed token into the bank's sui reserve.
-points: 200
+points: 100
 flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"

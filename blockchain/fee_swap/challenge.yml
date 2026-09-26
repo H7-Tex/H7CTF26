@@ -8,7 +8,7 @@ description: |
   you're holding token A. walk out with the pool's entire B reserve.
 sub_description: |
   a 1:1 swap desk with a reserve it thinks it can always cover. drain it.
-points: 350
+points: 250
 flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"
