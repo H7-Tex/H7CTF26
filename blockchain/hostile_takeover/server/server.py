@@ -60,19 +60,40 @@ def rpc_forward(body):
     return json.loads(urllib.request.urlopen(req, timeout=15).read())
 
 
-def token_ok(tok):
-    # local/dev: any non-empty sane token. prod: validate via the engine's token->team_id
-    # endpoint (KOTH_VERIFY_URL) so only issued buy-in tokens can play.
+VERIFY_URL = os.environ.get("KOTH_VERIFY_URL", "")   # POST {token, rpc_secret} -> {valid, public_tag}
+REQUIRE_SECRET = os.environ.get("KOTH_REQUIRE_SECRET", "").lower() in ("1", "true", "yes")
+
+
+def client_ip():
+    # behind Cloudflare + the ingress; trust the edge-set client-IP headers, fall back to the peer.
+    return (request.headers.get("CF-Connecting-IP")
+            or request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+            or request.remote_addr or "?")
+
+
+def authorize(tok, secret):
+    # Returns (ok, reason). The buy-in token is the PUBLIC crown tag -- it shows up in /koth/status
+    # -- so it can't gate writes on its own: a rival could harvest it and grief your RPC. The
+    # platform issues a private per-team rpc_secret at buy-in; every write must carry it
+    # (X-Koth-Secret). We verify {token, rpc_secret} with the engine and require the verified public
+    # tag to match the path token, so a session can only ever act as its own team.
     if not tok or len(tok) > 128:
-        return False
-    vurl = os.environ.get("KOTH_VERIFY_URL", "")
-    if not vurl:
-        return True
+        return False, "invalid koth token"
+    if not VERIFY_URL:
+        # off-platform (local/dev): no secret plumbing. allow a sane token unless a secret is forced.
+        return (True, "") if not REQUIRE_SECRET else ((True, "") if secret else (False, "missing rpc secret"))
+    if not secret or len(secret) > 256:
+        return False, "missing or invalid rpc secret"
     try:
-        r = urllib.request.urlopen(vurl + "?token=" + tok, timeout=4)
-        return json.loads(r.read()).get("team_id") is not None
+        req = urllib.request.Request(
+            VERIFY_URL, data=json.dumps({"token": tok, "rpc_secret": secret}).encode(),
+            headers={"Content-Type": "application/json"}, method="POST")
+        d = json.loads(urllib.request.urlopen(req, timeout=4).read())
     except Exception:
-        return False
+        return False, "verify unavailable"
+    if not d.get("valid") or d.get("public_tag") != tok:
+        return False, "rpc secret rejected"
+    return True, ""
 
 
 @app.get("/")
@@ -101,9 +122,14 @@ def info():
 
 @app.post("/rpc/<token>")
 def rpc(token):
-    if not token_ok(token):
-        return jsonify({"error": "invalid koth token"}), 403
-    if not allow_rate(token):
+    ok, reason = authorize(token, request.headers.get("X-Koth-Secret", ""))
+    if not ok:
+        return jsonify({"error": reason}), 403
+    ip = client_ip()
+    # rate-limit per (token, source IP): a rival submitting under a harvested token drains only its
+    # own bucket, never the owner's ability to re-seize. The owner's (token, own-IP) bucket is
+    # untouchable without knowing their IP, so targeted rate-exhaustion grief is closed.
+    if not allow_rate(token + "|" + ip):
         return jsonify({"error": "rate limited"}), 429
     body = request.get_json(silent=True)
     if body is None:
@@ -113,6 +139,9 @@ def rpc(token):
         if it.get("method") not in ALLOW:
             return jsonify({"jsonrpc": "2.0", "id": it.get("id"),
                             "error": {"code": -32601, "message": "method not allowed"}}), 200
+    # audit every submission for grief/collusion forensics: who (token), from where (ip), what
+    app.logger.info("rpc token=%s ip=%s methods=%s", token, ip,
+                    ",".join(str(it.get("method")) for it in items))
     try:
         return jsonify(rpc_forward(body))
     except Exception as e:

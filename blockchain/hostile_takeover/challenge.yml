@@ -7,7 +7,7 @@ description: |
 
   The seat resets each round, so expect to take it more than once.
 
-  Arena: your instance exposes a bridge. GET /koth/info for the chain id, contract addresses and current epoch; send your exploit transactions to POST /rpc/<your-koth-token>. It is a shared Anvil chain - the standard foundry/hardhat dev accounts (the default test mnemonic, indices 1-9) are funded, so drive your exploit from one of those to pay gas. Account 0 is the arena operator; do not use it.
+  Arena: your instance exposes a bridge. GET /koth/info for the chain id, contract addresses and current epoch; send your exploit transactions to POST /rpc/<your-koth-token>. Buy-in also gives you a private rpc secret: every /rpc call must carry it as the X-Koth-Secret header (foundry: set ETH_RPC_HEADERS="X-Koth-Secret: <secret>", or --rpc-headers), or the write is refused - your token alone is public and cannot write. It is a shared Anvil chain - the standard foundry/hardhat dev accounts (the default test mnemonic, indices 1-9) are funded, so drive your exploit from one of those to pay gas. Account 0 is the arena operator; do not use it.
 sub_description: |
   On-chain King of the Hill: seize the DAO Guardian seat and hold it to score - it resets each round, so re-solve to re-hold.
 scoring: koth

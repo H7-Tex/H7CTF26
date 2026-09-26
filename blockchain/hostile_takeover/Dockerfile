@@ -19,8 +19,9 @@ COPY server/server.py /server.py
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# KOTH_ADMIN_TOKEN injected by the engine (gates /koth/reset); KOTH_VERIFY_URL (optional) =
-# the engine's token->team_id endpoint so only issued buy-in tokens can play.
+# KOTH_ADMIN_TOKEN injected by the engine (gates /koth/reset). KOTH_VERIFY_URL = engine endpoint,
+# POST {token, rpc_secret} -> {valid, public_tag}; with KOTH_REQUIRE_SECRET=true every /rpc write
+# must carry the private per-team X-Koth-Secret (issued at buy-in) -> closes token-harvest grief.
 ENV PORT=8080
 EXPOSE 8080
 ENTRYPOINT ["/entrypoint.sh"]
