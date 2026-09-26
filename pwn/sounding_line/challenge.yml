@@ -1,0 +1,27 @@
+name: Sounding Line
+author: abu
+category: pwn
+difficulty: insane
+description: |
+  Cistern-9 is a flooded salvage station you can only reach through a narrow text uplink to a battered ROV. The bulkheads stay sealed until the old trim regulator agrees the manifold is equalized, and past the central shaft a survey transponder waits for someone to tell it where the bottom is.
+
+  Pilot the drone, settle the standoff, and reprogram the transponder.
+sub_description: |
+  The transponder believes whatever you tell it about the seabed.
+points: 500
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - path: challenge/sounding_line.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/sounding-line
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 5000, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [pwn, binary-exploitation]
