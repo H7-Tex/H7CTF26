@@ -1,5 +1,5 @@
+import base64
 import hashlib
-import os
 from pathlib import Path
 import re
 import sys
@@ -9,17 +9,14 @@ import time
 
 from fastapi import FastAPI, HTTPException
 
-from schrodinger.config import Settings
 from schrodinger.models import InternalRuntimeRequest, RuntimeResult
 from schrodinger.runtime.executor import run_bounded, sandbox_capabilities
 from schrodinger.runtime.installer import install_wheel
 from schrodinger.runtime.parser import resolve_module
-from schrodinger.store import ArtifactStore
 
 
 SMOKE_TIMEOUT_SECONDS = 8
 MAX_JOB_OUTPUT_BYTES = 32 * 1024
-QUALIFYING_STATUSES = {"passed", "passed_with_advisories"}
 # Trust boundary: runtime container == attacker-controlled after package import.
 SMOKE_TEST = """
 import importlib
@@ -43,21 +40,10 @@ def _bounded_lines(*sections: str) -> list[str]:
     return encoded.decode("utf-8", errors="ignore").splitlines()[:200]
 
 
-def create_app(data_dir: Path | None = None, workspace_dir: Path = Path("/tmp")) -> FastAPI:
-    settings = Settings.from_env()
-    root = Path(data_dir or settings.artifact_data_dir)
+def create_app(workspace_dir: Path = Path("/tmp")) -> FastAPI:
     app = FastAPI(title="Schrödinger Package Runtime")
-    app.state.store = None
     app.state.workspace_dir = Path(workspace_dir)
     app.state.job_lock = threading.Lock()
-
-    def readonly_store() -> ArtifactStore:
-        if app.state.store is None:
-            try:
-                app.state.store = ArtifactStore(root, readonly=True)
-            except FileNotFoundError:
-                raise HTTPException(status_code=503, detail="artifact storage is not ready") from None
-        return app.state.store
 
     @app.get("/health")
     async def health():
@@ -67,33 +53,15 @@ def create_app(data_dir: Path | None = None, workspace_dir: Path = Path("/tmp"))
     def create_job(request: InternalRuntimeRequest):
         if sys.platform == "linux" and not all(sandbox_capabilities().values()):
             raise HTTPException(status_code=503, detail="runtime process limits are unavailable")
-        store = readonly_store()
-        artifact = store.get(request.artifact_id)
-        if artifact is None:
-            raise HTTPException(status_code=404, detail="package not found")
-
-        inspections = store.inspections(request.artifact_id, limit=10_000)
-        inspection = next((item for item in inspections if item.inspection_id == request.inspection_id), None)
-        if inspection is None or inspection.status not in QUALIFYING_STATUSES:
-            raise HTTPException(status_code=409, detail="package does not have a qualifying inspection")
-        if (
-            artifact.sha256 != request.expected_sha256
-            or inspection.sha256 != artifact.sha256
-            or inspection.artifact_id != artifact.artifact_id
-            or inspection.package_name != artifact.package_name
-            or inspection.version != artifact.version
-        ):
-            raise HTTPException(status_code=409, detail="package inspection does not match stored artifact")
-
         try:
-            content = store.read_bytes(artifact.artifact_id)
-        except FileNotFoundError:
-            raise HTTPException(status_code=404, detail="package bytes not found") from None
-        if hashlib.sha256(content).hexdigest() != artifact.sha256 or artifact.sha256 != request.expected_sha256:
-            raise HTTPException(status_code=409, detail="stored package bytes failed SHA-256 verification")
+            content = base64.b64decode(request.content_b64, validate=True)
+        except Exception:
+            raise HTTPException(status_code=400, detail="content is not valid base64") from None
+        if hashlib.sha256(content).hexdigest() != request.expected_sha256:
+            raise HTTPException(status_code=409, detail="package bytes failed SHA-256 verification")
 
         started = time.monotonic()
-        output: list[str] = ["Stored artifact SHA-256 verified."]
+        output: list[str] = ["Submitted artifact SHA-256 verified."]
         status = "failed"
         installer_sha256 = ""
         module_path = ""
@@ -108,13 +76,13 @@ def create_app(data_dir: Path | None = None, workspace_dir: Path = Path("/tmp"))
                     prefix="schrodinger-runtime-", dir=app.state.workspace_dir
                 ) as temporary_directory:
                     workspace = Path(temporary_directory)
-                    wheel_path = workspace / Path(artifact.original_filename).name
+                    wheel_path = workspace / Path(request.filename).name
                     wheel_path.write_bytes(content)
                     installer_sha256 = hashlib.sha256(wheel_path.read_bytes()).hexdigest()
-                    if installer_sha256 != artifact.sha256 or installer_sha256 != request.expected_sha256:
+                    if installer_sha256 != request.expected_sha256:
                         raise HTTPException(status_code=409, detail="installer input failed SHA-256 verification")
 
-                    resolution = resolve_module(content, artifact.package_name)
+                    resolution = resolve_module(content, request.package_name)
                     module_path = resolution.path
                     archive_occurrences = resolution.occurrences
                     selected_sha256 = resolution.sha256
@@ -160,9 +128,9 @@ def create_app(data_dir: Path | None = None, workspace_dir: Path = Path("/tmp"))
 
         duration_ms = round((time.monotonic() - started) * 1000)
         return RuntimeResult(
-            artifact_id=artifact.artifact_id,
-            inspection_id=inspection.inspection_id,
-            sha256=artifact.sha256,
+            artifact_id=request.artifact_id,
+            inspection_id=request.inspection_id,
+            sha256=request.expected_sha256,
             installer_sha256=installer_sha256,
             module_path=module_path,
             archive_occurrences=archive_occurrences,

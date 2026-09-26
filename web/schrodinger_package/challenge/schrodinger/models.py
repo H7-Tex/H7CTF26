@@ -87,12 +87,25 @@ class RuntimeJobRequest(BaseModel):
     artifact_id: str = Field(pattern=r"^[0-9a-f]{32}$")
 
 
+class InternalInspectionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    artifact_id: str = Field(pattern=r"^[0-9a-f]{32}$")
+    filename: str = Field(min_length=1, max_length=256)
+    package_name: str
+    version: str
+    content_b64: str
+
+
 class InternalRuntimeRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     artifact_id: str = Field(pattern=r"^[0-9a-f]{32}$")
     inspection_id: str = Field(min_length=1, max_length=128)
+    filename: str = Field(min_length=1, max_length=256)
+    package_name: str
     expected_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    content_b64: str
 
 
 class RuntimeResult(BaseModel):

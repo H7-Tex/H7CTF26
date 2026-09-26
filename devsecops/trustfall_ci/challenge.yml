@@ -18,11 +18,78 @@ flags:
 deploy:
   resource_type: docker
   instancing: on_demand
-  image: h7ctf26/trustfall_ci
+  image: h7ctf26/trustfall_ci        # required by the importer; superseded by the services below
   cpu_limit: "1.0"
   memory_limit: 512Mi
-  exposed_ports:
-    - port: 8080
-      protocol: http
   instance_timeout: 1800
   max_extensions: 2
+  # Four roles off one image (role = command arg), same as docker-compose. Only portal is
+  # public; the rest are ClusterIP-only and reach each other by role name. The bundled dev
+  # ollama is dropped: agents points at the shared H7 Qwen (egress:true). FLAG lands in
+  # release only. No volumes needed - the app writes DATA_DIR on the pod's writable rootfs.
+  services:
+    - name: portal
+      image: h7ctf26/trustfall_ci
+      command: ["portal"]
+      public: true
+      cpu_limit: "0.5"
+      memory_limit: 384Mi
+      ports:
+        - port: 8080
+          protocol: http
+      env:
+        ROLE: portal
+        DATA_DIR: /data
+        INSTANCE_ID: "${INSTANCE_ID}"
+        INTERNAL_TOKEN: "${INTERNAL_TOKEN}"
+        SCANNER_URL: http://scanner:8081
+        AGENTS_URL: http://agents:8082
+        MAX_INPUT_BYTES: "262144"
+    - name: scanner
+      image: h7ctf26/trustfall_ci
+      command: ["scanner"]
+      public: false
+      cpu_limit: "0.5"
+      memory_limit: 512Mi
+      ports:
+        - port: 8081
+          protocol: http
+      env:
+        ROLE: scanner
+        INTERNAL_TOKEN: "${INTERNAL_TOKEN}"
+        MAX_INPUT_BYTES: "262144"
+    - name: agents
+      image: h7ctf26/trustfall_ci
+      command: ["agents"]
+      public: false
+      egress: true                   # reaches the shared H7 Qwen (qwen.h7tex.com)
+      cpu_limit: "0.5"
+      memory_limit: 384Mi
+      ports:
+        - port: 8082
+          protocol: http
+      env:
+        ROLE: agents
+        DATA_DIR: /data
+        INSTANCE_ID: "${INSTANCE_ID}"
+        INTERNAL_TOKEN: "${INTERNAL_TOKEN}"
+        OLLAMA_URL: https://qwen.h7tex.com
+        OLLAMA_MODEL: qwen2.5-coder:7b
+        OLLAMA_MODEL_DIGEST: "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364"
+        MAX_INPUT_BYTES: "262144"
+    - name: release
+      image: h7ctf26/trustfall_ci
+      command: ["release"]
+      public: false
+      cpu_limit: "0.25"
+      memory_limit: 256Mi
+      ports:
+        - port: 8083
+          protocol: http
+      env:
+        ROLE: release
+        INSTANCE_ID: "${INSTANCE_ID}"
+        INTERNAL_TOKEN: "${INTERNAL_TOKEN}"
+        AGENTS_URL: http://agents:8082
+        PORTAL_URL: http://portal:8080
+        FLAG: "${FLAG}"

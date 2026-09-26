@@ -9,12 +9,8 @@ services:
       INSPECTOR_URL: http://inspector:8081
       RUNTIME_URL: http://runtime:8082
       FLAG: ${FLAG:-}
-      FLAG_FILE: /run/secrets/challenge_flag
     ports:
       - "8080:8080"
-    volumes:
-      - artifacts:/var/lib/schrodinger
-      - ./flag.txt:/run/secrets/challenge_flag:ro
     depends_on:
       inspector:
         condition: service_healthy
@@ -32,9 +28,6 @@ services:
     command: ["python", "-m", "schrodinger.main", "inspector"]
     environment:
       SCHRODINGER_ROLE: inspector
-      ARTIFACT_DATA_DIR: /var/lib/schrodinger
-    volumes:
-      - artifacts:/var/lib/schrodinger
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8081/health')"]
       interval: 10s
@@ -47,9 +40,6 @@ services:
     command: ["python", "-m", "schrodinger.main", "runtime"]
     environment:
       SCHRODINGER_ROLE: runtime
-      ARTIFACT_DATA_DIR: /var/lib/schrodinger
-    volumes:
-      - artifacts:/var/lib/schrodinger:ro
     read_only: true
     tmpfs:
       - /tmp:rw,nosuid,nodev,size=256m,mode=1777
@@ -72,9 +62,6 @@ services:
       timeout: 3s
       retries: 5
     networks: [portal_runtime]
-
-volumes:
-  artifacts:
 
 networks:
   portal_inspector:

@@ -17,12 +17,45 @@ flags:
 deploy:
   resource_type: docker
   instancing: on_demand
-  image: h7ctf26/schrodinger-package
+  image: h7ctf26/schrodinger-package   # required by the importer; superseded by the services below
   cpu_limit: "1.0"
   memory_limit: 512Mi
-  exposed_ports:
-    - port: 8080
-      protocol: http
   instance_timeout: 1800
   max_extensions: 2
-  egress: false
+  # Three roles off one image. Only portal is public and holds FLAG; inspector + runtime are
+  # ClusterIP-only and reach nothing outward. Anvil has no shared volume, so portal holds all
+  # state and ships the wheel bytes to inspector and runtime over HTTP; runtime installs and
+  # imports the uploaded package in its own pod (no FLAG) under its seccomp + rlimit sandbox.
+  services:
+    - name: portal
+      image: h7ctf26/schrodinger-package
+      command: ["python", "-m", "schrodinger.main", "portal"]
+      public: true
+      cpu_limit: "0.5"
+      memory_limit: 384Mi
+      ports:
+        - port: 8080
+          protocol: http
+      env:
+        ARTIFACT_DATA_DIR: /var/lib/schrodinger
+        INSPECTOR_URL: http://inspector:8081
+        RUNTIME_URL: http://runtime:8082
+        FLAG: "${FLAG}"
+    - name: inspector
+      image: h7ctf26/schrodinger-package
+      command: ["python", "-m", "schrodinger.main", "inspector"]
+      public: false
+      cpu_limit: "0.25"
+      memory_limit: 256Mi
+      ports:
+        - port: 8081
+          protocol: http
+    - name: runtime
+      image: h7ctf26/schrodinger-package
+      command: ["python", "-m", "schrodinger.main", "runtime"]
+      public: false
+      cpu_limit: "0.75"
+      memory_limit: 768Mi
+      ports:
+        - port: 8082
+          protocol: http

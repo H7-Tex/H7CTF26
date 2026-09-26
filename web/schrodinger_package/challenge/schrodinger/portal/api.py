@@ -1,4 +1,5 @@
 from io import BytesIO
+import base64
 import os
 from pathlib import Path
 from datetime import datetime, timezone
@@ -13,6 +14,7 @@ from schrodinger.config import MAX_UPLOAD_BYTES, Settings
 from schrodinger.models import (
     InspectionHistory,
     InspectionList,
+    InspectionRecord,
     InspectionSummary,
     RuntimeJob,
     RuntimeJobResponse,
@@ -101,24 +103,33 @@ def create_api(store: ArtifactStore, settings: Settings) -> APIRouter:
 
     @api.post("/packages/{artifact_id}/inspection", response_model=InspectionSummary, status_code=201)
     async def request_inspection(artifact_id: str):
-        if store.get(artifact_id) is None:
+        artifact = store.get(artifact_id)
+        if artifact is None:
             raise HTTPException(status_code=404, detail="package not found")
+        content = store.read_bytes(artifact_id)
         try:
             async with httpx.AsyncClient(timeout=15.0) as client:
                 response = await client.post(
-                    f"{settings.inspector_url}/inspections", json={"artifact_id": artifact_id}
+                    f"{settings.inspector_url}/inspections",
+                    json={
+                        "artifact_id": artifact_id,
+                        "filename": artifact.original_filename,
+                        "package_name": artifact.package_name,
+                        "version": artifact.version,
+                        "content_b64": base64.b64encode(content).decode(),
+                    },
                 )
         except httpx.HTTPError:
             raise HTTPException(status_code=503, detail="inspection service is unavailable") from None
-        if response.status_code == 404:
-            raise HTTPException(status_code=404, detail="package bytes not found")
-        if response.status_code == 409:
-            raise HTTPException(status_code=409, detail="stored package bytes failed integrity verification")
         if response.status_code >= 500:
             raise HTTPException(status_code=503, detail="inspection service is unavailable")
         if response.status_code >= 400:
             raise HTTPException(status_code=502, detail="inspection request could not be completed")
-        return InspectionSummary.model_validate(response.json())
+        record = InspectionRecord.model_validate(response.json())
+        if record.artifact_id != artifact.artifact_id or record.sha256 != artifact.sha256:
+            raise HTTPException(status_code=502, detail="inspection result failed integrity verification")
+        store.record_inspection(record)
+        return InspectionSummary.model_validate(record.model_dump(exclude={"files"}))
 
     @api.get("/packages/{artifact_id}/inspection", response_model=InspectionHistory)
     async def inspection_history(artifact_id: str):
@@ -185,6 +196,7 @@ def create_api(store: ArtifactStore, settings: Settings) -> APIRouter:
         ):
             raise HTTPException(status_code=409, detail="inspection digest does not match the stored package")
 
+        content = store.read_bytes(artifact.artifact_id)
         try:
             async with httpx.AsyncClient(timeout=60.0) as client:
                 response = await client.post(
@@ -192,7 +204,10 @@ def create_api(store: ArtifactStore, settings: Settings) -> APIRouter:
                     json={
                         "artifact_id": artifact.artifact_id,
                         "inspection_id": inspection.inspection_id,
+                        "filename": artifact.original_filename,
+                        "package_name": artifact.package_name,
                         "expected_sha256": artifact.sha256,
+                        "content_b64": base64.b64encode(content).decode(),
                     },
                 )
         except httpx.HTTPError:
