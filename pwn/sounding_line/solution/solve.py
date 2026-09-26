@@ -19,8 +19,8 @@ PIE_SLOT = 3
 LIBC_SLOT = 10
 ROV0 = 0
 REG0 = 23
-OFF_BANNER = 0x1750
-OFF_MAINT = 0x5040
+OFF_BANNER = 0x1810
+OFF_MAINT = 0x6040
 
 
 def readelf_sym(path, name):
