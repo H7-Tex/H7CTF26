@@ -7,7 +7,7 @@ description: |
 
   Open the admin console.
 sub_description: |
-  It only opens for authenticators it already trusts. Bring one it has never heard of.
+  It only opens for hardware it already trusts. You are not holding any.
 points: 500
 flags:
   - type: dynamic
