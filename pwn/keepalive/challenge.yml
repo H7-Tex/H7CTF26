@@ -23,4 +23,4 @@ deploy:
   exposed_ports:
     - { port: 9006, protocol: tcp }
   instance_timeout: 3600
-tags: [pwn, heap, use-after-free, rcu, concurrency, insane]
+tags: [pwn, binary-exploitation]

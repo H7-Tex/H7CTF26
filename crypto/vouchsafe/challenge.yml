@@ -24,4 +24,4 @@ deploy:
     - { port: 8080, protocol: http }
   instance_timeout: 3600
   max_extensions: 2
-tags: [crypto, webauthn, fido2, attestation]
+tags: [crypto, web]

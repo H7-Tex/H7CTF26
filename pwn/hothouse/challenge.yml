@@ -24,4 +24,4 @@ deploy:
     - { port: 1337, protocol: tcp }
   instance_timeout: 3600
   max_extensions: 4
-tags: [pwn, binary-exploitation, shellcode]
+tags: [pwn, binary-exploitation]

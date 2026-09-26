@@ -24,4 +24,4 @@ deploy:
     - { port: 9999, protocol: tcp }
   instance_timeout: 3600
   max_extensions: 4
-tags: [hardware, dsp, binary-exploitation]
+tags: [hardware]

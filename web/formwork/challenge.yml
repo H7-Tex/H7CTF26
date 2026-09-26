@@ -23,4 +23,4 @@ deploy:
   exposed_ports:
     - { port: 8080, protocol: http }
   instance_timeout: 3600
-tags: [web, postgresql]
+tags: [web]
