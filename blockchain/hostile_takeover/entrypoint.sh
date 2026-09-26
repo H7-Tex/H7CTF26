@@ -7,7 +7,9 @@ RPC=http://127.0.0.1:8545
 SYS_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ADMIN=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 
-# shared arena: instamine, gas price 0 so any team account (0 ETH) can transact for free.
+# shared arena: instamine. NB: anvil still advertises ~1 gwei on eth_gasPrice even under
+# --gas-price 0 (a foundry-version quirk) and cast/forge won't build a 0-price send, so players
+# drive their exploit from a pre-funded standard dev account (accts 1-9; acct0 is the operator).
 # node stays on localhost; only the bridge (server.py) is exposed.
 anvil --host 127.0.0.1 --port 8545 --gas-price 0 --base-fee 0 --silent &
 until cast block-number --rpc-url $RPC >/dev/null 2>&1; do sleep 0.3; done

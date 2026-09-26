@@ -18,8 +18,10 @@ solution/        Coup.sol + exploit.sh (reference)
 ```
 
 ## How the arena works
-- One shared Anvil node (localhost, instamine, gas price 0 so 0-ETH team accounts transact
-  free). Never exposed.
+- One shared Anvil node (localhost, instamine). Never exposed. NB: anvil still advertises ~1 gwei
+  on eth_gasPrice even under `--gas-price 0` (foundry-version quirk) and cast/forge won't build a
+  0-price send, so teams drive their exploit from a pre-funded standard dev account (the default
+  foundry test mnemonic funds accts 0-9 with 10000 ETH; use index 1-9, acct0 is the operator).
 - The bridge is the only reachable service:
   - `GET /koth/info` -> chainId, contract addresses, current governor epoch.
   - `POST /rpc/<team-koth-token>` -> JSON-RPC proxy (read + `eth_sendRawTransaction` only,
