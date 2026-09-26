@@ -1,0 +1,29 @@
+name: Twenty Questions
+author: abu
+category: rev
+difficulty: insane
+description: |
+  A hardware lab audits a sealer routine that swallows a device secret, stirs it, and shreds
+  the leftovers. You do not get gdb. You get the Interrogator: it runs the bytecode you submit,
+  and it counts every question you ask.
+sub_description: |
+  Connect over TCP and submit an Interrogator program (length-prefixed bytecode). Recover the
+  flag in as few debug events as possible. Handout: the target, the ISA, and an offline simulator.
+points: 500
+scoring: graded
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - path: handout/twenty-questions.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/twenty-questions
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 1337, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [rev, pwn, relative, ptrace, graded]

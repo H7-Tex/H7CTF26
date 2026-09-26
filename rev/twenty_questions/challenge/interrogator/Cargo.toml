@@ -1,0 +1,12 @@
+[package]
+name = "interrogator"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "interrogator"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 2
+panic = "abort"

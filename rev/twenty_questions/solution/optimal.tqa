@@ -1,0 +1,300 @@
+    IMM r5, 16
+    IMM r4, 255
+    BP 0, 0x000000000040301a
+    CONT
+    IMM r7, 0
+SCAN:
+    MOV r2, r7
+    IMM r3, 3
+    ALU SHL r2, r3
+    IMM r3, 512
+    ALU ADD r3, r2
+    PEEKMEMX r0, r3
+    MOV r2, r7
+    IMM r3, 3
+    ALU SHL r2, r3
+    IMM r3, 256
+    ALU ADD r3, r2
+    PEEKMEMX r1, r3
+    MOV r2, r0
+    ALU AND r2, r4
+    ALU CMP r2, r5
+    JLT store_j0
+    JMP after_j0
+store_j0:
+    MOV r6, r1
+    ALU AND r6, r4
+    STBX r2, r6
+after_j0:
+    MOV r2, r0
+    IMM r3, 8
+    ALU SHR r2, r3
+    ALU AND r2, r4
+    ALU CMP r2, r5
+    JLT store_j1
+    JMP after_j1
+store_j1:
+    MOV r6, r1
+    IMM r3, 8
+    ALU SHR r6, r3
+    ALU AND r6, r4
+    STBX r2, r6
+after_j1:
+    MOV r2, r0
+    IMM r3, 16
+    ALU SHR r2, r3
+    ALU AND r2, r4
+    ALU CMP r2, r5
+    JLT store_j2
+    JMP after_j2
+store_j2:
+    MOV r6, r1
+    IMM r3, 16
+    ALU SHR r6, r3
+    ALU AND r6, r4
+    STBX r2, r6
+after_j2:
+    MOV r2, r0
+    IMM r3, 24
+    ALU SHR r2, r3
+    ALU AND r2, r4
+    ALU CMP r2, r5
+    JLT store_j3
+    JMP after_j3
+store_j3:
+    MOV r6, r1
+    IMM r3, 24
+    ALU SHR r6, r3
+    ALU AND r6, r4
+    STBX r2, r6
+after_j3:
+    MOV r2, r0
+    IMM r3, 32
+    ALU SHR r2, r3
+    ALU AND r2, r4
+    ALU CMP r2, r5
+    JLT store_j4
+    JMP after_j4
+store_j4:
+    MOV r6, r1
+    IMM r3, 32
+    ALU SHR r6, r3
+    ALU AND r6, r4
+    STBX r2, r6
+after_j4:
+    MOV r2, r0
+    IMM r3, 40
+    ALU SHR r2, r3
+    ALU AND r2, r4
+    ALU CMP r2, r5
+    JLT store_j5
+    JMP after_j5
+store_j5:
+    MOV r6, r1
+    IMM r3, 40
+    ALU SHR r6, r3
+    ALU AND r6, r4
+    STBX r2, r6
+after_j5:
+    MOV r2, r0
+    IMM r3, 48
+    ALU SHR r2, r3
+    ALU AND r2, r4
+    ALU CMP r2, r5
+    JLT store_j6
+    JMP after_j6
+store_j6:
+    MOV r6, r1
+    IMM r3, 48
+    ALU SHR r6, r3
+    ALU AND r6, r4
+    STBX r2, r6
+after_j6:
+    MOV r2, r0
+    IMM r3, 56
+    ALU SHR r2, r3
+    ALU AND r2, r4
+    ALU CMP r2, r5
+    JLT store_j7
+    JMP after_j7
+store_j7:
+    MOV r6, r1
+    IMM r3, 56
+    ALU SHR r6, r3
+    ALU AND r6, r4
+    STBX r2, r6
+after_j7:
+    IMM r3, 1
+    ALU ADD r7, r3
+    IMM r3, 32
+    ALU CMP r7, r3
+    JLT SCAN
+    IMM r0, 0
+    LDB r1, 0
+    ALU OR r0, r1
+    LDB r1, 1
+    IMM r3, 8
+    ALU SHL r1, r3
+    ALU OR r0, r1
+    LDB r1, 2
+    IMM r3, 16
+    ALU SHL r1, r3
+    ALU OR r0, r1
+    LDB r1, 3
+    IMM r3, 24
+    ALU SHL r1, r3
+    ALU OR r0, r1
+    LDB r1, 4
+    IMM r3, 32
+    ALU SHL r1, r3
+    ALU OR r0, r1
+    LDB r1, 5
+    IMM r3, 40
+    ALU SHL r1, r3
+    ALU OR r0, r1
+    LDB r1, 6
+    IMM r3, 48
+    ALU SHL r1, r3
+    ALU OR r0, r1
+    LDB r1, 7
+    IMM r3, 56
+    ALU SHL r1, r3
+    ALU OR r0, r1
+    POKEMEM 256, r0
+    IMM r0, 0
+    LDB r1, 8
+    ALU OR r0, r1
+    LDB r1, 9
+    IMM r3, 8
+    ALU SHL r1, r3
+    ALU OR r0, r1
+    LDB r1, 10
+    IMM r3, 16
+    ALU SHL r1, r3
+    ALU OR r0, r1
+    LDB r1, 11
+    IMM r3, 24
+    ALU SHL r1, r3
+    ALU OR r0, r1
+    LDB r1, 12
+    IMM r3, 32
+    ALU SHL r1, r3
+    ALU OR r0, r1
+    LDB r1, 13
+    IMM r3, 40
+    ALU SHL r1, r3
+    ALU OR r0, r1
+    LDB r1, 14
+    IMM r3, 48
+    ALU SHL r1, r3
+    ALU OR r0, r1
+    LDB r1, 15
+    IMM r3, 56
+    ALU SHL r1, r3
+    ALU OR r0, r1
+    POKEMEM 264, r0
+    IMM r0, 0x0706050403020100
+    POKEMEM 512, r0
+    IMM r0, 0x0f0e0d0c0b0a0908
+    POKEMEM 520, r0
+    IMM r0, 16
+    POKEMEM 1024, r0
+    BP 1, 0x0000000000403019
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    CONT
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    IMM r2, 256
+    ALU ADD r1, r2
+    STBX r1, r0
+    SUBMIT 256, 16
+    HALT

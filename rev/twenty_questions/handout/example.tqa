@@ -1,0 +1,7 @@
+    PEEKMEM r0, 0
+    STB 0, r0
+    IMM r1, 1
+    ALU ADD r0, r1
+    STB 1, r0
+    SUBMIT 0, 2
+    HALT

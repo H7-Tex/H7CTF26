@@ -1,0 +1,16 @@
+    IMM r2, 16
+    BP 0, 0x403019
+LOOP:
+    CONT
+    JNZ DONE
+    PEEKREG r0, rdi
+    PEEKREG r1, rsi
+    ALU CMP r1, r2
+    JLT STORE
+    JMP LOOP
+STORE:
+    STBX r1, r0
+    JMP LOOP
+DONE:
+    SUBMIT 0, 16
+    HALT
