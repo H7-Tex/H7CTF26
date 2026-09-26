@@ -1,0 +1,27 @@
+name: Kintsugi
+author: abu
+category: rev
+difficulty: hard
+description: |
+  A retired key-custody vault shattered its root seed across a mesh of tiny
+  guardian agents and lost the tool that glues them back. The re-attestation
+  socket is still listening.
+sub_description: |
+  Reassemble the seed from the shard dump, then GET a nonce and POST a valid
+  attestation to /attest on your instance to unseal the flag.
+points: 500
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - path: handout/handout.tar.gz
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/kintsugi
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 8000, protocol: http }
+  instance_timeout: 3600
+tags: [rev, vm, smt, crypto-chain]
