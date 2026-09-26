@@ -4,7 +4,8 @@
 import os, json, urllib.request, urllib.error
 from flask import Flask, request, jsonify, Response
 
-GRADER = os.environ.get("GRADER", "http://127.0.0.1:9000")
+# grader is a SEPARATE container (no shared localhost) — reach it by role hostname; overridable
+GRADER = os.environ.get("GRADER", "http://grader:9000")
 app = Flask(__name__)
 
 PAGE = """<!doctype html><meta charset=utf-8><title>Aegis Gateway :: hardening ladder</title>

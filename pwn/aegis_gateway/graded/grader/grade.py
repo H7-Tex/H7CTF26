@@ -8,27 +8,39 @@ import os, socket, threading, time
 from flask import Flask, request, jsonify
 import tokens, report
 
-# tier -> its control port on shared pod localhost (public rung port is separate, player-facing)
-CTRL = {"v1.0": 9101, "v1.4": 9102, "v2.0": 9103, "v2.6": 9104, "v3.0": 9105}
+# Pod containers do NOT share localhost -- reach each tier by its ROLE HOSTNAME (default = the
+# role name in services.yaml), overridable via TIER_HOST_<VER> if Anvil's addressing differs.
+# version -> (peer hostname, control port). Public rung port is separate + player-facing.
+def _host(ver, default):
+    return os.environ.get("TIER_HOST_" + ver.replace(".", "_"), default)
+
+TIERS_NET = {
+    "v1.0": (_host("v1.0", "tier-v1-0"), 9101),
+    "v1.4": (_host("v1.4", "tier-v1-4"), 9102),
+    "v2.0": (_host("v2.0", "tier-v2-0"), 9103),
+    "v2.6": (_host("v2.6", "tier-v2-6"), 9104),
+    "v3.0": (_host("v3.0", "tier-v3-0"), 9105),
+}
 PROVISIONED = {"done": False}
 
 
-def _push_one(tier, port):
-    tok = tokens.mint(tier).encode()
+def _push_one(ver, host, port):
+    tok = tokens.mint(ver).encode()
     for _ in range(240):                          # retry until the tier's control listener is up
         try:
-            s = socket.create_connection(("127.0.0.1", port), timeout=2)
+            s = socket.create_connection((host, port), timeout=2)
             s.sendall(tok); s.shutdown(socket.SHUT_WR); s.close()
             return True
         except OSError:
             time.sleep(0.5)
-    print("WARN: could not push token to %s:%d" % (tier, port), flush=True)
+    print("WARN: could not push token to %s (%s:%d)" % (ver, host, port), flush=True)
     return False
 
 
 def push_tokens():
-    # push to every tier IN PARALLEL, so one slow-to-boot tier can't starve the others
-    ths = [threading.Thread(target=_push_one, args=(t, p), daemon=True) for t, p in CTRL.items()]
+    # push to every tier IN PARALLEL (by role hostname), so one slow tier can't starve the others
+    ths = [threading.Thread(target=_push_one, args=(v, h, p), daemon=True)
+           for v, (h, p) in TIERS_NET.items()]
     for th in ths:
         th.start()
     for th in ths:
@@ -65,4 +77,5 @@ def grade():
 
 if __name__ == "__main__":
     threading.Thread(target=push_tokens, daemon=True).start()
-    app.run(host="127.0.0.1", port=int(os.environ.get("GRADER_PORT", "9000")))
+    # bind 0.0.0.0: the portal is a SEPARATE container (no shared localhost) and reaches us by hostname
+    app.run(host="0.0.0.0", port=int(os.environ.get("GRADER_PORT", "9000")))

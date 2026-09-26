@@ -11,27 +11,27 @@ difficulty: insane
 
 services:
   # ---- public: the 5 hardening rungs, each isolated so popping one can't read another's token ----
-  - name: tier-v1_0
+  - name: tier-v1-0
     image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/aegis-graded-tier
     public: true
     ports: [{ port: 9001, protocol: tcp }]
     env: { TIER: "gateway_v1.0", PORT: "9001", CTRL_PORT: "9101" }
-  - name: tier-v1_4
+  - name: tier-v1-4
     image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/aegis-graded-tier
     public: true
     ports: [{ port: 9002, protocol: tcp }]
     env: { TIER: "gateway_v1.4", PORT: "9002", CTRL_PORT: "9102" }
-  - name: tier-v2_0
+  - name: tier-v2-0
     image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/aegis-graded-tier
     public: true
     ports: [{ port: 9003, protocol: tcp }]
     env: { TIER: "gateway_v2.0", PORT: "9003", CTRL_PORT: "9103" }
-  - name: tier-v2_6
+  - name: tier-v2-6
     image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/aegis-graded-tier
     public: true
     ports: [{ port: 9004, protocol: tcp }]
     env: { TIER: "gateway_v2.6", PORT: "9004", CTRL_PORT: "9104" }
-  - name: tier-v3_0
+  - name: tier-v3-0
     image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/aegis-graded-tier
     public: true
     ports: [{ port: 9005, protocol: tcp }]
@@ -41,7 +41,7 @@ services:
     image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/aegis-graded-portal
     public: true
     ports: [{ port: 8080, protocol: http }]
-    env: { GRADER: "http://127.0.0.1:9000" }
+    env: { GRADER: "http://grader:9000" }
   # ---- internal: the only role with the secret + egress; mints/pushes tokens, verifies, reports ----
   - name: grader
     image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/aegis-graded-grader
