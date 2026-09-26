@@ -1,0 +1,26 @@
+name: Formwork
+author: abu
+category: web
+difficulty: hard
+description: |
+  Formwork is our internal low-code base builder. Spin up a base, shape its fields, and seal it so the schema gets signed and any later drift shows up.
+
+  The workspace license key does the signing. The name is your only hint about what a mold is really for.
+sub_description: |
+  A live instance over HTTPS. Build a base, seal it, and pay attention to what the seal folds in.
+points: 500
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - path: handout/formwork.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/formwork
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 3600
+tags: [web, postgresql]

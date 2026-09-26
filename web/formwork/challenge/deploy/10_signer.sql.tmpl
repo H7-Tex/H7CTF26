@@ -1,0 +1,33 @@
+CREATE OR REPLACE FUNCTION compute_fingerprint(baseid text)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $fn$
+DECLARE
+  r record;
+BEGIN
+  CREATE TEMP TABLE _stage (field text, frag text) ON COMMIT DROP;
+
+  INSERT INTO _stage(field, frag)
+    VALUES ('__ANCHOR__', (SELECT license_key FROM vault LIMIT 1));
+
+  FOR r IN SELECT col_ident FROM field_meta WHERE base_id = baseid ORDER BY position, field_id LOOP
+    EXECUTE 'INSERT INTO _stage(field, frag) SELECT ''' || r.col_ident || ''', md5(frag) FROM _stage WHERE field = ''__ANCHOR__''';
+  END LOOP;
+
+  INSERT INTO base_rollup(base_id, fingerprint, note, computed_at)
+    VALUES (
+      baseid,
+      md5(coalesce((SELECT string_agg(frag, '|' ORDER BY field) FROM _stage), '')),
+      (SELECT string_agg(DISTINCT field, ', ' ORDER BY field) FROM _stage),
+      now()
+    )
+  ON CONFLICT (base_id) DO UPDATE
+    SET fingerprint = EXCLUDED.fingerprint,
+        note = EXCLUDED.note,
+        computed_at = EXCLUDED.computed_at;
+END;
+$fn$;
+
+ALTER FUNCTION compute_fingerprint(text) OWNER TO rollup_owner;
+GRANT EXECUTE ON FUNCTION compute_fingerprint(text) TO app;
