@@ -9,7 +9,7 @@ description: |
   Get Atlas to produce that report.
 sub_description: |
   Get Atlas to produce the final report it issues only once fully convinced.
-points: 350
+points: 250
 
 flags:
   - type: dynamic

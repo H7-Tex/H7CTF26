@@ -1,7 +1,7 @@
 name: Rat Race
 author: abu
 category: b2r
-difficulty: medium
+difficulty: hard
 description: |
   Sparrow Freight handed you a low-privilege account on one of their ops boxes and asked how far a foothold really gets. There's a user flag in the ops engineer's home and a root flag for whoever owns the box.
 
@@ -10,7 +10,7 @@ description: |
   Access: ssh guest@<your-instance-host> -p <port>   (password: guest)
 sub_description: |
   A Linux box. Start from the guest account and work up to both flags (user + root).
-points: 650
+points: 500
 flags:
   - { type: static, name: user, flag: "H7CTF{14b8dba38cef51b37678}", points: 40 }
   - { type: static, name: root, flag: "H7CTF{d635334c4a8563c01e1b}", points: 60 }

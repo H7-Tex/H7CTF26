@@ -1,7 +1,7 @@
 name: The Ledger Never Sleeps
 author: abu
 category: crypto
-difficulty: insane
+difficulty: hard
 description: |
   The Aurum treasury signer is online. Send it an approval and it signs, but it always refuses an admin transfer. To shave a step off every signature, a former engineer reworked the signing routine, and the audit never noticed.
 
