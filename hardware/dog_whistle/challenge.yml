@@ -1,0 +1,27 @@
+name: Dog Whistle
+author: abu
+category: hardware
+difficulty: insane
+description: |
+  Aria takes orders it can hear, and the equalizer is the only guard the vendor left you. Lately it keeps obeying instructions nobody in the room ever gave.
+
+  The engineering channel is sealed off from the room, or so the datasheet swears. Reach it and read what the speaker is hiding.
+sub_description: |
+  Connect over TCP and feed the speaker base64 wav captures. The flag comes out only from inside the firmware.
+points: 500
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - path: handout/dog_whistle.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/dog-whistle
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 9999, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [hardware, dsp, binary-exploitation]

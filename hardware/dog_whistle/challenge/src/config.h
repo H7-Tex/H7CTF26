@@ -1,0 +1,35 @@
+#ifndef ARIA_CONFIG_H
+#define ARIA_CONFIG_H
+
+#define INPUT_SR 96000
+#define MAX_SECONDS 2
+#define MAX_SAMPLES (INPUT_SR * MAX_SECONDS)
+#define DECIM 6
+#define CODEC_SR (INPUT_SR / DECIM)
+
+#define MIC_GAIN 4.0
+#define POLY_A1 0.98
+#define POLY_A2 0.05
+#define POLY_A3 0.005
+
+#define SYM_LEN 200
+#define SYM_LEAD 64
+#define TONE_COUNT 16
+#define TONE_BASE 800.0
+#define TONE_STEP 80.0
+
+#define PREAMBLE0 0xA5
+#define PREAMBLE1 0x5A
+
+#define OPCODE_SELECT_PROFILE 0x01
+#define OPCODE_SET_CAL_VECTOR 0x02
+#define OPCODE_DEBUG_PING 0x10
+
+#define PROFILE_CAL_REGION 0x0E
+
+#define INTERLOCK_LO 300.0
+#define INTERLOCK_HI 3400.0
+
+#define CAP_BUDGET 12
+
+#endif
