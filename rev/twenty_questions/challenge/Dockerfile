@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends socat && rm -rf
 RUN useradd -m -u 1000 play
 WORKDIR /tq
 COPY --from=rust /build/interrogator/target/release/interrogator /tq/interrogator
-COPY target/sealer /tq/sealer
+COPY sealer /tq/sealer
 COPY entry.sh /tq/entry.sh
 RUN chmod +x /tq/entry.sh /tq/interrogator /tq/sealer
 ENV TQ_MODE=live

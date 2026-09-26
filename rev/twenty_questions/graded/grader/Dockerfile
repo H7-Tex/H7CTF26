@@ -8,7 +8,7 @@ FROM python:3.12-slim
 RUN useradd -m -u 1000 grader
 WORKDIR /tq
 COPY --from=rust /build/interrogator/target/release/interrogator /tq/interrogator
-COPY target/sealer /tq/sealer
+COPY sealer /tq/sealer
 COPY graded/grader/grade.py graded/grader/report.py /tq/
 RUN chmod +x /tq/interrogator /tq/sealer
 USER grader

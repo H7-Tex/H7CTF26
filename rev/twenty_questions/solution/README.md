@@ -26,17 +26,17 @@ The shipped `simulator` is the exact scorer binary. Run the committed sealer dir
 ```
 python3 ../challenge/interrogator/asm.py optimal.tqa /tmp/optimal.bin
 TQ_MODE=live FLAG='H7CTF{test_flag_1234567}' \
-  TQ_SEALER=../challenge/target/sealer TQ_WIN_BASE=0x4baac0 TQ_CONFESS=0x403019 TQ_BEST_KNOWN=285 \
+  TQ_SEALER=../challenge/sealer TQ_WIN_BASE=0x4baac0 TQ_CONFESS=0x403019 TQ_BEST_KNOWN=285 \
   <the interrogator binary> < /tmp/optimal.bin
 # -> {"solved":true,"gas":285,"score":1.0000,"flag":"H7CTF{test_flag_1234567}",...}
 ```
 
 ## Binary identity
-The deployed image and the handout both use the pinned `challenge/target/sealer` (COPYed, not rebuilt),
+The deployed image and the handout both use the pinned `challenge/sealer` (COPYed, not rebuilt),
 so the addresses in `optimal.tqa` (`confess 0x403019`, `pre_loop 0x40301a`, window base `0x4baac0`)
 match every instance. `sealer.c` is the source of record; rebuild and compare if auditing.
 
 ## Regenerating optimal.tqa
-If the pinned binary ever changes, re-derive the addresses (`nm challenge/target/sealer`) and run
+If the pinned binary ever changes, re-derive the addresses (`nm challenge/sealer`) and run
 `python3 gen_optimal.py <pre_loop> <confess> optimal.tqa`, then re-pin the env in the Dockerfiles and
 `services.yaml` to match.

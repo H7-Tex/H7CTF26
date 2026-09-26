@@ -7,6 +7,6 @@ A hardware lab audits a sealer routine that swallows a device secret, stirs it, 
 See `writeup/README.md` for the intended path and the reference solve.
 
 ## Files
-- `challenge/` : Dockerfile, build_handout.sh, entry.sh, interrogator, target
+- `challenge/` : Dockerfile, build_handout.sh, entry.sh, interrogator, sealer, sealer.c
 - `handout/` : ISA_SPEC.md, example.tqa, twenty-questions.zip
-- `solution/` : baseline.tqa, gen_optimal.py, optimal.tqa
+- `solution/` : README.md, baseline.tqa, gen_optimal.py, optimal.tqa, solve.py

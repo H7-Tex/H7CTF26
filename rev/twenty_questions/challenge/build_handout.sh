@@ -4,7 +4,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 OUT="$1"
 STAGE="$(mktemp -d)"
-cp "$HERE/target/sealer" "$STAGE/sealer"
+cp "$HERE/sealer" "$STAGE/sealer"
 ( cd "$HERE/interrogator" && CARGO_TARGET_DIR="$STAGE/t" cargo build --release >/dev/null 2>&1 )
 cp "$STAGE/t/release/interrogator" "$STAGE/simulator"
 cp "$HERE/interrogator/asm.py" "$STAGE/asm.py"
