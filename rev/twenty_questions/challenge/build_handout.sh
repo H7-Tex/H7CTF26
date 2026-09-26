@@ -4,7 +4,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 OUT="$1"
 STAGE="$(mktemp -d)"
-gcc -static -no-pie -fno-pic -O1 -fno-stack-protector -o "$STAGE/sealer" "$HERE/target/sealer.c"
+cp "$HERE/target/sealer" "$STAGE/sealer"
 ( cd "$HERE/interrogator" && CARGO_TARGET_DIR="$STAGE/t" cargo build --release >/dev/null 2>&1 )
 cp "$STAGE/t/release/interrogator" "$STAGE/simulator"
 cp "$HERE/interrogator/asm.py" "$STAGE/asm.py"
