@@ -6,8 +6,6 @@ description: |
   H7 Passport is our passwordless SSO. Staff tap a passkey and they are in. The admin console behind it only opens for enterprise-attested authenticators, the corporate hardware the portal already trusts.
 
   Open the admin console.
-
-  Bring one it has never heard of.
 sub_description: |
   It only opens for authenticators it already trusts. Bring one it has never heard of.
 points: 500

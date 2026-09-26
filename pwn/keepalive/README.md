@@ -9,4 +9,4 @@ See `writeup/README.md` for the intended path and the reference solve.
 ## Files
 - `challenge/` : build.sh, gatecache.cpp
 - `handout/` : keepalive.zip
-- `solution/` : solve.py
+- `solution/` : __pycache__, solve.py
