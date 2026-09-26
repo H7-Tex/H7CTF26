@@ -5,9 +5,11 @@ difficulty: insane
 description: |
   Two boxes in a Halcyon mesh have been muttering at each other for months in a firmware dialect no upstream library will speak. You have a tap on the wire between them.
 
+  Make the gateway hand over what only an operator is meant to see.
+
   The gateway keeps a provisioning secret it hands out only to its own kind. The guest node on this link is not its own kind. You are the wire now, so start talking.
 sub_description: |
-  Raw TCP. You get every byte both ends send and you can splice bytes toward the gateway. The handout carries the dialect.
+  Nobody else speaks their dialect, which is exactly why they trust it.
 points: 500
 flags:
   - type: dynamic

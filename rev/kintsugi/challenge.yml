@@ -3,12 +3,11 @@ author: abu
 category: rev
 difficulty: hard
 description: |
-  A retired key-custody vault shattered its root seed across a mesh of tiny
-  guardian agents and lost the tool that glues them back. The re-attestation
-  socket is still listening.
+  A retired key-custody vault shattered its root seed across a mesh of tiny guardian agents and lost the tool that glues them back. The re-attestation socket is still listening.
+
+  Put the seed back together and prove it to the socket.
 sub_description: |
-  Reassemble the seed from the shard dump, then GET a nonce and POST a valid
-  attestation to /attest on your instance to unseal the flag.
+  They broke the seed into pieces too small to read. They kept every piece.
 points: 500
 flags:
   - type: dynamic

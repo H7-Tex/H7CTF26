@@ -3,12 +3,11 @@ author: abu
 category: rev
 difficulty: insane
 description: |
-  A hardware lab audits a sealer routine that swallows a device secret, stirs it, and shreds
-  the leftovers. You do not get gdb. You get the Interrogator: it runs the bytecode you submit,
-  and it counts every question you ask.
+  A hardware lab audits a sealer routine that swallows a device secret, stirs it, and shreds the leftovers. You do not get gdb. You get the Interrogator: it runs the bytecode you submit, and it counts every question you ask.
+
+  Pull the secret back out, in as few questions as you can.
 sub_description: |
-  Connect over TCP and submit an Interrogator program (length-prefixed bytecode). Recover the
-  flag in as few debug events as possible. Handout: the target, the ISA, and an offline simulator.
+  It shreds the secret, then hands you a debugger that bills per question. Fair.
 points: 500
 scoring: graded
 flags:

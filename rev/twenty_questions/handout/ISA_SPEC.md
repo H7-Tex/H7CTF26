@@ -45,24 +45,24 @@ Only debug events (interactions with the child) cost gas. Local register and scr
 Operands: `rD`,`rS` are registers; `imm64` is an 8-byte immediate; `addr` is an 8-byte code address;
 `off` is a 16-bit window/scratch offset; `regid` selects a child register; `tgt` is a program label.
 
-- `IMM rD, imm64` — rD = imm64
-- `MOV rD, rS` — rD = rS
-- `ALU op rD, rS` — op in ADD SUB XOR AND OR SHL SHR CMP. CMP sets zero and less-than flags, writes nothing.
-- `BP slot, addr` — arm breakpoint `slot` (0..7) at code `addr`
-- `WP slot, off, len` — arm a watchpoint slot on the window
-- `CONT` — run the child to the next breakpoint. Zero flag set if the child is still stopped, cleared if it exited.
-- `STEP` — single step one instruction
-- `PEEKREG rD, regid` — rD = child register. regid names: rax rcx rdx rsi rdi rip.
-- `PEEKMEM rD, off` — rD = 8 bytes of the window at offset `off`
-- `PEEKMEMX rD, rOff` — rD = 8 bytes of the window at the offset held in rOff
-- `POKEMEM off, rS` — write 8 bytes rS into the window at offset `off`
-- `POKEMEMX rOff, rS` — write 8 bytes rS into the window at the offset held in rOff
-- `JMP tgt` / `JZ tgt` / `JNZ tgt` / `JLT tgt` — jump, on zero, on not-zero, on less-than
-- `STB off, rS` — scratch[off] = low byte of rS
-- `STBX rIdx, rS` — scratch[rIdx & 511] = low byte of rS
-- `LDB rD, off` — rD = scratch[off]
-- `SUBMIT off, len` — submit scratch[off .. off+len] as your recovered bytes
-- `HALT` — stop
+- `IMM rD, imm64` : rD = imm64
+- `MOV rD, rS` : rD = rS
+- `ALU op rD, rS` : op in ADD SUB XOR AND OR SHL SHR CMP. CMP sets zero and less-than flags, writes nothing.
+- `BP slot, addr` : arm breakpoint `slot` (0..7) at code `addr`
+- `WP slot, off, len` : arm a watchpoint slot on the window
+- `CONT` : run the child to the next breakpoint. Zero flag set if the child is still stopped, cleared if it exited.
+- `STEP` : single step one instruction
+- `PEEKREG rD, regid` : rD = child register. regid names: rax rcx rdx rsi rdi rip.
+- `PEEKMEM rD, off` : rD = 8 bytes of the window at offset `off`
+- `PEEKMEMX rD, rOff` : rD = 8 bytes of the window at the offset held in rOff
+- `POKEMEM off, rS` : write 8 bytes rS into the window at offset `off`
+- `POKEMEMX rOff, rS` : write 8 bytes rS into the window at the offset held in rOff
+- `JMP tgt` / `JZ tgt` / `JNZ tgt` / `JLT tgt` : jump, on zero, on not-zero, on less-than
+- `STB off, rS` : scratch[off] = low byte of rS
+- `STBX rIdx, rS` : scratch[rIdx & 511] = low byte of rS
+- `LDB rD, off` : rD = scratch[off]
+- `SUBMIT off, len` : submit scratch[off .. off+len] as your recovered bytes
+- `HALT` : stop
 
 ## Assembler
 `asm.py prog.tqa out.bin` produces the length-prefixed bytecode. Labels are `name:` on their own line.

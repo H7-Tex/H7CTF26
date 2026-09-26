@@ -2,7 +2,7 @@
 
 `rev` / `hard` / on-demand per-team instance (http) / 500 pts / dynamic flag
 
-A retired key-custody vault shattered its root seed across a mesh of tiny guardian agents and lost the tool that glues them back. The re-attestation socket is still listening.
+A retired key-custody vault shattered its root seed across a mesh of tiny guardian agents and lost the tool that glues them back. The re-attestation socket is still listening. Put the seed back together and prove it to the socket.
 
 See `writeup/README.md` for the intended path and the reference solve.
 

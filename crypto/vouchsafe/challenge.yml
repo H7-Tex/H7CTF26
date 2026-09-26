@@ -3,11 +3,13 @@ author: abu
 category: crypto
 difficulty: insane
 description: |
-  H7 Passport is our passwordless SSO. Staff tap a passkey and they are in. The admin console behind it only opens for enterprise-attested authenticators, corporate hardware the portal already trusts.
+  H7 Passport is our passwordless SSO. Staff tap a passkey and they are in. The admin console behind it only opens for enterprise-attested authenticators, the corporate hardware the portal already trusts.
+
+  Open the admin console.
 
   Bring one it has never heard of.
 sub_description: |
-  A live WebAuthn relying party over HTTPS. Enroll a credential, then authenticate with it to reach the admin console.
+  It only opens for authenticators it already trusts. Bring one it has never heard of.
 points: 500
 flags:
   - type: dynamic

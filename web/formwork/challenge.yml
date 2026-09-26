@@ -5,9 +5,11 @@ difficulty: hard
 description: |
   Formwork is our internal low-code base builder. Spin up a base, shape its fields, and seal it so the schema gets signed and any later drift shows up.
 
+  Read the record no base is supposed to contain.
+
   The workspace license key does the signing. The name is your only hint about what a mold is really for.
 sub_description: |
-  A live instance over HTTPS. Build a base, seal it, and pay attention to what the seal folds in.
+  Every base gets sealed so nothing can be tampered with. The seal is very thorough.
 points: 500
 flags:
   - type: dynamic

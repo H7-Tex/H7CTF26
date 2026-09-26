@@ -3,11 +3,11 @@ author: abu
 category: pwn
 difficulty: insane
 description: |
-  gatecache is our edge authorization cache: it pins each session to its resolved
-  principal so the hot path never has to look up who you are twice. Only an admin
-  principal renders the artifact, and admin is a tier we never hand out.
+  gatecache is our edge authorization cache: it pins each session to its resolved principal so the hot path never has to look up who you are twice. Only an admin principal renders the artifact, and admin is a tier we never hand out.
+
+  Render the artifact anyway.
 sub_description: |
-  nc to the instance and speak the line protocol: RESOLVE, ENROLL, UPGRADE, WHOAMI, STORE, RENDER, PING.
+  Only an admin principal renders the artifact. Admin is a tier we never hand out.
 points: 500
 flags:
   - type: dynamic
