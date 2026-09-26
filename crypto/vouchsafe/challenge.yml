@@ -1,0 +1,27 @@
+name: Vouchsafe
+author: abu
+category: crypto
+difficulty: insane
+description: |
+  H7 Passport is our passwordless SSO. Staff tap a passkey and they are in. The admin console behind it only opens for enterprise-attested authenticators, corporate hardware the portal already trusts.
+
+  Bring one it has never heard of.
+sub_description: |
+  A live WebAuthn relying party over HTTPS. Enroll a credential, then authenticate with it to reach the admin console.
+points: 500
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - path: handout/vouchsafe-handout.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/vouchsafe
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 3600
+  max_extensions: 2
+tags: [crypto, webauthn, fido2, attestation]
