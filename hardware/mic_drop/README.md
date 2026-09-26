@@ -11,13 +11,14 @@ voice-band modem, it survives the lossy AAC/HLS codec intact.
 
 ## Delivery
 Per-team live instance. On launch the container generates the room audio with `$FLAG`
-encoded as the AFSK burst, and MediaMTX serves it as a continuously-looping HLS stream at
-`/boardroom/index.m3u8`. Pull the stream, demodulate the audio offline, submit the flag.
+encoded as the AFSK burst. The container pre-segments the audio once into a STATIC VOD HLS
+stream at `/boardroom/index.m3u8` (served by a small threaded static HTTP server; no live
+RTSP). Pull the stream, demodulate the audio offline, submit the flag.
 
 ## Files
 - `challenge.yml` : definition (dynamic flag, on-demand docker, http:8080).
 - `challenge/gen.py` : the audio synthesizer (room ambience + AFSK-encoded `$FLAG`).
-- `challenge/mediamtx.yml` : MediaMTX config (loops the audio into a live HLS stream).
+- `challenge/serve.py` : threaded static HTTP server for the pre-segmented HLS.
 - `challenge/entrypoint.sh` : generate audio, then run MediaMTX.
 - `challenge/Dockerfile` : the instance image (`h7ctf26/mic-drop`, ffmpeg + MediaMTX + numpy).
 - `solution/solve.py` : reference solver (pull HLS via ffmpeg, Goertzel AFSK demod).
@@ -35,8 +36,9 @@ pre-generated once at boot and looped, so it is near-static weight). AFSK surviv
 128k byte-exact (12/12 random flags through the codec).
 
 ## Deploy notes
-- The image build downloads the MediaMTX binary (v1.9.3) from GitHub and `apt install`s
-  ffmpeg, so the Cloud Build needs internet egress. No GPU, no runtime external calls.
+- The image `apt install`s ffmpeg only (no MediaMTX/binary download). No GPU, no runtime
+  external calls, no live RTSP. (v0.0.108: switched from live MediaMTX RTSP->HLS to static
+  pre-segmented HLS - the live RTSP publish stalled intermittently under gVisor/CPU load.)
 - Player-facing endpoint is HLS over HTTP (`/boardroom/index.m3u8`) so it rides the normal
   Traefik web path; no raw-TCP/RTSP transport is exposed publicly.
 
