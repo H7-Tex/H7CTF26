@@ -73,6 +73,27 @@ class Chan:
         self.s.sendall(line.encode() + b"\n")
         return self.drain(idle, total)
 
+    def cmd_re(self, line, pattern, total=3.0):
+        self.s.setblocking(True)
+        self.s.sendall(line.encode() + b"\n")
+        end = time.time() + total
+        self.s.setblocking(False)
+        rx = re.compile(pattern)
+        while time.time() < end:
+            if rx.search(self.buf.decode(errors="replace")):
+                break
+            try:
+                d = self.s.recv(4096)
+                if d:
+                    self.buf += d
+                else:
+                    time.sleep(0.02)
+            except BlockingIOError:
+                time.sleep(0.02)
+        out = self.buf
+        self.buf = b""
+        return out.decode(errors="replace")
+
 
 def moves(adj, u):
     return adj[u] + [u]
@@ -136,7 +157,7 @@ def main():
 
     adj = [[] for _ in range(NODES)]
     for n in range(NODES):
-        r = ch.cmd("survey %d" % n, idle=0.05, total=1.0)
+        r = ch.cmd_re("survey %d" % n, r"bulkheads to:[ \d]*\n", total=3.0)
         m = re.search(r"bulkheads to:([ \d]+)", r)
         adj[n] = [int(x) for x in m.group(1).split()] if m else []
     print("[*] surveyed manifold, degrees:", [len(a) for a in adj][:8], "...")
