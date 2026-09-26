@@ -1,0 +1,14 @@
+{
+  "contract": "relay.report-package/v1",
+  "profiles": {
+    "summary": {
+      "material": ["report"]
+    },
+    "record": {
+      "material": ["report", "readings", "technician-notes"]
+    },
+    "complete": {
+      "material": ["report", "readings", "technician-notes", "commissioning"]
+    }
+  }
+}

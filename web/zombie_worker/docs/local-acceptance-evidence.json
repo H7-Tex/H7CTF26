@@ -1,0 +1,66 @@
+{
+  "challenge": "Owatron/zombie-worker",
+  "checked_on": "2026-09-26",
+  "base_commit": "a3cc61c4add993e293349be75cc3d7c70d4cbf7b",
+  "candidate_commit": null,
+  "source_status": "working tree changes; not committed",
+  "results": {
+    "api_exporter_and_real_chromium_acceptance": "19 passed",
+    "player_owned_release_and_worker_lifecycle": "passed; active/controller legacy, waiting current after v2 frontend/API; reload preserved skew",
+    "current_worker_negative_path": "passed; transient preview remained unpublished",
+    "player_owned_reference_solve": "passed; crafted v1 preference and worker metadata, durable outbox, deliberate MessageChannel replay, ordinary export",
+    "v1_selector_shortcut_removed": "passed; v1 UI offers only summary and record while v1 API still accepts the crafted complete profile",
+    "summary_record_negative": "passed; signed replay with either v1 profile leaves JOB-3887 Draft and report export unavailable",
+    "arbitrary_outbox_and_unsigned_replay": "passed; fabricated envelope was rejected and no publication occurred",
+    "client_generated_key_full_protocol_emulation": "accepted expert alternate solve; the server cannot attest key origin, so it requires the complete authoritative semantic conversion, exact staging, signature, expiry, and one-use replay",
+    "compose_two_service_acceptance": "passed; relay and exporter only",
+    "local_tls_terminating_ingress": "passed; original Host and X-Forwarded-Proto=https preserved",
+    "production_anvil_https_instances": "pending; no fresh Anvil origin available",
+    "immutable_release_images": "phase3-v0.2.4 references configured; not published or digest-verified",
+    "reliability_gate_20_runs": "passed 20/20 fresh Compose instances; median cycle 5.270s, max 5.356s; median stage latency 0.066s, max 0.098s; zero retries; zero stuck cycles"
+  },
+  "observed_browser_state": {
+    "frontend": "v2",
+    "api": "v2",
+    "registration_active": "legacy/v1",
+    "registration_waiting": "current/v2",
+    "controller": "legacy/v1"
+  },
+  "flag_isolation": {
+    "runtime_flag_written_to_evidence": false,
+    "relay_environment_contains_flag": false,
+    "exporter_environment_contains_runtime_flag": true,
+    "relay_logs_contain_runtime_flag": false
+  },
+  "compose_observations": {
+    "dispatch_cycle_duration_seconds": 5.253,
+    "stage_latency_seconds": 0.069,
+    "replay_attempts": 1,
+    "retry_count": 0,
+    "stuck_cycle": false,
+    "relay_container_memory_bytes": 42320527,
+    "exporter_container_memory_bytes": 35137781,
+    "browser_heap_bytes": null
+  },
+  "local_tls": {
+    "certificate_validation": "test certificate pinned to the test key",
+    "forwarded_host": true,
+    "forwarded_proto_https": true,
+    "secure_httponly_cookie": true,
+    "same_origin_worker_registration": true,
+    "outbox_staged_and_signed_replay_sent": true,
+    "final_export_retrieved": true
+  },
+  "reliability_20_runs": {
+    "runs": 20,
+    "cycle_duration_median_seconds": 5.270,
+    "cycle_duration_max_seconds": 5.356,
+    "stage_latency_median_seconds": 0.066,
+    "stage_latency_max_seconds": 0.098,
+    "retry_count_total": 0,
+    "browser_heap_median_bytes": null,
+    "relay_container_memory_median_bytes": 54305751,
+    "relay_container_memory_max_bytes": 55710842,
+    "permanently_stuck_cycles": 0
+  }
+}

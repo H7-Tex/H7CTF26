@@ -1,0 +1,14 @@
+{
+  "origin": "https://localhost:54185",
+  "tls_terminated_at_ingress": true,
+  "host_forwarded": "localhost:54185",
+  "x_forwarded_proto": "https",
+  "secure_cookie": true,
+  "real_sw_skew": true,
+  "outbox": true,
+  "signed_replay": true,
+  "player_owned_legacy_controller": true,
+  "current_worker_waiting": true,
+  "deliberate_messagechannel_replay": true,
+  "final_export_retrieved": true
+}

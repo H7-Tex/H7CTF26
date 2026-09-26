@@ -1,0 +1,64 @@
+name: ZOMBIE WORKER
+author: web
+category: web
+difficulty: hard
+description: |
+  Relay keeps field technicians working through unreliable connections. Jobs,
+  drafts, and reports continue syncing while a routine client update rolls out.
+sub_description: |
+  The field shift continues while Relay rolls out an update to its field app.
+points: 500
+
+flags:
+  - type: dynamic
+    name: CHECKPOINT_FLAG
+    dynamic_flag_prefix: "H7CTF{"
+  - type: dynamic
+    name: FLAG
+    dynamic_flag_prefix: "H7CTF{"
+
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  # Relay and the private exporter are separate Anvil services.
+  image: h7ctf26/zombie-worker-relay
+  tag: phase3-v0.2.4
+  cpu_limit: "1.0"
+  memory_limit: 512Mi
+  exposed_ports:
+    - port: 8080
+      protocol: http
+  instance_timeout: 1800
+  max_extensions: 2
+  egress: false
+  services:
+    - name: relay
+      image: h7ctf26/zombie-worker-relay
+      tag: phase3-v0.2.4
+      public: true
+      egress: false
+      ports:
+        - port: 8080
+          protocol: http
+      cpu_limit: "500m"
+      memory_limit: 256Mi
+      env:
+        APP_ENV: production
+        CHECKPOINT_FLAG: "${CHECKPOINT_FLAG}"
+        EXPORTER_URL: http://exporter:8090
+        EXPORTER_TOKEN: "${INTERNAL_TOKEN}"
+        INSTANCE_ID: "${INSTANCE_ID}"
+    - name: exporter
+      image: h7ctf26/zombie-worker-exporter
+      tag: phase3-v0.2.4
+      public: false
+      egress: false
+      ports:
+        - port: 8090
+          protocol: http
+      cpu_limit: "250m"
+      memory_limit: 128Mi
+      env:
+        APP_ENV: production
+        FLAG: "${FLAG}"
+        EXPORTER_TOKEN: "${INTERNAL_TOKEN}"

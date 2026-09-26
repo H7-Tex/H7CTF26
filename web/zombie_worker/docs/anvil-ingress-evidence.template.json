@@ -1,0 +1,32 @@
+{
+  "challenge": "Owatron/zombie-worker",
+  "release_commit": null,
+  "instances": [
+    {
+      "origin": "https://<fresh-anvil-instance-1>",
+      "created_independently": true,
+      "certificate_verified": null,
+      "secure_httponly_cookie": null,
+      "same_origin_browser_solve": null,
+      "lifecycle": "frontend=v2 api=v2 controller=v1 waiting=v2",
+      "signed_replay": null,
+      "report_package_semantic_transition": null,
+      "final_flag_retrieved_from_export": null
+    },
+    {
+      "origin": "https://<fresh-anvil-instance-2>",
+      "created_independently": true,
+      "certificate_verified": null,
+      "secure_httponly_cookie": null,
+      "same_origin_browser_solve": null,
+      "lifecycle": "frontend=v2 api=v2 controller=v1 waiting=v2",
+      "signed_replay": null,
+      "report_package_semantic_transition": null,
+      "final_flag_retrieved_from_export": null
+    }
+  ],
+  "image_digests": {
+    "relay": null,
+    "exporter": null
+  }
+}

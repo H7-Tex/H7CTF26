@@ -1,0 +1,28 @@
+# Python environments and bytecode
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Browser automation output
+playwright-report/
+test-results/
+blob-report/
+artifacts/
+
+# Local TLS certificates and generated ingress evidence
+*.pem
+*.key
+https-evidence*.json
+https-instance-*.json
+local-tls-evidence*.json
+
+# Local credentials and environment files
+.env
+.env.*
+!.env.example
+*.secret
+
+# Local code graph output
+graphify-out/

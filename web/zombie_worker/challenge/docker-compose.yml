@@ -1,0 +1,50 @@
+services:
+  relay:
+    build:
+      context: .
+      target: relay
+    ports:
+      - "${RELAY_HOST_PORT:-8080}:8080"
+    mem_limit: 256m
+    cpus: 0.50
+    pids_limit: 128
+    environment:
+      APP_ENV: production
+      INSTANCE_ID: local-relay
+      CHECKPOINT_FLAG: ${CHECKPOINT_FLAG:-ZW-CHECKPOINT-local-dummy}
+      EXPORTER_URL: http://exporter:8090
+      EXPORTER_TOKEN: ${EXPORTER_TOKEN:?Set a random EXPORTER_TOKEN before starting Relay}
+      DISPATCH_COLLECTION_SECONDS: ${DISPATCH_COLLECTION_SECONDS:-8}
+      DISPATCH_COOLDOWN_SECONDS: ${DISPATCH_COOLDOWN_SECONDS:-2}
+    networks: [relay-private]
+    depends_on:
+      exporter:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/api/meta', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+  exporter:
+    build:
+      context: .
+      target: exporter
+    mem_limit: 128m
+    cpus: 0.25
+    pids_limit: 64
+    environment:
+      APP_ENV: production
+      FLAG: ${FLAG:?Set FLAG before starting the private exporter}
+      EXPORTER_TOKEN: ${EXPORTER_TOKEN:?Set the same random EXPORTER_TOKEN used by Relay}
+    networks: [relay-private]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/health', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+networks:
+  relay-private:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: "false"

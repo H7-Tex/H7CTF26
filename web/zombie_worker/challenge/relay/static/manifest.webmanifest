@@ -1,0 +1,12 @@
+{
+  "id": "/",
+  "name": "Relay Field Operations",
+  "short_name": "Relay",
+  "description": "Field operations and dispatch",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f5f1",
+  "theme_color": "#f4f5f1",
+  "icons": [{ "src": "/icons/relay.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
