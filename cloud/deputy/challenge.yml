@@ -3,15 +3,15 @@ author: abu
 category: cloud
 difficulty: hard
 description: |
-  DeputyCorp is a cloud deployment partner your company integrated with. You've been handed a low-privilege analyst key into the account and asked how far a careless integration really lets you go.
+  DeputyCorp is a cloud deployment partner your company integrated with. You've been handed a low-privilege analyst key into their account. Find out how far a careless integration really lets you go.
 
-  Point the AWS CLI at the endpoint and escalate. Four flags, deeper each stage.
+  Four flags, deeper each stage.
 
-  Endpoint: http://<your-instance-host>:<port>   (use as `--endpoint-url`)
-  Starting credentials (analyst):
-    aws_access_key_id     = AKIAANALYST0000000000
-    aws_secret_access_key = wJalrAnalystSecretKeyEXAMPLEbPxRfiCY
-    region                = us-east-1
+  Endpoint: `http://<your-instance-host>:<port>`
+
+  `aws_access_key_id = AKIAANALYST0000000000`
+  `aws_secret_access_key = wJalrAnalystSecretKeyEXAMPLEbPxRfiCY`
+  `region = us-east-1`
 sub_description: |
   A simulated AWS account you drive with the real AWS CLI. Start from a low-privilege key and escalate. Four flags.
 points: 1500
