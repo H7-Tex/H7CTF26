@@ -1,0 +1,27 @@
+name: Afterglow
+author: abu
+category: hardware
+difficulty: hard
+description: |
+  A dead airport departure board came back from salvage with its controller flash still readable, so we dumped it. Boot the image and it comes up, flickers, and paints a crisp tag along the top calibration strip that reads the same on every board we have tried, which is exactly why it is not the one you want.
+
+  The unit's own service tag is down in the flicker, and the panel keeps it dark until a technician brings the board into service.
+sub_description: |
+  Your instance serves panel.rom. Boot it locally with qemu-system-i386, bring the panel into service, and read your unit's tag off the matrix.
+points: 500
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - path: handout/afterglow.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/afterglow
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 8080, protocol: http }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [hardware, reverse-engineering, real-mode, vga]
