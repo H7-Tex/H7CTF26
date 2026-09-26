@@ -14,27 +14,27 @@ services:
   - name: tier-v1-0
     image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/aegis-graded-tier
     public: true
-    ports: [{ port: 9001, protocol: tcp }]
+    ports: [{ port: 9001, protocol: tcp }, { port: 9101, protocol: tcp, internal: true }]
     env: { TIER: "gateway_v1.0", PORT: "9001", CTRL_PORT: "9101" }
   - name: tier-v1-4
     image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/aegis-graded-tier
     public: true
-    ports: [{ port: 9002, protocol: tcp }]
+    ports: [{ port: 9002, protocol: tcp }, { port: 9102, protocol: tcp, internal: true }]
     env: { TIER: "gateway_v1.4", PORT: "9002", CTRL_PORT: "9102" }
   - name: tier-v2-0
     image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/aegis-graded-tier
     public: true
-    ports: [{ port: 9003, protocol: tcp }]
+    ports: [{ port: 9003, protocol: tcp }, { port: 9103, protocol: tcp, internal: true }]
     env: { TIER: "gateway_v2.0", PORT: "9003", CTRL_PORT: "9103" }
   - name: tier-v2-6
     image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/aegis-graded-tier
     public: true
-    ports: [{ port: 9004, protocol: tcp }]
+    ports: [{ port: 9004, protocol: tcp }, { port: 9104, protocol: tcp, internal: true }]
     env: { TIER: "gateway_v2.6", PORT: "9004", CTRL_PORT: "9104" }
   - name: tier-v3-0
     image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/aegis-graded-tier
     public: true
-    ports: [{ port: 9005, protocol: tcp }]
+    ports: [{ port: 9005, protocol: tcp }, { port: 9105, protocol: tcp, internal: true }]
     env: { TIER: "gateway_v3.0", PORT: "9005", CTRL_PORT: "9105" }
   # ---- public: submission surface, NO secret ----
   - name: portal
@@ -47,6 +47,7 @@ services:
     image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/aegis-graded-grader
     public: false
     egress: true
+    ports: [{ port: 9000, protocol: tcp, internal: true }]   # internal ClusterIP so portal reaches grader:9000
     env:
       GRADER_SECRET: "${GRADER_SECRET}"
       GRADER_URL: "${GRADER_URL}"
