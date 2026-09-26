@@ -1,14 +1,14 @@
 name: Fool's Gold
 author: h7
 category: blockchain
-difficulty: medium
+difficulty: easy
 description: |
   crosscollateral is a multi-asset bank on sui: deposit any listed asset, then redeem it later for any other at the bank's posted prices. it holds a real reserve for its honest users.
 
   you're funded with a bag of a near-worthless listed token. leave with the bank's sui.
 sub_description: |
   turn a bag of a worthless listed token into the bank's sui reserve.
-points: 800
+points: 200
 flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"

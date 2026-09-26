@@ -1,6 +1,6 @@
 # Cross Collateral
 
-`blockchain` `sui` `hard`
+`blockchain` `sui` `easy`
 
 crosscollateral is a multi-asset bank. deposit any listed asset, get a ticket, redeem it later for any other listed asset, converted at the bank's posted prices. it holds a real SUI reserve.
 

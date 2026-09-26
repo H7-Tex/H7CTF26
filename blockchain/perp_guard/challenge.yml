@@ -1,14 +1,14 @@
 name: Perp Guard
 author: h7
 category: blockchain
-difficulty: insane
+difficulty: hard
 description: |
   perpguard is a solana lending market: post collateral, open positions, borrow.
 
   you're a borrower who plans to default, and your collateral is about to be marked down. end up underwater on a loan no keeper can ever claw back.
 sub_description: |
   leave yourself underwater on a loan no keeper can ever liquidate.
-points: 1000
+points: 500
 flags:
   - type: dynamic
     dynamic_flag_prefix: "H7CTF{"
