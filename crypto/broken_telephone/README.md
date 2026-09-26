@@ -1,0 +1,12 @@
+# Broken Telephone
+
+`crypto` / `insane` / on-demand per-team instance (tcp) / 500 pts / dynamic flag
+
+Two boxes in a Halcyon mesh have been muttering at each other for months in a firmware dialect no upstream library will speak. You have a tap on the wire between them.
+
+See `writeup/README.md` for the intended path and the reference solve.
+
+## Files
+- `challenge/` : murmur_crypto.py, server.py
+- `handout/` : MURMUR-1.2.md, broken_telephone.zip, murmur_crypto.py
+- `solution/` : solve.py

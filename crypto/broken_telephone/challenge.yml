@@ -1,0 +1,27 @@
+name: Broken Telephone
+author: abu
+category: crypto
+difficulty: insane
+description: |
+  Two boxes in a Halcyon mesh have been muttering at each other for months in a firmware dialect no upstream library will speak. You have a tap on the wire between them.
+
+  The gateway keeps a provisioning secret it hands out only to its own kind. The guest node on this link is not its own kind. You are the wire now, so start talking.
+sub_description: |
+  Raw TCP. You get every byte both ends send and you can splice bytes toward the gateway. The handout carries the dialect.
+points: 500
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - path: handout/broken_telephone.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/broken_telephone
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 1337, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [crypto, aead, noise, mitm]
