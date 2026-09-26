@@ -1,0 +1,26 @@
+name: Keepalive
+author: abu
+category: pwn
+difficulty: insane
+description: |
+  gatecache is our edge authorization cache: it pins each session to its resolved
+  principal so the hot path never has to look up who you are twice. Only an admin
+  principal renders the artifact, and admin is a tier we never hand out.
+sub_description: |
+  nc to the instance and speak the line protocol: RESOLVE, ENROLL, UPGRADE, WHOAMI, STORE, RENDER, PING.
+points: 500
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - path: handout/keepalive.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/keepalive
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 9006, protocol: tcp }
+  instance_timeout: 3600
+tags: [pwn, heap, use-after-free, rcu, concurrency, insane]
