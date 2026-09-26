@@ -3,11 +3,11 @@ author: abu
 category: pwn
 difficulty: medium
 description: |
-  The vault will run any code you hand it, and it even gives you room to put it in. But the door only opens so far, so simply asking for a shell won't get you anywhere.
+  The vault throws its doors wide and lets you set up shop inside. There is only one move it will not tolerate, and wouldn't you know it, that is exactly the one you had planned.
 
-  Work within what it allows and take what you came for.
+  You will have to take what you came for the long way around.
 sub_description: |
-  A networked binary that runs your code within limits. Read the flag.
+  Read the flag the long way around.
 points: 300
 flags:
   - type: dynamic

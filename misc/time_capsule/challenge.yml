@@ -3,11 +3,11 @@ author: abu
 category: misc
 difficulty: easy
 description: |
-  A developer at Sparrow Freight swears they never committed the production credentials, and the visible history is clean. We pulled their repo before it was scrubbed.
+  A Sparrow Freight developer swears the production token never made it into a commit, and the history is spotless. We pulled their repo before anyone could tidy it further.
 
-  "Never committed" isn't the same as "never there." Recover the leaked token.
+  Never committed is not the same as never there.
 sub_description: |
-  Recover a leaked production token from a repo whose visible history looks clean.
+  Recover a leaked production token from a repo whose history looks perfectly clean.
 points: 150
 flags:
   - type: static

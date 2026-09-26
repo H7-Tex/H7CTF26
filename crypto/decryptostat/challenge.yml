@@ -3,11 +3,11 @@ author: abu
 category: crypto
 difficulty: hard
 description: |
-  DecryptoStat runs analytics on encrypted data. A legacy service runs beside a hardened successor.
+  DecryptoStat crunches the numbers without ever peeking at your data, or so the pitch deck promises. The original service still hums along beside the hardened rewrite that was meant to make it behave.
 
-  Recover the secret key behind each.
+  Both of them are hopeless at keeping a secret.
 sub_description: |
-  Recover the secret key behind each version of the encrypted-analytics service.
+  Two versions, two keys neither was ever meant to let slip.
 points: 600
 provide:
   - path: challenge/ckks.py

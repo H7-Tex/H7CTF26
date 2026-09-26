@@ -3,11 +3,11 @@ author: abu
 category: mobile
 difficulty: easy
 description: |
-  Onyx Locker is a personal password manager for Android. Its developers were sure the vault's recovery code was safe on the device.
+  Onyx Locker keeps all your secrets on the phone, never in the cloud, exactly as promised. The vault's recovery code sits right there on the device, sealed up tight and yours alone.
 
-  See if they were right. Recover it.
+  Yours, and anyone who bothers to look.
 sub_description: |
-  Recover the Onyx Locker vault's recovery code from the Android app.
+  Recover the recovery code the vault swears is safe.
 points: 150
 flags:
   - type: dynamic

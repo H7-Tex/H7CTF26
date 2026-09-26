@@ -3,11 +3,11 @@ author: h7
 category: blockchain
 difficulty: hard
 description: |
-  MirrorLend lets you borrow against your Mirror LP tokens, and it holds a real reserve for its lenders. On paper the numbers add up.
+  MirrorLend lets you borrow against your Mirror LP tokens, and it holds a real reserve for its lenders. On paper, every figure reconciles.
 
-  Borrow far more than your collateral is honestly worth and walk off with the lender's funds.
+  A good trompe-l'oeil only has to hold for as long as the eye is on it. The reserve won't notice you leaving.
 sub_description: |
-  borrow against your LP collateral for far more than it's worth and drain the lender.
+  the books reconcile to the penny, right up until they don't. walk off with the lender's reserve.
 points: 1000
 flags:
   - type: dynamic

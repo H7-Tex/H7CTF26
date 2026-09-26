@@ -3,11 +3,11 @@ author: abu
 category: mobile
 difficulty: hard
 description: |
-  Meridian Pay is a mobile neobank. Client and backend were shipped in a hurry, and they trust each other, and the device around them, more than they should.
+  Meridian Pay is a neobank that shipped in a hurry and trusts everyone: the client trusts the server, the server trusts the client, and both trust the phone underneath. Four separate cracks are hiding in that arrangement, some in the app and some in the API behind it, one flag each.
 
-  Four separate flaws hide here, each worth a flag: some in the app, some in the API behind it. Find all four.
+  Move fast, break banks.
 sub_description: |
-  Review the Android neobank client and its API and recover all four flags, one per flaw.
+  Find all four flaws across the neobank's app and API, one flag apiece.
 flags:
   - { type: dynamic, name: v1, dynamic_flag_prefix: "H7CTF{", points: 10 }
   - { type: dynamic, name: v2, dynamic_flag_prefix: "H7CTF{", points: 20 }

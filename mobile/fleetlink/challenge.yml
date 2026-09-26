@@ -3,11 +3,11 @@ author: abu
 category: mobile
 difficulty: medium
 description: |
-  FleetLink is the Android app our delivery drivers use to pull their trip assignments. The backend is locked down, and each driver only ever sees their own trips.
+  FleetLink is what our delivery drivers use to pull their trip sheets, and the backend is careful: it hands each driver their own trips and nothing else. Above all that sits the dispatcher's full fleet manifest, the one no driver is ever meant to see.
 
-  Get it to give up the dispatcher-only fleet manifest, the one no driver was ever meant to see.
+  Sign for it yourself.
 sub_description: |
-  Recover the dispatcher-only fleet manifest from the FleetLink driver app.
+  Get the dispatcher-only fleet manifest the driver app never asks for.
 points: 350
 flags:
   - type: dynamic

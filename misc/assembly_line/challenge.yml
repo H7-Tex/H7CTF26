@@ -3,11 +3,11 @@ author: abu
 category: misc
 difficulty: easy
 description: |
-  The Sparrow Freight sorting line moves fast: a long run of small tasks, each on a short clock, with no way to keep up by hand.
+  The Sparrow Freight sorting line never slows down: a long run of tiny jobs, each on a short clock, far more than any pair of hands can chase.
 
-  Clear the whole run and the line hands over the day's code.
+  Clear the whole shift and the line signs out the day's code.
 sub_description: |
-  Clear a long run of timed tasks fast enough that the line hands over its code.
+  Keep pace with a long run of timed tasks until the line hands over its code.
 points: 150
 flags:
   - type: dynamic

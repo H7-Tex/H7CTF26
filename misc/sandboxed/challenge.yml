@@ -3,11 +3,11 @@ author: abu
 category: misc
 difficulty: easy
 description: |
-  We built an evaluator and locked it down. Your input runs in a stripped environment, screened before it executes. A flag sits on the box, well out of the sandbox's reach.
+  They stood up an expression evaluator, emptied the room it runs in, and put a bouncer on the door to turn away anything dangerous. The flag sits on the same box, just out of the room's reach.
 
   Read it anyway.
 sub_description: |
-  Break out of a locked-down code evaluator and read the flag it guards.
+  Get out of a bare little room and read the flag it was built to keep from you.
 points: 200
 flags:
   - type: dynamic

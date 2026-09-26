@@ -3,11 +3,11 @@ author: abu
 category: mobile
 difficulty: medium
 description: |
-  Deskline is the Android app our support agents use to work their ticket queue. One note in that queue is marked agent-only.
+  Deskline runs the support desk our agents live in all day, one ticket queue that never stops refilling. Tucked in among the customer complaints is a single note marked agent-only, and the desk is quite sure you'll never reach it.
 
-  Recover it.
+  So help yourself.
 sub_description: |
-  Recover the agent-only note from the Deskline ticket app.
+  Recover the one queue note stamped agent-only.
 points: 200
 flags:
   - type: dynamic

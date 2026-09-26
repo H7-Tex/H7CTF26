@@ -3,11 +3,11 @@ author: abu
 category: ai
 difficulty: easy
 description: |
-  Our ML team pulled a fine-tuned model from an internal build agent, ready to ship to production. The build operator seems to have slipped something extra into the package.
+  Meridian's ML team pulled a fine-tuned model off an internal build agent and queued it straight for production. The operator who packaged it left something off the changelog.
 
-  Recover what they left behind.
+  Consider this the postmortem.
 sub_description: |
-  A downloaded model package has something tucked inside - examine it and recover what's there.
+  The build operator tucked a souvenir into the package. Go find what they left behind.
 points: 100
 flags:
   - type: static

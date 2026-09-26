@@ -3,11 +3,11 @@ author: abu
 category: crypto
 difficulty: medium
 description: |
-  VoltEye runs a fleet of IP cameras. Each device ships with its own identity certificate, and during provisioning the cloud seals an admin token to each one. You pulled the whole fleet's certificates and intercepted a single provisioning payload addressed to one device; the token sealed inside unlocks its console.
+  VoltEye ships a whole fleet of identical cameras, cranked out on the same assembly line, in the same hurry. Somewhere in that crowd is one device whose console you'd very much like to open.
 
-  Recover that device's key, read the token it protects, and unlock the console.
+  Family resemblance runs deeper than you'd think.
 sub_description: |
-  From the camera fleet's certificates and one intercepted payload, recover the target device's key and read the admin token that unlocks the console.
+  A fleet of near-identical cameras, all built in the same hurry. One console you want open. Family resemblance runs deep.
 points: 350
 flags:
   - type: dynamic

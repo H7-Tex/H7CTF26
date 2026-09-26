@@ -3,11 +3,11 @@ author: abu
 category: crypto
 difficulty: hard
 description: |
-  Helios ships signed firmware. The device boots any build that carries a valid signature, and the notary signs only builds it trusts.
+  Helios firmware boots only with the notary's blessing, and the notary blesses only the builds it trusts. The one you have in mind will never make that list.
 
-  Boot a build the notary would never sign.
+  Lucky for you, it is not above a second take.
 sub_description: |
-  Boot a backdoored firmware build the notary would never sign.
+  Boot a build the notary would never put its name on.
 points: 500
 provide:
   - path: challenge/lms.py

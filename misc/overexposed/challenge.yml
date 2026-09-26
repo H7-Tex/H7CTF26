@@ -3,12 +3,11 @@ author: abu
 category: misc
 difficulty: medium
 description: |
-  We redacted the photo before we shared it. There's nothing left in the pixels.
+  The comms team blacked out the sensitive photo before it went public. Nothing left in the pixels, they swore.
 
-  overexposed.png is attached.
+  For a redaction, it reveals an awful lot.
 sub_description: |
-  One file, more than one way to read it. The pixels are a decoy, and the obvious tools only
-  show you what the file wants them to.
+  One quiet image that says far more than the people who shared it intended.
 points: 300
 flag: "H7CTF{06da61b5c60e087c87c9}"
 handout:

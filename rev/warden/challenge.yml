@@ -3,11 +3,11 @@ author: abu
 category: rev
 difficulty: medium
 description: |
-  This licence checker was pulled from a grey-market satellite modem's firmware. Type a valid licence and it releases the carrier provisioning string.
+  Pulled from a grey-market satellite modem, this licence checker is all that stands between you and the carrier provisioning string. Every wrong key earns the same flat "rejected," and it is fussy about what it accepts.
 
-  Work out the licence it wants and read the string.
+  Every checker has a method; this one just won't say what it is.
 sub_description: |
-  A single Linux binary. Recover the licence it accepts and read the flag.
+  A single Linux binary. Recover the licence it accepts and read the provisioning string.
 points: 300
 flags:
   - type: static

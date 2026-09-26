@@ -3,11 +3,11 @@ author: abu
 category: hardware
 difficulty: medium
 description: |
-  We tapped a connected vehicle's internal network during a service session. Most of it is routine powertrain chatter, but a diagnostic tool was talking to one of the control units at the same time - and that unit handed back something it should not have.
+  We spliced into a car's wiring while it was in for service and let the recorder run. Most of the traffic is the usual engine gossip, but two boxes were having a far more private conversation.
 
-  Recover what the control unit leaked.
+  One of them said too much.
 sub_description: |
-  From a vehicle's diagnostic capture, follow the exchange and recover what one control unit leaked.
+  From the vehicle capture, follow the private exchange and recover what one unit let slip.
 points: 500
 flags:
   - type: dynamic

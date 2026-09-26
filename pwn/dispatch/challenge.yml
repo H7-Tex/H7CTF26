@@ -3,11 +3,11 @@ author: abu
 category: pwn
 difficulty: medium
 description: |
-  The Sparrow Freight dispatch terminal takes a waybill number and logs it into a space far too small to hold it. There's no shortcut waiting inside this time, so you'll have to bring your own way through.
+  Sparrow Freight dispatch takes your waybill number, logs it, and waves you off. Trouble is, the intake clerk never learned when to stop listening.
 
-  Get a foothold and read the flag.
+  No spare key was left out this time, so bring your own way in.
 sub_description: |
-  A networked binary. Get a foothold and read the flag.
+  Force your own way in and read the flag.
 points: 350
 flags:
   - type: dynamic

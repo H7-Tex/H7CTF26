@@ -3,11 +3,11 @@ author: abu
 category: rev
 difficulty: medium
 description: |
-  This lock won't open unless your key keeps a whole web of interlocking rules satisfied at once.
+  Cipherlock is the last lock in the vault, and it's a stubborn one: the key it wants has to satisfy it on every count or the door doesn't budge. Anything short of exactly right gets a flat "denied."
 
-  Recover the key and read the flag.
+  Some locks you pick. This one you have to reason with.
 sub_description: |
-  Recover the key that satisfies the lock and read the flag.
+  Recover the key that opens the lock and read the flag.
 points: 400
 flags:
   - type: dynamic

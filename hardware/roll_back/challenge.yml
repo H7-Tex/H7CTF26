@@ -3,11 +3,11 @@ author: abu
 category: hardware
 difficulty: hard
 description: |
-  A cheap garage remote sends a fresh, unpredictable code on every press. We recorded eight of them.
+  A bargain-bin garage remote swears it fires a brand-new, unguessable code on every single press. We loitered in the driveway long enough to catch eight.
 
-  Work out the code it would send next, and open the door.
+  Turns out "unguessable" and "unpredictable" are not the same word.
 sub_description: |
-  From eight recorded presses of a garage remote, work out the next code and open the door.
+  Eight presses of the remote, recorded. Open the door on the ninth.
 points: 450
 flags:
   - type: dynamic

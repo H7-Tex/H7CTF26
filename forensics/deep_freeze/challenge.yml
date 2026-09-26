@@ -3,11 +3,11 @@ author: abu
 category: forensics
 difficulty: hard
 description: |
-  At 03:14, ransomware tore through St. Cascade General's file server. Responders caught one nurse-station workstation still mid-encryption and captured its live memory before pulling the plug. The key it used never got wiped.
+  At 03:14 the ransomware reached St. Cascade General, and by the time responders made the nurses' station it was still chewing through patient files. They froze the workstation where it stood and only then cut the power.
 
-  Recover it, decrypt the locked file, and read what was inside.
+  Catch a thief mid-reach and they are still holding what they grabbed.
 sub_description: |
-  A workstation's memory captured mid-encryption, plus one locked file - recover the key and decrypt it.
+  One file still locked, one machine caught red-handed. The rest is just arithmetic.
 points: 500
 flags:
   - type: static

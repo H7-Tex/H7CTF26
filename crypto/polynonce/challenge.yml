@@ -3,11 +3,11 @@ author: abu
 category: crypto
 difficulty: hard
 description: |
-  The Aurum treasury signer batches approvals. To save time, a former engineer stopped drawing each signature's nonce at random.
+  Aurum's treasury signer rubber-stamps transfers by the batch, day in and day out. The engineer who wired it up cut a corner to keep the queue moving, then quietly left the company.
 
-  Recover the signing key.
+  The corner he cut is still signing every approval.
 sub_description: |
-  Recover the signing key from a batch of the treasury signer's approvals and use it to open the sealed flag.
+  A stack of the signer's approvals is all you get. It is all you need.
 points: 500
 flags:
   - type: dynamic

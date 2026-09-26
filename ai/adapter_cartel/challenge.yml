@@ -3,11 +3,11 @@ author: abu
 category: ai
 difficulty: hard
 description: |
-  We mirrored a community model hub: one base model and eight community adapters layered on top. Automated review flagged the collection, though every adapter looks clean on its own.
+  You mirrored a community model hub: one base model and eight community adapters stacked on top. Each one sails through review alone, yet the scanner keeps flagging the collection and won't say why.
 
-  Work out what the set is hiding and recover the payload.
+  No member ever looks guilty on its own, which is the whole point of a cartel.
 sub_description: |
-  A mirrored model hub with a hidden payload - recover it.
+  Eight clean adapters, one dirty secret, and nobody's talking.
 points: 450
 flags:
   - type: static

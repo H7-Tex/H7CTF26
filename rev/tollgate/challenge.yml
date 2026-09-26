@@ -3,9 +3,9 @@ author: abu
 category: rev
 difficulty: medium
 description: |
-  Toll Story is the admin-token booth from an internal API gateway. Give it the right token and it hands back the cluster bootstrap secret.
+  Toll Story is the admin lane of an internal API gateway. Show it the right token and the booth waves through the cluster bootstrap secret; show it anything else and you get "access denied."
 
-  Work out the token it accepts and read the secret.
+  There's a toll on this road, and it isn't paid in cash.
 sub_description: |
   Recover the token the booth accepts and read the secret.
 points: 350

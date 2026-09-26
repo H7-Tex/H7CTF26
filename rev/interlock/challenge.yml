@@ -3,11 +3,11 @@ author: abu
 category: rev
 difficulty: medium
 description: |
-  Lockstep is the key controller off a depot door, the kind where the pins aren't independent but move together.
+  Lockstep is the key controller off a depot door: one exact sequence opens it, and everything else leaves you out in the yard. It is not the guessing kind of lock.
 
-  Recover the key it accepts and read the flag.
+  These tumblers were never going to fall one at a time.
 sub_description: |
-  Recover the key the controller accepts and read the flag.
+  Recover the sequence the controller opens for and read the token.
 points: 350
 flags:
   - type: dynamic

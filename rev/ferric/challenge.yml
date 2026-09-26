@@ -3,11 +3,11 @@ author: abu
 category: rev
 difficulty: medium
 description: |
-  A firmware vendor with strong opinions about memory safety shipped this licence validator. Give it the right licence and it reveals the token; get it wrong and it just shrugs.
+  A firmware vendor with strong opinions about memory safety shipped this licence validator with every label filed off. Right licence and it surrenders the token; wrong one and it just shrugs.
 
-  Recover the licence it accepts and read the token.
+  Safe code still has to answer for what it's guarding.
 sub_description: |
-  A stripped Linux binary. Recover the licence it accepts to reveal the token.
+  A stripped Linux binary. Recover the licence it accepts and claim the token.
 points: 300
 flags:
   - type: static

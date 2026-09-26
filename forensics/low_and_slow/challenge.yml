@@ -3,11 +3,11 @@ author: abu
 category: forensics
 difficulty: medium
 description: |
-  For six weeks, nothing tripped - no alerts, nothing out of place. Then a partner tipped us that our unreleased designs were being shopped around. Something on the network had been quietly talking to the outside the whole time, and it took data with it.
+  Six weeks, not one alert, a clean bill of health on every dashboard that mattered. Then a partner asks why your unreleased designs are making the rounds.
 
-  Work out how the data was leaving and recover what left with it.
+  Something in here has been talking to the outside on a very patient schedule.
 sub_description: |
-  From a capture of a compromised subnet, work out how data was leaving and recover it.
+  Nothing tripped for six weeks. That was the whole point.
 points: 300
 flags:
   - type: static

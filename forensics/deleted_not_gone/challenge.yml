@@ -3,11 +3,11 @@ author: abu
 category: forensics
 difficulty: medium
 description: |
-  A phone was seized in a harassment case. The suspect used a chat app called Nova Messenger and swears they never sent anything incriminating - and the app shows no such message. Investigators aren't convinced it's as clean as it looks.
+  A phone lands on the evidence bench for a harassment case, and the suspect is adamant they never sent anything ugly. Nova Messenger agrees with them: nothing there.
 
-  Recover the message the suspect got rid of and read what it said.
+  Deleting a thing and being rid of it were never the same move.
 sub_description: |
-  From a seized chat app's data, recover the message the suspect deleted.
+  The app forgot the message. Its files were less discreet.
 points: 300
 flags:
   - type: static

@@ -3,16 +3,11 @@ author: abu
 category: misc
 difficulty: hard
 description: |
-  FoundryProof signs off every design before tape-out: it formally certifies that your netlist
-  is equivalent to our golden reference, then probes the certified design once on a post-fab
-  audit vector to catch tampering. We think it's airtight.
+  FoundryProof stamps every chip before tape-out: prove your netlist matches the golden reference and it signs off, then probes the finished part once to catch anyone who got cute. We think it is airtight.
 
-  Ship us a design that FoundryProof certifies as equivalent to the reference, yet that outputs
-  the sabotage value on the audit vector. The Tiny-HDL spec, the golden reference, and the exact
-  certifier we run are attached. Launch your instance and submit your netlist over the socket.
+  Walk out certified, and leave the auditor something to find.
 sub_description: |
-  Sneak a hardware trojan past a formal equivalence checker: get a non-equivalent design
-  certified as equivalent. Source of the checker is provided.
+  Earn a design the certifier blesses and the audit wishes it hadn't.
 points: 400
 flags:
   - type: dynamic

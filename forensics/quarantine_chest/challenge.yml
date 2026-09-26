@@ -3,11 +3,11 @@ author: abu
 category: forensics
 difficulty: insane
 description: |
-  A finance workstation, DESKTOP-M-HALE, got hit - every file on its E: drive is encrypted. Its antivirus caught and quarantined the payload before the sweep finished, so the sample is still sitting in the incident image.
+  DESKTOP-M-HALE keeps the finance team's books, and overnight every file on its E: drive turned to expensive noise. Security pulled a full image of the box while it was still warm.
 
-  Recover the sample, work out how it locks files, and restore the E: drive. The flag is in one of the recovered files.
+  Whatever froze the assets left a copy of itself behind. Rude of it, and useful to you.
 sub_description: |
-  Recover a quarantined malware sample from a workstation's incident image, work out how it locks files, and restore the encrypted E: drive.
+  Every file on the finance drive is frozen. Thaw it, all of it.
 points: 500
 flags:
   - type: static

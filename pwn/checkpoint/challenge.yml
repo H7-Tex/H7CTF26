@@ -3,11 +3,11 @@ author: abu
 category: pwn
 difficulty: easy
 description: |
-  The Sparrow Freight border terminal logs your name and waves you back. Somewhere inside is a routine that would clear you straight through.
+  The Sparrow Freight border checkpoint takes down your name, denies you entry, and tells you to turn back. Somewhere behind the booth is the stamp that waves people straight through, and the guard is not going to reach for it on your account.
 
-  Make the terminal run it and read your clearance code.
+  So reach for it yourself.
 sub_description: |
-  A networked binary. Get it to clear you through and read the flag.
+  Get yourself waved through and read the clearance code.
 points: 150
 flags:
   - type: dynamic

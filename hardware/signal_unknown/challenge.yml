@@ -3,11 +3,11 @@ author: abu
 category: hardware
 difficulty: medium
 description: |
-  We pulled a single burst off the air near a device nobody could identify - no datasheet, no protocol notes, nothing.
+  A single burst went out over the air next to a device nobody can name. No datasheet, no protocol notes, not so much as a label on the case.
 
-  Recover the message it carries.
+  Whatever it said, it only said once. Read it back.
 sub_description: |
-  A single captured burst from an unknown device - recover the message it carries.
+  From one captured burst off an unknown device, recover the message it carries.
 points: 300
 flags:
   - type: dynamic

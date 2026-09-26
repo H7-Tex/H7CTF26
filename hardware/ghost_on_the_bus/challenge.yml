@@ -3,11 +3,11 @@ author: abu
 category: hardware
 difficulty: medium
 description: |
-  We tapped a NoiseGate device as it powered up and recorded every line on the board at once. Its provisioning key passes through during that boot.
+  We clipped onto a NoiseGate board and let it boot while we wrote down everything the chips muttered to each other. Somewhere in that wake-up routine the device hands its provisioning key across.
 
-  Recover the provisioning key.
+  It never says the whole thing in one place. Ghosts are like that.
 sub_description: |
-  Recover the provisioning key from a NoiseGate device's boot-time capture.
+  Recover the provisioning key from the NoiseGate board's boot-time capture.
 points: 400
 flags:
   - type: dynamic

@@ -3,11 +3,11 @@ author: abu
 category: hardware
 difficulty: medium
 description: |
-  A "smart" conference-room AV unit - the boardroom's always-on mic-and-camera bridge - was quietly compromised. It still serves its normal live audio feed, but the implant is smuggling data out through that same feed.
+  The boardroom's always-on AV bridge got quietly compromised, and it still dutifully streams the room its live feed. Whoever owns it now is riding that same feed to walk secrets out the door.
 
-  Recover what the implant is exfiltrating.
+  Nobody in the meeting hears a thing wrong. That is rather the point.
 sub_description: |
-  Recover what the implant on a bugged boardroom device is exfiltrating.
+  Recover what the implant on the bugged boardroom device is smuggling out through its live feed.
 points: 500
 flags:
   - type: dynamic

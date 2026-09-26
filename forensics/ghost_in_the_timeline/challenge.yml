@@ -3,11 +3,11 @@ author: abu
 category: forensics
 difficulty: medium
 description: |
-  An engineer is under investigation for leaking a confidential product roadmap. Their defense: the file was created back in June, long before they had access to the sensitive share, and they never staged or deleted anything - the timestamps back them up.
+  An engineer stands accused of walking off with the product roadmap, and the alibi is tidy: the file predates their access, nothing was staged, nothing deleted, and every timestamp agrees.
 
-  Test that story. Establish when the roadmap was really handled and recover what the engineer took off the machine.
+  Timestamps are only as honest as whoever set them.
 sub_description: |
-  From a suspect's disk image, break the file's alibi and recover what the engineer took.
+  The dates swear he's innocent. Check their work.
 points: 300
 flags:
   - type: static

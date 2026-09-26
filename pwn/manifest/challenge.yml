@@ -3,11 +3,11 @@ author: abu
 category: pwn
 difficulty: medium
 description: |
-  The Sparrow Freight manifest terminal won't show you the cargo list without admin clearance, but its feedback form repeats a little too much of what you tell it.
+  Sparrow Freight keeps its cargo manifest under admin clearance, which is not something they planned on giving you. Good thing the terminal loves feedback and takes your every word to heart.
 
-  Talk your way up to admin and read the clearance code.
+  Some of us are just destined for management.
 sub_description: |
-  A networked binary. Get admin clearance and read the flag.
+  Get yourself admin clearance and read the manifest.
 points: 250
 flags:
   - type: dynamic

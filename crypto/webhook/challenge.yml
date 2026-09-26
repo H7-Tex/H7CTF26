@@ -3,11 +3,11 @@ author: abu
 category: crypto
 difficulty: medium
 description: |
-  OrionPay delivers signed payment webhooks to your merchant endpoint, which trusts any webhook whose signature checks out. A webhook that sets role=owner authorizes an owner-only payout. You captured one legitimate webhook, but you were never given the signing secret. A hardened next-gen endpoint runs beside the original.
+  OrionPay does exactly what it's told, provided the paperwork looks right. The owner's draw is the one payout nobody else is supposed to touch. You walked away with a single genuine slip and a lot of curiosity.
 
-  Authorize an owner payout you were never handed a signature for.
+  The rest is between you and the accountant.
 sub_description: |
-  With one captured webhook and no signing secret, get the receiver to authorize an owner-only payout.
+  One payout is reserved for the owner. You have a single genuine slip and a lot of nerve.
 points: 300
 flags:
   - type: dynamic
