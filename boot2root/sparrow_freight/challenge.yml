@@ -18,7 +18,7 @@ deploy:
   resource_type: docker
   instancing: on_demand
   image: h7ctf26/sparrow-b2r
-  privesc: true            # needs allowPrivilegeEscalation:true (no_new_privs off) for the SUID step; drop-ALL is fine (Finals' deploy.privesc flag)
+  privesc: true            # SUID/no_new_privs-off step. GKE gVisor REJECTS allowPrivilegeEscalation at admission, so the instancer must route privesc:true to the sysbox-runc pool (same bucket as Freightpipe). drop-ALL caps still fine.
   cpu_limit: "1.0"
   memory_limit: 512Mi
   exposed_ports:

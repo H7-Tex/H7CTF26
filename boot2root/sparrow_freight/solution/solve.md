@@ -31,7 +31,8 @@ H7CTF{p4th_h1j4ck_su1d_r00t_5parr0w}
 
 ## Notes
 - Both steps are pure DAC (no capability needed): `sudo`/SUID give euid=0, which reads root-owned
-  files and is the root user. Runs under gVisor with drop-ALL caps as long as no_new_privs is off
-  (`deploy.privesc: true`).
+  files and is the root user. drop-ALL caps is fine, but it needs no_new_privs off
+  (`deploy.privesc: true`). GKE gVisor rejects allowPrivilegeEscalation at admission, so this
+  must run on the sysbox-runc pool, not gVisor.
 - Flags are static by default but the entrypoint honors `$USER_FLAG` / `$ROOT_FLAG` for per-team
   injection if we later want dynamic flags.

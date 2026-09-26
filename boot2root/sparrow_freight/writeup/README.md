@@ -40,8 +40,8 @@ PATH hijacking of a SUID binary that calls helpers without absolute paths is a t
 ## Why it's a good B2R for this platform
 - **Pure Docker.** No VM/Firecracker: it's one container. It only needs the platform's
   `deploy.privesc: true` (allowPrivilegeEscalation:true / no_new_privs off); drop-ALL caps stays,
-  because both escalations are DAC, not capability-gated. gVisor implements setuid/exec, so SUID
-  works in-sandbox.
+  because both escalations are DAC, not capability-gated. GKE gVisor rejects allowPrivilegeEscalation
+  at admission, so this rides the sysbox-runc pool (same bucket as Freightpipe), not gVisor.
 - **Two distinct, real techniques** with a forced order (sudo-GTFObins, then SUID-PATH-hijack), so
   it teaches breadth, not one trick twice.
 - **Deterministic + tested.** The full chain (SSH login -> sudo awk -> mel -> netmon PATH-hijack ->
