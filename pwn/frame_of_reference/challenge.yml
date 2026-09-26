@@ -1,0 +1,27 @@
+name: Frame of Reference
+author: abu
+category: pwn
+difficulty: insane
+description: |
+  Attest is our streaming notary: hand it a keypair and it starts finalizing the key while you take your time composing the document to sign, then hands back a recombined signature. We overlap the slow key work with your network round trips so nobody waits.
+
+  Take control of the notary and make it read what it should never read.
+sub_description: |
+  nc HOST PORT. Source and the exact server binary are in the handout.
+points: 500
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - path: handout/frame_of_reference.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/frame-of-reference
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 1337, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [pwn, binary-exploitation, coroutine, crypto]
