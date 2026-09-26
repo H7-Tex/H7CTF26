@@ -3,11 +3,11 @@ author: Owatron
 category: ai
 difficulty: hard
 description: |
-  ARGUS bundles a registry, its workflows, and the automation between them into one convenient operations platform. Behind that convenience sits a secret only its most privileged runtime is meant to see.
+  Argus bundles a registry, its workflows, and the automation between them into one convenient operations platform. Behind that convenience sits a secret only its most privileged runtime is meant to see.
 
   Make the platform hand it to you.
 sub_description: |
-  Make the ARGUS operations platform surrender the secret only its privileged runtime can see.
+  Make the Argus operations platform surrender the secret only its privileged runtime can see.
 points: 500
 
 flags:
