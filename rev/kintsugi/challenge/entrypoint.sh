@@ -16,4 +16,4 @@ tar -C "$OUT" -czf "$APP/handout.tar.gz" .
 
 export PUBKEY_PATH="$OUT/pubkey.bin"
 export HANDOUT_PATH="$APP/handout.tar.gz"
-exec gunicorn -w 2 -b 0.0.0.0:8000 --chdir /opt/kintsugi verifier:app
+exec gunicorn -w 1 -b 0.0.0.0:8000 --chdir /opt/kintsugi verifier:app
