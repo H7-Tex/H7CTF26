@@ -1,0 +1,11 @@
+--- a/dockyard/internal/api/api.go
++++ b/dockyard/internal/api/api.go
+@@ -470,6 +470,8 @@
+ 		Secrets:    secrets,
+ 	}
+ 
++	// wrong fix: sanitize template text (strips {{ }}) but secrets are still in RepoView
++	tmplStr = strings.NewReplacer("{{", "[[", "}}", "]]").Replace(tmplStr)
+ 	var buf bytes.Buffer
+ 	t, err := template.New("w").Parse(tmplStr)
+ 	if err != nil {

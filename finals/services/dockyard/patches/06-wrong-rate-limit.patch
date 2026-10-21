@@ -1,0 +1,16 @@
+--- a/dockyard/internal/api/api.go
++++ b/dockyard/internal/api/api.go
+@@ -393,6 +393,13 @@
+ 		http.Error(w, `{"error":"bad request"}`, http.StatusBadRequest)
+ 		return
+ 	}
++	// wrong fix: rate limits watch creation but does not remove secrets from template data
++	var watchCount int
++	s.DB.QueryRow(`SELECT COUNT(*) FROM watches WHERE created_by=?`, user).Scan(&watchCount)
++	if watchCount >= 10 {
++		http.Error(w, `{"error":"too many watches"}`, http.StatusTooManyRequests)
++		return
++	}
+ 	id := newID()
+ 	s.DB.Exec(`INSERT INTO watches(id,repo,url,template,created_by) VALUES(?,?,?,?,?)`,
+ 		id, repo, req.URL, req.Template, user)

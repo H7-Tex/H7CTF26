@@ -1,0 +1,19 @@
+--- a/dockyard/internal/registry/registry.go
++++ b/dockyard/internal/registry/registry.go
+@@ -104,13 +104,9 @@
+ 		if a.Type != "repository" {
+ 			continue
+ 		}
+-		// BUG: split the name on comma - allows "ns/x,ns/y:pull" to grant both
+-		granted := strings.Split(a.Name, ",")
+-		for _, gname := range granted {
+-			if gname == repo {
+-				if hasAll(a.Actions, required) {
+-					return true
+-				}
++		if a.Name == repo {
++			if hasAll(a.Actions, required) {
++				return true
+ 			}
+ 		}
+ 	}

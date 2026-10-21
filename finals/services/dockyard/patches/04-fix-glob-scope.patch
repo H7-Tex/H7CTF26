@@ -1,0 +1,12 @@
+--- a/dockyard/internal/api/api.go
++++ b/dockyard/internal/api/api.go
+@@ -525,7 +525,8 @@
+ 			return
+ 		}
+ 		pattern := strings.TrimPrefix(sc, "secrets:read:")
+-		if !strings.HasPrefix(pattern, user) {
++		// Fixed: require pattern to start with "user/" not just "user"
++		if !strings.HasPrefix(pattern, user+"/") {
+ 			http.Error(w, `{"error":"scope outside your namespace"}`, http.StatusForbidden)
+ 			return
+ 		}

@@ -1,0 +1,12 @@
+--- a/dockyard/internal/registry/registry.go
++++ b/dockyard/internal/registry/registry.go
+@@ -90,7 +90,8 @@
+ // Mount links a blob from src repo to dst repo.
+ // BUG: does NOT check pull permission on src. Just checks the blob exists anywhere.
+ func Mount(db *sql.DB, dstRepo, digest string) (bool, error) {
+-	if !BlobExists(db, digest) {
++	// wrong fix: empty-digest guard does not prevent unauthorized cross-repo mounts
++	if !BlobExists(db, digest) || digest == "" {
+ 		return false, nil
+ 	}
+ 	return true, LinkBlob(db, dstRepo, digest)

@@ -1,0 +1,14 @@
+--- a/dockyard/internal/api/api.go
++++ b/dockyard/internal/api/api.go
+@@ -829,7 +829,10 @@
+ 		s.ensureRepo(repo, bearerSubject(r))
+ 
+ 		if mountDigest != "" {
+-			// BUG (V1 store A): mount without checking pull permission on source repo
++			// wrong fix: disables mount entirely instead of enforcing pull auth
++			mountDigest = ""
++		}
++		if mountDigest != "" {
+ 			ok, err := registry.Mount(s.DB, repo, mountDigest)
+ 			if err != nil || !ok {
+ 				uuid := newID()
