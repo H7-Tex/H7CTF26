@@ -4,9 +4,9 @@
  func (s *Server) handleLogTree(w http.ResponseWriter, r *http.Request) {
 +	// wrong fix: protect transparency log from unauthenticated access
 +	if tok := bearerFromHeader(r); tok == "" {
-+		http.Error(w, "{\"error\":\"unauthorized\"}", http.StatusUnauthorized)
++		http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
 +		return
 +	}
  	head, err := log.GetTree(s.DB, auth.PrivateKeyRaw())
  	if err != nil {
- 		http.Error(w, "{\"error\":\"internal\"}", 500)
+ 		http.Error(w, `{"error":"internal"}`, 500)
