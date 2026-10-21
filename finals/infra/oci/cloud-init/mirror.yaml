@@ -1,0 +1,59 @@
+#cloud-config
+# mirror VM: offline apt + docker + pip + npm caches; unbound DNS sink; archive registry
+# data volume /dev/sdb is mounted at /srv/cache by mount-data.sh after cloud-init
+packages:
+  - apt-cacher-ng
+  - docker.io
+  - docker-compose-v2
+  - python3-pip
+  - unbound
+  - nginx
+  - chrony
+
+write_files:
+  - path: /etc/apt-cacher-ng/acng.conf.d/h7.conf
+    content: |
+      Port: 3142
+      CacheDir: /srv/cache/apt
+      LogDir: /var/log/apt-cacher-ng
+      Timeout: 60
+      PassThroughPattern: .*
+  - path: /etc/unbound/unbound.conf.d/h7-sink.conf
+    content: |
+      server:
+        interface: 10.60.202.10
+        interface: 127.0.0.1
+        access-control: 10.60.0.0/15 allow
+        access-control: 127.0.0.0/8 allow
+        # game subnets: deny all PTR lookups (prevent team fingerprinting of prod IPs)
+        local-zone: "60.10.in-addr.arpa." deny
+        local-zone: "61.10.in-addr.arpa." deny
+        local-zone: "80.10.in-addr.arpa." deny
+        # organizer service FQDNs
+        local-data: "anvil.internal.h7ctf. A 10.60.200.10"
+        local-data: "checker.internal.h7ctf. A 10.60.201.20"
+        local-data: "gitea.internal.h7ctf. A 10.60.201.30"
+        local-data: "mirror.internal.h7ctf. A 10.60.202.10"
+        local-data: "ops.internal.h7ctf. A 10.60.200.5"
+      forward-zone:
+        name: "."
+        forward-addr: 169.254.169.254
+  - path: /etc/docker/daemon.json
+    content: |
+      {
+        "data-root": "/srv/cache/docker",
+        "log-driver": "json-file",
+        "log-opts": {"max-size": "20m"},
+        "insecure-registries": ["10.60.202.10:5001"]
+      }
+  - path: /etc/chrony/sources.d/oci.sources
+    content: |
+      server 169.254.169.123 iburst prefer
+
+runcmd:
+  - systemctl enable --now chrony unbound apt-cacher-ng docker
+  - mkdir -p /srv/cache/{apt,docker,pip,npm,files}
+  # devpi (Python package mirror)
+  - pip3 install -q devpi-server devpi-web
+  # verdaccio (npm mirror) via docker; registry:2 (docker mirror)
+  # warm-up procedure is in images/offline-mirror.sh (run from atom before T-0)

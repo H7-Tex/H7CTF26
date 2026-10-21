@@ -1,0 +1,75 @@
+#cloud-config
+# workbench VM: team's root exploiter box.
+# golden image h7f-wb has tools pre-installed; this file adds per-instance config.
+package_update: false
+packages: []
+
+write_files:
+  - path: /etc/sysctl.d/99-wb.conf
+    content: |
+      net.ipv4.ip_forward = 0
+      vm.swappiness = 20
+  - path: /etc/docker/daemon.json
+    content: |
+      {
+        "log-driver": "json-file",
+        "log-opts": {"max-size": "20m", "max-file": "2"},
+        "registry-mirrors": ["http://10.60.202.10:5001"],
+        "insecure-registries": ["10.60.202.10:5001"]
+      }
+  - path: /etc/pip.conf
+    content: |
+      [global]
+      index-url = http://10.60.202.10:3141/root/pypi/+simple/
+      trusted-host = 10.60.202.10
+  - path: /etc/apt/apt.conf.d/99-proxy
+    content: |
+      Acquire::http::Proxy "http://10.60.202.10:3142/";
+  - path: /etc/chrony/sources.d/oci.sources
+    content: |
+      server 169.254.169.123 iburst prefer
+  - path: /home/ubuntu/.gitconfig
+    content: |
+      [user]
+        name = team
+        email = team@internal.h7ctf
+      [init]
+        defaultBranch = main
+      [http]
+        proxy =
+    owner: ubuntu:ubuntu
+
+runcmd:
+  - sysctl --system
+  - systemctl enable --now docker chrony
+  # Tulip packet viewer port 5000 (team-visible: nftables allows own_wb -> own_prod read-only)
+  - mkdir -p /srv/tulip /srv/farm /home/ubuntu/.ssh
+  - chmod 700 /home/ubuntu/.ssh
+  - chown -R ubuntu:ubuntu /home/ubuntu
+  # pcap pull timer: pulls latest pcap archives from r1:8081 every 5 min
+  - |
+    cat > /usr/local/bin/pcap-pull <<'SCRIPT'
+    #!/bin/bash
+    TEAM=$(hostname | sed 's/wb-//')
+    rsync -avz --no-motd http://10.60.250.100:8081/team$TEAM/ /srv/pcap/ 2>/dev/null || \
+      wget -q -r -np -nH --cut-dirs=1 "http://10.60.250.100:8081/team$TEAM/" -P /srv/pcap/ 2>/dev/null || true
+    SCRIPT
+    chmod +x /usr/local/bin/pcap-pull
+  - |
+    cat > /etc/systemd/system/pcap-pull.timer <<'SVC'
+    [Unit]
+    Description=pull team pcaps from router
+    [Timer]
+    OnBootSec=2min
+    OnUnitActiveSec=5min
+    [Install]
+    WantedBy=timers.target
+    SVC
+    cat > /etc/systemd/system/pcap-pull.service <<'SVC'
+    [Unit]
+    Description=pcap pull
+    [Service]
+    Type=oneshot
+    ExecStart=/usr/local/bin/pcap-pull
+    SVC
+  - systemctl daemon-reload; systemctl enable pcap-pull.timer
