@@ -107,15 +107,62 @@ done
 
 P4-Infra owns the full NAT topology; run their `check_snat.sh` from the checker node before t0.
 
-## End-of-event
+## Hill windows (engine-driven)
 
-1. At `t0 + 24h`: pause game via `game.state = "paused"` (platform_settings).
-2. Wait for the current tick to close (check `metrics` — `tick.status = "closed"`).
-3. Run final standings recompute: admin API.
-4. Stop the outbreak bot if it is running (`game.outbreak.enabled = false` + gameserver restart).
-5. Stop checker fleet: `docker compose -f /srv/checkers/docker-compose.yml down`.
-6. Set `game.state = "stopped"`.
-7. Export final scoreboard: `GET /api/v1/scoreboard` (public).
+Hill windows, freeze, and KotH rounds are controlled by the engine — not external timers. The admin `extend` call shifts all windows atomically.
+
+| Hill | Open | Close |
+|---|---|---|
+| A (GridWatch) | Sat 15:00 IST | Sat 24:00 IST then Sun 08:00–12:00 IST |
+| B (Hostile Takeover) | Sat 21:00 IST | Sun 08:00 IST |
+| C (Harbor Master) | Sun 07:00 IST | Sun 12:00 IST |
+
+Night rounds 00:00–07:00 IST use `game.koth.night_round_interval` (30 min); outside that window rounds close on `planned_end`.
+
+**Fri rehearsal**: set compressed hill windows in config, then run `rehearsal-check.sh` to watch transitions:
+
+```bash
+export ANVIL_URL=https://ctf.h7tex.com ANVIL_ADMIN_TOKEN=...
+bash finals/infra/systemd/rehearsal-check.sh 15   # poll every 15s
+```
+
+## End-of-event sequence
+
+Hill windows and the board freeze are engine-driven. Post-game ops (after `game.state=stopped`):
+
+```
+Sun 11:00 IST  board freeze          (engine sets freeze automatically)
+Sun 12:00 IST  game.state=stopped    (engine: final KotH round closes + flags judged)
+Sun 12:00+     run eoe.sh export
+               run eoe.sh vm-stop
+```
+
+### Running post-game ops
+
+```bash
+source /etc/anvil/finals.env
+export ANVIL_URL ANVIL_ADMIN_TOKEN DB_DSN OCI_COMPARTMENT_ID
+
+# 1. export scores (waits for game.state=stopped before proceeding)
+bash finals/infra/systemd/eoe.sh export
+
+# 2. stop team VMs after export confirms
+bash finals/infra/systemd/eoe.sh vm-stop
+```
+
+Score JSON lands in `$EXPORT_DIR` (default `/opt/anvil/exports/scores-<timestamp>.json`).
+
+If the engine does not set `game.state=stopped` automatically after Sun 12:00 IST:
+
+```bash
+psql "$DB_DSN" -c "UPDATE platform_settings SET value = 'stopped' WHERE key = 'game.state'"
+```
+
+Stop the checker fleet once standings are confirmed:
+
+```bash
+docker compose -f /srv/checkers/docker-compose.yml down
+```
 
 ## Config keys (all in `config.yaml` or env)
 
