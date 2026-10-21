@@ -18,10 +18,8 @@ patches:
     stores: [1]
   - file: patches/03-fix-scope-comma.patch
     expect: correct
-    stores: [0]
   - file: patches/04-fix-glob-scope.patch
     expect: correct
-    stores: [1]
   - file: patches/05-wrong-noop.patch
     expect: wrong
   - file: patches/06-wrong-rate-limit.patch

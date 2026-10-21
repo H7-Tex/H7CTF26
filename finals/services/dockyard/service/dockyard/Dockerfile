@@ -1,4 +1,4 @@
-FROM golang:1.22-bookworm AS builder
+FROM golang:1.24-bookworm AS builder
 WORKDIR /src
 COPY . .
 RUN CGO_ENABLED=1 go build -mod=vendor -o /dockyard ./cmd/dockyard

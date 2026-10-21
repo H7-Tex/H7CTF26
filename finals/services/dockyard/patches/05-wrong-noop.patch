@@ -1,12 +1,17 @@
---- a/dockyard/internal/registry/registry.go
-+++ b/dockyard/internal/registry/registry.go
-@@ -90,7 +90,8 @@
- // Mount links a blob from src repo to dst repo.
- // BUG: does NOT check pull permission on src. Just checks the blob exists anywhere.
- func Mount(db *sql.DB, dstRepo, digest string) (bool, error) {
--	if !BlobExists(db, digest) {
-+	// wrong fix: empty-digest guard does not prevent unauthorized cross-repo mounts
-+	if !BlobExists(db, digest) || digest == "" {
- 		return false, nil
- 	}
- 	return true, LinkBlob(db, dstRepo, digest)
+--- a/dockyard/internal/api/api.go
++++ b/dockyard/internal/api/api.go
+@@ -935,6 +935,15 @@
+ 		ct := r.Header.Get("Content-Type")
+ 		if ct == "" {
+ 			ct = "application/vnd.oci.image.manifest.v1+json"
+ 		}
++		// wrong fix: require at least one layer to prevent empty-manifest abuse
++		var mfChk map[string]interface{}
++		if json.Unmarshal(body, &mfChk) == nil {
++			if layers, _ := mfChk["layers"].([]interface{}); len(layers) == 0 {
++				http.Error(w, "{\"errors\":[{\"code\":\"MANIFEST_INVALID\",\"message\":\"no layers\"}]}", http.StatusBadRequest)
++				return
++			}
++		}
+ 		digest := auth.DigestHex(body)
+ 		s.ensureRepo(repo, bearerSubject(r))

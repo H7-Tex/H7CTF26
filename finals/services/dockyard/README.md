@@ -97,10 +97,10 @@ Affected component: fine-grained token scope validator.
 | `patches/02-fix-template-secrets.patch` | Store B V1: remove `Secrets` from `RepoView` |
 | `patches/03-fix-scope-comma.patch` | Store A V2: direct equality instead of comma-split in `CheckAccess` |
 | `patches/04-fix-glob-scope.patch` | Store B V2: require `user+"/"` prefix not just `user` |
-| `patches/05-wrong-noop.patch` | WRONG: adds `|| digest == ""` guard - doesn't fix mount auth |
-| `patches/06-wrong-rate-limit.patch` | WRONG: rate-limits watch creation - doesn't remove secrets from template |
-| `patches/07-wrong-disable-mount.patch` | WRONG: disables mount entirely - breaks legitimate CI workflows |
-| `patches/08-wrong-escape-template.patch` | WRONG: switches to html/template - secrets still in data |
+| `patches/05-wrong-noop.patch` | WRONG: rejects manifests with empty layers - breaks checkers pushing layer-free configs |
+| `patches/06-wrong-rate-limit.patch` | WRONG: base64-encodes secrets at rest - stored value != plaintext flag |
+| `patches/07-wrong-disable-mount.patch` | WRONG: rejects push+pull combined in one scope - breaks token flow |
+| `patches/08-wrong-escape-template.patch` | WRONG: requires auth on /log/tree - breaks unauthenticated transparency log reads |
 
 ---
 
@@ -131,7 +131,7 @@ All `MumbleException` and `OfflineException` messages use `DOCKYARD-<STEP>-<NN>:
 | DOCKYARD-EXP0-01..05 | exploit(0) blob mount |
 | DOCKYARD-EXP1-01..08 | exploit(1) template secrets |
 | DOCKYARD-EXP2-01..05 | exploit(2) scope comma |
-| DOCKYARD-EXP3-01..06 | exploit(3) glob scope |
+| DOCKYARD-EXP3-01..07 | exploit(3) glob scope |
 
 ---
 
