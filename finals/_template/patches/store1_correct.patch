@@ -1,0 +1,13 @@
+diff --git a/notebook/app.py b/notebook/app.py
+index dee4283..75b5e81 100644
+--- a/notebook/app.py
++++ b/notebook/app.py
+@@ -125,6 +125,8 @@ class H(BaseHTTPRequestHandler):
+             if not row:
+                 return self.reply(404, {"error": "no such user"})
+             fields = (q.get("fields") or ["name,display"])[0].split(",")
++            if me != name:
++                fields = [f for f in fields if f in ("name", "display", "joined")]
+             # store 1 bug: field selection is not limited to public fields for other users
+             return self.reply(200, {f: row[f] for f in fields if f in row.keys()})
+         if url.path == "/health":

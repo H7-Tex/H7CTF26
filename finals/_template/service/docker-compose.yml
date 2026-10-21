@@ -1,0 +1,13 @@
+services:
+  notebook:
+    build: ./notebook
+    ports:
+      - "7000:7000"
+    volumes:
+      - notebook-data:/data
+    restart: unless-stopped
+    cpus: 0.5
+    mem_limit: 256m
+
+volumes:
+  notebook-data:

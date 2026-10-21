@@ -1,0 +1,21 @@
+# patch matrix for finals/tools/gate.py
+service: notebook          # compose service the checker talks to
+port: 7000                 # port inside that container
+flag_stores: 2
+noise_variants: 1
+havoc_variants: 1
+patchable:                 # the only paths a team may change (relative to service/)
+  - notebook/app.py
+secrets:                   # files that must differ between two fresh boots
+  - /data/instance.key
+patches:
+  - file: patches/store0_correct.patch
+    expect: correct        # checker OK, exploits for these stores fail
+    stores: [0]
+  - file: patches/store0_wrong_nopreview.patch
+    expect: caught         # checker must report MUMBLE or OFFLINE
+  - file: patches/store1_correct.patch
+    expect: correct
+    stores: [1]
+  - file: patches/store1_wrong_nofields.patch
+    expect: caught
