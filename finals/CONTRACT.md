@@ -1,4 +1,4 @@
-# H7CTF'26 Finals: service author contract (v1.3)
+# H7CTF'26 Finals: service author contract (v1.4)
 
 Every finals service, checker, exploit and hill is built against this file. If something here is wrong or missing, ask Finals-3 before you work around it. Breaking changes bump the version at the top.
 
@@ -91,6 +91,8 @@ Python 3.12 with `enochecker3==0.14.0`. Start from `_template/checker/`.
 ## 7. Bug design rules
 
 - Each store has 2 intended paths, an easier one and a harder one. **Core bugs only** in the first build. Stretch bugs ship only after the gate passes with time to spare.
+- **Exploitability band:** store 0's easier path must be something a median team finds in about 2-3 hours. A store nobody cracks pays no defense, which kills the defense game.
+- **Advisory line per store** in README.md: one sentence naming the component and the bug class in vendor-advisory language, never the exploit. For example: "Berth Board document sharing: improper authorization on signed download links." The Outbreak wave publishes it about 60 minutes after first blood.
 - Every bug sits inside a feature the checker uses every tick. Name the correct patch and at least one tempting wrong patch in README.md, and prove in `gate.yml` that the checker catches the wrong one.
 - Banned:
   - RCE as an intended path;
