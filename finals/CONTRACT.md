@@ -1,4 +1,4 @@
-# H7CTF'26 Finals: service author contract (v1.1)
+# H7CTF'26 Finals: service author contract (v1.2)
 
 Every finals service, checker, exploit and hill is built against this file. If something here is wrong or missing, ask Finals-3 before you work around it. Breaking changes bump the version at the top.
 
@@ -19,6 +19,8 @@ finals/services/<slug>/
 ```
 
 Start from `finals/_template/`. Hills live under `finals/hills/<slug>/` with the same shape, minus flag stores (section 10).
+
+Services released mid-game (S5 Sat 19:00, S6 Sun 07:00) ship like any other. **Do not build your own dormancy or encryption**: the pipeline ships the dormant bundle and unlocks it at `release_at`.
 
 ## 2. The box your service runs on
 
@@ -70,6 +72,11 @@ Python 3.12 with `enochecker3==0.14.0`. Start from `_template/checker/`.
   - Probe the dangerous feature with legitimate, exploit-shaped input, so blanket filters cost SLA.
 - **Be fast and safe under load.** Async throughout, no global locks, no infinite retries. Budget: p95 under 5 s per task, hard cap at the task timeout (at most 30 s, the library keeps a 2 s buffer). 15 teams times about 20 tasks per tick land on your checker.
 - Tolerate service restarts, ±120 s of clock skew, and repeated getflag calls for the same chain.
+- **Cover every user-visible feature, not just the flag paths.** Together, the havoc and noise variants must exercise every feature a normal user sees, so a rewrite inside `patchable` that strips features fails the checker. List the feature-to-checker-step coverage in README.md.
+- **Exploit-shaped probes:**
+  - havoc sends benign input shaped like the real exploits, such as quotes, `../` and long fields, into the legitimate features;
+  - the gate's naive blanket filter must push the checker to MUMBLE in at least 30% of rounds;
+  - the reference patch must pass 100% of probes.
 
 ## 6. Exploits
 
@@ -98,12 +105,17 @@ Python 3.12 with `enochecker3==0.14.0`. Start from `_template/checker/`.
 
 1. **Clean service:** every putflag, getflag, putnoise, getnoise and havoc variant is OK for 3 consecutive rounds.
 2. **Exploits work:** every exploit variant recovers its flag from the clean service.
-3. **Correct patches:** for every `store<N>_correct.patch`, the checker stays OK and that store's exploits fail.
+3. **Correct patches:** for every `store<N>_correct.patch`:
+   - the checker stays OK;
+   - that store's exploits fail;
+   - **flags placed before the patch was applied and the image rebuilt are still readable**, so data survives a deploy.
 4. **Wrong patches are caught:** for every `store<N>_wrong_*.patch`, the checker reports MUMBLE or OFFLINE.
 5. **Box isolation:** two fresh boots share no generated secret.
 6. **Restart resilience:** restarting the service between rounds keeps old flags retrievable.
 7. **Compose rules** from section 2.
 8. **Patchable allowlist:** every patch in `gate.yml` touches only `patchable` paths.
+9. **Blanket filters cost SLA:** a naive filter in front of the service makes the checker report MUMBLE in at least 30% of rounds. The gate provides a regex WAF that drops requests containing common exploit tokens for the stack.
+10. **Load smoke:** 15 concurrent rounds against one copy of the service, under its own cpus and mem caps, with checker p95 under 5 s.
 
 `gate.yml` lists the patches and the expected outcome of each. Run the gate locally before review.
 
