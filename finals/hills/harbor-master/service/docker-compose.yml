@@ -1,0 +1,38 @@
+services:
+  dockyard:
+    build:
+      context: ./dockyard
+    restart: unless-stopped
+    cpus: "1.0"
+    mem_limit: 512m
+    volumes:
+      - dockyard-data:/data
+    environment:
+      DB_PATH: /data/dockyard.db
+      BLOB_ROOT: /data
+      KEY_PATH: /data/token.key
+      LISTEN: ":7005"
+      VULN_D1: "${VULN_D1:-1}"
+      VULN_D2: "${VULN_D2:-1}"
+      VULN_D3: "${VULN_D3:-1}"
+      VULN_D4: "${VULN_D4:-1}"
+
+  harbor-master:
+    build:
+      context: ./harbor-master
+    restart: unless-stopped
+    cpus: "0.4"
+    mem_limit: 256m
+    ports:
+      - "8085:8085"
+    depends_on:
+      - dockyard
+    environment:
+      DOCKYARD_URL: "http://dockyard:7005"
+      PORT: "8085"
+      KOTH_ADMIN_TOKEN: "${KOTH_ADMIN_TOKEN}"
+      KOTH_VERIFY_URL: "${KOTH_VERIFY_URL:-}"
+      ADMIN_PASS: "${HARBOR_ADMIN_PASS:-harbor_master_sekret_42}"
+
+volumes:
+  dockyard-data:

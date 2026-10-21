@@ -5,9 +5,9 @@ noise_variants: 1
 havoc_variants: 2
 
 patchable:
-  - dockyard/internal/registry/registry.go
-  - dockyard/internal/api/api.go
-  - dockyard/internal/auth/auth.go
+  - finals/services/dockyard/service/dockyard/internal/registry/registry.go
+  - finals/services/dockyard/service/dockyard/internal/api/api.go
+  - finals/services/dockyard/service/dockyard/internal/auth/auth.go
 
 patches:
   - file: patches/01-fix-mount-auth.patch
