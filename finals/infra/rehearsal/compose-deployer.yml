@@ -1,0 +1,168 @@
+# compose-deployer.yml - P3 deployer overlay for the local full-stack rehearsal.
+#
+# Usage (after main compose is up + seed.sh has run):
+#   docker compose -f docker-compose.yml -f compose-deployer.yml up --build -d
+#
+# This overlay:
+#   - overrides notebook-team1..5 to no-op containers so h7d owns those IPs
+#   - adds deployer-init (one-shot repo+svcroot seed)
+#   - adds h7d-1..5 (one deployer per team)
+#
+# After "docker compose up", seed-deployer.sh extracts TEAM_IDs from Anvil
+# and restarts the deployers with the correct UUIDs.
+#
+# Gate mode: GATE_MOCK=1 by default (staging uses loopback+STAGING_PORT_BASE).
+# For path 4 (gate burst with real gate): set GATE_MOCK=0 after the mock run and
+# supply a STAGING_ADDR per team (see individual service env). Real staging
+# requires the notebook container to be reachable by the checker before the gate
+# call returns; that works because deployers write the staging compose with the
+# team IP on the rehearsal_rehearsal network.
+
+x-h7d: &h7d
+  build:
+    context: ../../infra/pipeline/deployer
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - deployer-git:/srv/git
+    - deployer-svc:/opt/h7
+    - deployer-state:/var/lib/h7d
+  environment: &h7d-env
+    ANVIL_HOST: 172.30.0.5:8080
+    ANVIL_SCHEME: http
+    ANVIL_GAME_INTERNAL_TOKEN: rehearsal-internal-token
+    TICK_S: "30"
+    QUIET_OFFSET_S: "25"
+    H7D_BUILDER: default
+    BUILD_TIMEOUT_S: "90"
+    STAGING_PORT_BASE: "40000"
+    FREE_DEPLOYS: "3"
+    MAX_CONSEC_FAIL: "2"
+    MODE_CHECK_INTERVAL_S: "15"
+    WEBHOOK_SECRET: rehearsal-webhook-secret
+    H7D_WEBHOOK_ADDR: ":9000"
+    H7D_API_ADDR: ":9300"
+    GATE_MOCK: "1"  # set to 0 for path-4 gate burst test
+  depends_on:
+    deployer-init:
+      condition: service_completed_successfully
+    anvil-gameserver:
+      condition: service_healthy
+  networks:
+    - rehearsal
+  restart: unless-stopped
+
+services:
+  # neutralise static notebooks so h7d can bind those IPs
+  notebook-team1:
+    image: busybox
+    command: [tail, -f, /dev/null]
+    networks: [rehearsal]
+    volumes: []
+  notebook-team2:
+    image: busybox
+    command: [tail, -f, /dev/null]
+    networks: [rehearsal]
+    volumes: []
+  notebook-team3:
+    image: busybox
+    command: [tail, -f, /dev/null]
+    networks: [rehearsal]
+    volumes: []
+  notebook-team4:
+    image: busybox
+    command: [tail, -f, /dev/null]
+    networks: [rehearsal]
+    volumes: []
+  notebook-team5:
+    image: busybox
+    command: [tail, -f, /dev/null]
+    networks: [rehearsal]
+    volumes: []
+
+  deployer-init:
+    build:
+      context: ../../infra/pipeline/deployer
+    entrypoint: ["/bin/sh", "/init-deployer.sh"]
+    volumes:
+      - deployer-git:/srv/git
+      - deployer-svc:/opt/h7
+      - ./init-deployer.sh:/init-deployer.sh:ro
+      - ../../_template:/template:ro
+    networks: []
+
+  # team UUIDs: run seed-deployer.sh after seed.sh to populate TEAM_ID in each container.
+  # for path 1+2 with GATE_MOCK=1 the TEAM_ID is only needed for deploy-event reporting.
+
+  h7d-1:
+    <<: *h7d
+    environment:
+      <<: *h7d-env
+      TEAM: "1"
+      TEAM_ID: ""  # fill in after seed.sh: seed-deployer.sh will restart with correct UUID
+      H7D_REPO: /srv/git/team1/services.git
+      H7D_SVC_ROOT: /opt/h7/team1
+      H7D_STATE: /var/lib/h7d/team1/state.json
+      H7D_PROJECT: h7-team1-prod
+      BOX_TOKEN: box-token-h7d-1
+    ports: ["19001:9000", "19301:9300"]
+
+  h7d-2:
+    <<: *h7d
+    environment:
+      <<: *h7d-env
+      TEAM: "2"
+      TEAM_ID: ""
+      H7D_REPO: /srv/git/team2/services.git
+      H7D_SVC_ROOT: /opt/h7/team2
+      H7D_STATE: /var/lib/h7d/team2/state.json
+      H7D_PROJECT: h7-team2-prod
+      BOX_TOKEN: box-token-h7d-2
+    ports: ["19002:9000", "19302:9300"]
+
+  h7d-3:
+    <<: *h7d
+    environment:
+      <<: *h7d-env
+      TEAM: "3"
+      TEAM_ID: ""
+      H7D_REPO: /srv/git/team3/services.git
+      H7D_SVC_ROOT: /opt/h7/team3
+      H7D_STATE: /var/lib/h7d/team3/state.json
+      H7D_PROJECT: h7-team3-prod
+      BOX_TOKEN: box-token-h7d-3
+    ports: ["19003:9000", "19303:9300"]
+
+  h7d-4:
+    <<: *h7d
+    environment:
+      <<: *h7d-env
+      TEAM: "4"
+      TEAM_ID: ""
+      H7D_REPO: /srv/git/team4/services.git
+      H7D_SVC_ROOT: /opt/h7/team4
+      H7D_STATE: /var/lib/h7d/team4/state.json
+      H7D_PROJECT: h7-team4-prod
+      BOX_TOKEN: box-token-h7d-4
+    ports: ["19004:9000", "19304:9300"]
+
+  h7d-5:
+    <<: *h7d
+    environment:
+      <<: *h7d-env
+      TEAM: "5"
+      TEAM_ID: ""
+      H7D_REPO: /srv/git/team5/services.git
+      H7D_SVC_ROOT: /opt/h7/team5
+      H7D_STATE: /var/lib/h7d/team5/state.json
+      H7D_PROJECT: h7-team5-prod
+      BOX_TOKEN: box-token-h7d-5
+    ports: ["19005:9000", "19305:9300"]
+
+networks:
+  rehearsal:
+    external: true
+
+volumes:
+  deployer-git:
+  deployer-svc:
+  deployer-state:
