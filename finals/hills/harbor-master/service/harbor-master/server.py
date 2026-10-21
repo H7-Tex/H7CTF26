@@ -15,6 +15,7 @@ import sys
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 
 from flask import Flask, abort, jsonify, request
@@ -132,20 +133,9 @@ def _ensure_empty_blob():
             return  # already exists
     except Exception:
         pass
-    # upload it
-    start_url = DOCKYARD + f"/v2/{THRONE_REPO}/blobs/uploads/"
-    req = urllib.request.Request(start_url, data=b"", method="POST")
-    req.add_header("Authorization", "Bearer " + tok)
-    try:
-        with urllib.request.urlopen(req, timeout=10) as r:
-            loc = r.headers.get("Location", "")
-    except urllib.error.HTTPError as e:
-        loc = e.headers.get("Location", "") if e.code == 202 else ""
-    if not loc:
-        return
-    put_url = (DOCKYARD + loc if loc.startswith("/") else loc) + f"&digest={digest}"
-    data = b"{}"
-    req = urllib.request.Request(put_url, data=data, method="PUT")
+    # single-step upload: POST with digest param links the blob in one request
+    upload_url = DOCKYARD + f"/v2/{THRONE_REPO}/blobs/uploads/?digest={urllib.parse.quote(digest)}"
+    req = urllib.request.Request(upload_url, data=b"{}", method="POST")
     req.add_header("Authorization", "Bearer " + tok)
     req.add_header("Content-Type", "application/octet-stream")
     try:
@@ -253,9 +243,6 @@ def _resolve_crown(raw):
             return data.get("tag")
     except Exception:
         return raw  # fallback: use raw value
-
-
-import urllib.parse  # noqa: E402
 
 
 if __name__ == "__main__":
