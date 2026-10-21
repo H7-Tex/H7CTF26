@@ -149,7 +149,7 @@ export H7D_REPO="$REPO"
 export H7D_SVC_ROOT="$SVC_ROOT"
 export H7D_STATE="$TESTDIR/state/state.json"
 export H7D_WEBHOOK_ADDR=":9000"
-export H7D_API_ADDR=":9100"
+export H7D_API_ADDR=":9300"
 export H7D_PROJECT="prod"
 export H7D_BUILDER="default"  # use default builder for local tests
 export BUILD_TIMEOUT_S=300
@@ -161,7 +161,7 @@ H7D_PID=$!
 sleep 2
 kill -0 "$H7D_PID" 2>/dev/null || { echo "deployer failed to start"; cat "$TESTDIR/log/deployer.log"; exit 1; }
 echo "deployer running PID=$H7D_PID"
-curl -sf http://127.0.0.1:9100/health > /dev/null && echo "api healthy"
+curl -sf http://127.0.0.1:9300/health > /dev/null && echo "api healthy"
 
 # 6. make a patch commit (correct patch: fix store0)
 cp "$TEMPLATE_SRC/../patches/store0_correct.patch" "$TESTDIR/patch.diff"
@@ -188,7 +188,7 @@ echo "webhook accepted"
 echo "waiting for promote..."
 for i in $(seq 1 120); do
   sleep 5
-  CURRENT_SHA=$(curl -sf -H "Authorization: Bearer $BOX_TOKEN" http://127.0.0.1:9100/deploys 2>/dev/null | \
+  CURRENT_SHA=$(curl -sf -H "Authorization: Bearer $BOX_TOKEN" http://127.0.0.1:9300/deploys 2>/dev/null | \
     python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('$SVC',{}).get('sha',''))" 2>/dev/null || echo "")
   if [[ "${CURRENT_SHA}" == "${PATCH_SHA:0:12}" ]]; then
     echo "promoted OK sha=${CURRENT_SHA}"
@@ -209,10 +209,10 @@ curl -sf http://127.0.0.1:7000/health > /dev/null && echo "service healthy after
 
 # 10. test rollback via API
 echo "testing rollback..."
-H7D_TOKEN=testtoken H7D_API=http://127.0.0.1:9100 "$H7_CLI" rollback notebook prev
+H7D_TOKEN=testtoken H7D_API=http://127.0.0.1:9300 "$H7_CLI" rollback notebook prev
 sleep 3
 
-ROLLED_SHA=$(curl -sf -H "Authorization: Bearer $BOX_TOKEN" http://127.0.0.1:9100/deploys | \
+ROLLED_SHA=$(curl -sf -H "Authorization: Bearer $BOX_TOKEN" http://127.0.0.1:9300/deploys | \
   python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('notebook',{}).get('sha',''))")
 echo "after rollback sha=$ROLLED_SHA (expected ${ORIG_SHA_12})"
 
@@ -221,7 +221,7 @@ curl -sf http://127.0.0.1:7000/health > /dev/null && echo "service healthy after
 # 11. test h7 status
 echo ""
 echo "=== h7 status ==="
-H7D_TOKEN=testtoken H7D_API=http://127.0.0.1:9100 "$H7_CLI" status
+H7D_TOKEN=testtoken H7D_API=http://127.0.0.1:9300 "$H7_CLI" status
 
 echo ""
 echo "=== ALL TESTS PASSED ==="

@@ -17,7 +17,7 @@
 
 set -euo pipefail
 
-H7D_API="${H7D_API:-http://127.0.0.1:9100}"
+H7D_API="${H7D_API:-http://127.0.0.1:9300}"
 H7D_TOKEN="${H7D_TOKEN:-}"
 
 # load token from box.env if not set
@@ -181,7 +181,7 @@ h7 - team tools for model C AD
   h7 local-down                    stop local test stack
   h7 tick                          current tick number and quiet-window status
 
-Env: H7D_API (default http://127.0.0.1:9100), H7D_TOKEN, H7D_SVC_ROOT
+Env: H7D_API (default http://127.0.0.1:9300), H7D_TOKEN, H7D_SVC_ROOT
 EOF
     ;;
 

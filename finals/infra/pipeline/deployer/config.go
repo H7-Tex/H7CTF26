@@ -15,7 +15,7 @@ type Config struct {
 
 	// server addresses
 	WebhookAddr string // :9000
-	APIAddr     string // :9100
+	APIAddr     string // :9300
 
 	// paths
 	StateFile      string
@@ -69,7 +69,7 @@ func mustLoadConfig() *Config {
 		Team:              envInt("TEAM", 0),
 		TeamID:            env("TEAM_ID", ""),
 		WebhookAddr:       env("H7D_WEBHOOK_ADDR", ":9000"),
-		APIAddr:           env("H7D_API_ADDR", ":9100"),
+		APIAddr:           env("H7D_API_ADDR", ":9300"),
 		StateFile:         env("H7D_STATE", "/var/lib/h7d/state.json"),
 		RepoPath:          env("H7D_REPO", "/srv/git/services.git"),
 		ServiceRoot:       env("H7D_SVC_ROOT", "/opt/h7"),
