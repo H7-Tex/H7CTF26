@@ -1,4 +1,4 @@
-# H7CTF'26 Finals: service author contract (v1.2)
+# H7CTF'26 Finals: service author contract (v1.3)
 
 Every finals service, checker, exploit and hill is built against this file. If something here is wrong or missing, ask Finals-3 before you work around it. Breaking changes bump the version at the top.
 
@@ -66,6 +66,11 @@ Python 3.12 with `enochecker3==0.14.0`. Start from `_template/checker/`.
   - one `exploit` per store, used only by the gate.
 - **Never return INTERNAL_ERROR for something the team did.** Raise `MumbleException` when the service misbehaves and `OfflineException` when it's unreachable. INTERNAL_ERROR means our bug and is credited to the team.
 - **MUMBLE messages name the feature, never the bug.** Write "export: embedded page content missing", not "SSRF filter blocked us". Players see these messages, so a wrong patch should teach without leaking.
+- **Every failure message starts with a stable code:** `<SERVICE>-<STEP>-<NN>: <text>`. For example, `BERTH-HAVOC-04: search by tag returned no results`.
+  - One code per check site, each listed in README.md with the feature it exercises.
+  - At most 160 characters, ASCII.
+  - Never include flags, flag IDs, credentials, internal paths, stack traces, or the shape of the probe that failed. A failed exploit-shaped probe reads like any other functionality failure.
+  - Use `log` for private detail; it is never shown to teams.
 - **Look like a normal user.**
   - Randomized realistic usernames and content, a realistic user-agent pool and realistic request order.
   - No fixed marker that a filter could key on.
