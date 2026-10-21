@@ -1,6 +1,6 @@
 --- a/dockyard/internal/api/api.go
 +++ b/dockyard/internal/api/api.go
-@@ -935,6 +935,15 @@
+@@ -935,6 +935,14 @@
  		ct := r.Header.Get("Content-Type")
  		if ct == "" {
  			ct = "application/vnd.oci.image.manifest.v1+json"

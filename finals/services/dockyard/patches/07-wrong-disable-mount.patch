@@ -1,6 +1,6 @@
 --- a/dockyard/internal/api/api.go
 +++ b/dockyard/internal/api/api.go
-@@ -577,6 +577,15 @@
+@@ -577,8 +577,18 @@
  	for _, sc := range r.Form["scope"] {
  		typ, name, actions, err := auth.ParseScope(sc)
  		if err != nil || typ != "repository" {
@@ -13,7 +13,7 @@
 +			if a == "pull" { hasPull = true }
 +		}
 +		if hasPush && hasPull {
-+			http.Error(w, `{"errors":[{"code":"UNAUTHORIZED","message":"push and pull cannot be combined in one scope"}]}`, http.StatusBadRequest)
++			http.Error(w, "{\"errors\":[{\"code\":\"UNAUTHORIZED\",\"message\":\"push and pull cannot be combined in one scope\"}]}", http.StatusBadRequest)
 +			return
 +		}
  		var granted []string
