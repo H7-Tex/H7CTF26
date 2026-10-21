@@ -126,8 +126,7 @@ async def putflag_blob(task: PutflagCheckerTaskMessage, db: ChainDB):
         _push_manifest(c, oci_tok, repo, "latest", digest, len(blob_data))
 
     await db.set("blob", {"user": user, "pw": pw, "repo": repo, "digest": digest})
-    # attackInfo: repo + digest visible via transparency log; pass both for checker use
-    return {"repo": repo, "digest": digest}
+    return json.dumps({"repo": repo, "digest": digest})
 
 
 @checker.getflag(0)
@@ -185,7 +184,7 @@ async def putflag_secret(task: PutflagCheckerTaskMessage, db: ChainDB):
             raise MumbleException(f"DOCKYARD-PUTFLAG-14: set secret failed {r.status_code}")
 
     await db.set("secret", {"user": user, "pw": pw, "repo": repo})
-    return {"repo": repo}  # attackInfo for exploit(1)
+    return json.dumps({"repo": repo})
 
 
 @checker.getflag(1)
@@ -284,7 +283,7 @@ async def exploit_blob_mount(task: ExploitCheckerTaskMessage, db: ChainDB):
     attackInfo: {"repo": "victim/repo", "digest": "sha256:..."}
     """
     host = task.address
-    attack_info = task.attack_info or {}
+    attack_info = json.loads(task.attack_info or "{}")
     victim_repo = attack_info.get("repo", "")
     victim_digest = attack_info.get("digest", "")
     if not victim_repo or not victim_digest:
@@ -326,7 +325,7 @@ async def exploit_watch_template(task: ExploitCheckerTaskMessage, db: ChainDB):
     attackInfo: {"repo": "victim/repo"} - the public repo with DEPLOY_KEY set.
     """
     host = task.address
-    attack_info = task.attack_info or {}
+    attack_info = json.loads(task.attack_info or "{}")
     victim_repo = attack_info.get("repo", "")
     if not victim_repo:
         raise MumbleException("DOCKYARD-EXP1-01: missing attackInfo")
@@ -385,7 +384,7 @@ async def exploit_scope_comma(task: ExploitCheckerTaskMessage, db: ChainDB):
     attackInfo: {"repo": "victim/repo", "digest": "sha256:..."}
     """
     host = task.address
-    attack_info = task.attack_info or {}
+    attack_info = json.loads(task.attack_info or "{}")
     victim_repo = attack_info.get("repo", "")
     victim_digest = attack_info.get("digest", "")
     if not victim_repo or not victim_digest:
@@ -429,7 +428,7 @@ async def exploit_glob_scope(task: ExploitCheckerTaskMessage, db: ChainDB):
     attackInfo: {"repo": "victim_ns/victim_repo"}
     """
     host = task.address
-    attack_info = task.attack_info or {}
+    attack_info = json.loads(task.attack_info or "{}")
     victim_repo = attack_info.get("repo", "")
     if not victim_repo:
         raise MumbleException("DOCKYARD-EXP3-01: missing attackInfo")
