@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"time"
@@ -172,20 +173,73 @@ func (c *anvilClient) slaHistory(cfg *Config, svc string, sinceTick int64) ([]SL
 	return ticks, nil
 }
 
-// boxMode reads the fallback-A mode for this team from Anvil.
+// TickInfo is one game tick from the public arena/tick endpoint.
+type TickInfo struct {
+	Tick      int64     `json:"tick"`
+	StartedAt time.Time `json:"started_at"`
+	EndsAt    time.Time `json:"ends_at"`
+	HoldFrom  time.Time `json:"hold_from"`
+}
+
+// currentTick fetches the current tick from GET /api/v1/arena/tick (public, no auth).
+func (c *anvilClient) currentTick() (*TickInfo, error) {
+	req, err := http.NewRequest("GET", c.base+"/api/v1/arena/tick", nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	var t TickInfo
+	if err := json.NewDecoder(resp.Body).Decode(&t); err != nil {
+		return nil, err
+	}
+	return &t, nil
+}
+
+// waitForQuietWindow polls the tick API and blocks until the promote window
+// (hold_from <= now < ends_at). Returns the confirmed tick number.
+// In mock/local mode falls back to the local-clock quiet window.
+func (c *anvilClient) waitForQuietWindow(cfg *Config) int64 {
+	if cfg.GateMock || cfg.InternalToken == "" {
+		waitQuietWindow(cfg)
+		return tickNumber(cfg)
+	}
+	for {
+		ti, err := c.currentTick()
+		if err != nil {
+			time.Sleep(5 * time.Second)
+			continue
+		}
+		now := time.Now()
+		if now.Before(ti.HoldFrom) {
+			time.Sleep(ti.HoldFrom.Sub(now) + time.Duration(rand.Intn(2))*time.Second)
+			continue
+		}
+		if now.Before(ti.EndsAt) {
+			return ti.Tick
+		}
+		// past ends_at — tick rolled over, re-poll
+		time.Sleep(2 * time.Second)
+	}
+}
+
+// boxMode reads the global fallback-A mode from Anvil.
 func (c *anvilClient) boxMode(cfg *Config) (string, error) {
-	if cfg.GateMock || cfg.InternalToken == "" || cfg.Team == 0 {
+	if cfg.GateMock || cfg.InternalToken == "" {
 		return "pipeline", nil
 	}
 	var out struct {
 		Mode string `json:"mode"`
 	}
-	code, err := c.do("GET", fmt.Sprintf("/api/v1/ad/boxes/%d/mode", cfg.Team), nil, &out)
+	code, err := c.do("GET", "/api/v1/internal/arena/mode", nil, &out)
 	if err != nil {
 		return "", err
 	}
 	if code != 200 {
-		return "pipeline", nil // default
+		return "pipeline", nil
 	}
 	if out.Mode == "" {
 		return "pipeline", nil

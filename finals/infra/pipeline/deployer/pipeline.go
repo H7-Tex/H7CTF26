@@ -496,11 +496,13 @@ func runDeploy(cfg *Config, anvil *anvilClient, st *State, svc, sha string) {
 	s := st.svc(svc)
 	fromSHA := s.SHA
 
-	// rate limit: at most one promote per service per tick
-	tick := tickNumber(cfg)
-	if tick > 0 && s.LastTick == tick {
-		log.Printf("[%s] already promoted this tick (%d), coalescing", svc, tick)
-		return
+	// coarse rate-limit: skip build if local clock puts us in same tick as last promote
+	if !cfg.GateMock {
+		tick := tickNumber(cfg)
+		if tick > 0 && s.LastTick == tick {
+			log.Printf("[%s] already promoted this tick (%d), coalescing", svc, tick)
+			return
+		}
 	}
 
 	g, err := loadGateYML(cfg.ServiceRoot, svc)
@@ -545,7 +547,13 @@ func runDeploy(cfg *Config, anvil *anvilClient, st *State, svc, sha string) {
 	}
 	log.Printf("[%s] gate OK %dms", svc, gateResp.DurationMS)
 
-	waitQuietWindow(cfg)
+	promoteTick := anvil.waitForQuietWindow(cfg)
+
+	// re-check: another build may have won the race during our build+gate time
+	if promoteTick > 0 && st.svc(svc).LastTick == promoteTick {
+		log.Printf("[%s] tick %d already promoted during build, skipping", svc, promoteTick)
+		return
+	}
 
 	if err := promoteService(cfg, svc, sha); err != nil {
 		log.Printf("[%s] promote FAIL: %v", svc, err)
@@ -553,7 +561,7 @@ func runDeploy(cfg *Config, anvil *anvilClient, st *State, svc, sha string) {
 	}
 
 	nFiles, nLines, nBytes := diffStats(cfg.RepoPath, svc, fromSHA, sha)
-	st.recordPromote(svc, sha12, digest, tick)
+	st.recordPromote(svc, sha12, digest, promoteTick)
 
 	evtResp, _ := anvil.reportDeployFull(cfg, svc, "deploy", digest, nFiles, nLines, nBytes)
 	if evtResp != nil {

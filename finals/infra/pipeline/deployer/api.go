@@ -90,8 +90,8 @@ func registerAPIRoutes(mux *http.ServeMux, cfg *Config, st *State) {
 			return
 		}
 
-		// wait for quiet window
-		waitQuietWindow(cfg)
+		// wait for quiet window (API-driven in prod, local-clock in mock)
+		anvil.waitForQuietWindow(cfg)
 
 		digest, err := rollbackService(cfg, svc, target)
 		if err != nil {
@@ -183,18 +183,31 @@ func registerAPIRoutes(mux *http.ServeMux, cfg *Config, st *State) {
 		json.NewEncoder(w).Encode(map[string]any{"ok": true, "queued": req.Service})
 	})
 
-	// Not used during normal play, but useful for debug:
-	// GET /tick - current tick info
+	// GET /tick - current tick info (proxies Anvil when available)
 	mux.HandleFunc("/tick", func(w http.ResponseWriter, r *http.Request) {
-		cfg2 := cfg
-		tick := tickNumber(cfg2)
+		w.Header().Set("Content-Type", "application/json")
+		if !cfg.GateMock && cfg.InternalToken != "" {
+			if ti, err := anvil.currentTick(); err == nil {
+				now := time.Now()
+				json.NewEncoder(w).Encode(map[string]any{
+					"tick":       ti.Tick,
+					"started_at": ti.StartedAt,
+					"ends_at":    ti.EndsAt,
+					"hold_from":  ti.HoldFrom,
+					"quiet":      !now.Before(ti.HoldFrom) && now.Before(ti.EndsAt),
+				})
+				return
+			}
+		}
+		// fallback: local-clock estimate
+		tick := tickNumber(cfg)
 		var offset int
-		if !cfg2.EventStart.IsZero() {
-			offset = int(time.Since(cfg2.EventStart).Seconds()) % cfg2.TickS
+		if !cfg.EventStart.IsZero() {
+			offset = int(time.Since(cfg.EventStart).Seconds()) % cfg.TickS
 		}
 		json.NewEncoder(w).Encode(map[string]any{
 			"tick": tick, "offset_s": offset,
-			"quiet": offset >= cfg2.QuietOffsetS,
+			"quiet": offset >= cfg.QuietOffsetS,
 		})
 	})
 
