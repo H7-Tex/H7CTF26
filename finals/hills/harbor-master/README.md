@@ -65,21 +65,20 @@ the delivery immediately; one watch is sufficient to extract the key.
 
 ---
 
-### D3 -- manifest PUT by digest skips push auth (hill-only)
+### D3 -- manifest PUT skips push auth when all blobs are linked (hill-only)
 
 **Component:** `api.handleManifest` (PUT case)
-**Advisory:** When `ref` is a digest (`sha256:...`) and all blobs referenced in the
-manifest body are already linked to the target repo, push auth is skipped. The
-"all blobs linked" condition is a proxy for trust -- but the push auth gate is missing.
+**Advisory:** When all blobs referenced in the manifest body are already linked to the
+target repo, push auth is skipped entirely. The "all blobs linked" condition is a proxy
+for trust -- but the auth gate is missing. The empty config blob
+(`sha256:44136fa355ba77b9ad7b35f1a80f6b8bb480e88a82b4d5e0a1c487a1fefa7e6b`) is always
+linked to `harbor/throne` after initialization, so no prior blob upload is needed.
 **Attack:**
-1. Cross-repo mount any blob into `harbor/throne` using the V1 blob-mount bug (no pull
-   auth needed on source -- both bugs coexist).
-2. Construct a minimal manifest referencing only that blob.
-3. Compute the manifest digest locally. PUT to
-   `/v2/harbor/throne/manifests/sha256:<digest>` with no credentials.
-4. Auth is skipped (digest ref + all blobs linked). Manifest stored.
-5. PUT same body to `/v2/harbor/throne/manifests/latest` (also skipped).
-**Correct patch:** Require push auth regardless of ref type and blob link state.
+1. Construct a minimal manifest with `config.digest = sha256:44136fa...` (well-known
+   empty blob, always linked), `layers: []`, `annotations: {"h7.crown": <team-tag>}`.
+2. PUT to `/v2/harbor/throne/manifests/latest` with no Authorization header.
+3. D3 bypass fires: empty blob is linked to harbor/throne -- auth skipped. Crown set.
+**Correct patch:** Always require push auth regardless of blob link state.
 **Wrong patch:** Require a valid (but unchecked) Bearer token -- the attacker supplies
 any token string and the bypass still fires.
 

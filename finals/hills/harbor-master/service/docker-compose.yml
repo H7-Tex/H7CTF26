@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     cpus: "1.0"
     mem_limit: 512m
+    ports:
+      - "7005:7005"
     volumes:
       - dockyard-data:/data
     environment:

@@ -928,12 +928,12 @@ func (s *Server) handleManifest(w http.ResponseWriter, r *http.Request, repo, re
 		w.Write(content)
 
 	case http.MethodPut:
-		// D3 (hill-only): manifest PUT by digest skips push auth when all referenced blobs are linked.
-		// An attacker cross-mounts a blob into harbor/throne (no pull auth needed, BUG V1),
-		// constructs a minimal manifest referencing only that blob, then PUTs by its sha256 digest.
-		// The "all blobs linked" check signals trust -- but the push auth gate is the missing guard.
+		// D3 (hill-only): manifest PUT skips push auth when all referenced blobs are already linked
+		// to the target repo. The empty config blob (sha256:44136fa...) is always linked to
+		// harbor/throne after initialization, so an attacker only needs to construct a manifest
+		// referencing that well-known digest and push to harbor/throne:latest without credentials.
 		d3Bypass := false
-		if os.Getenv("VULN_D3") != "" && strings.HasPrefix(ref, "sha256:") {
+		if os.Getenv("VULN_D3") != "" {
 			peekBody, _ := io.ReadAll(io.LimitReader(r.Body, 4*1024*1024))
 			r.Body = io.NopCloser(bytes.NewReader(peekBody))
 			var m struct {
