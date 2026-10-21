@@ -66,6 +66,19 @@ contract TreasuryTest is Test {
         ctx.setBotSig(botAddr, attacker, 0, expiry, v, r, s);
     }
 
+    // --- setBotSig access control: players must not be able to overwrite the published sig ---
+
+    function testSetBotSig_OnlyAdmin() public {
+        uint256 expiry = ctx.botDelegateExpiry();
+        uint8 v = ctx.botDelegatev();
+        bytes32 r = ctx.botDelegater();
+        bytes32 s = ctx.botDelegates();
+        // player tries to zero out the sig -> must revert
+        vm.prank(attacker);
+        vm.expectRevert("only admin");
+        ctx.setBotSig(address(0), address(0), 0, expiry, v, r, s);
+    }
+
     // --- D1: flash loan live votes ---
 
     function testD1_FlashLoanVotes() public {

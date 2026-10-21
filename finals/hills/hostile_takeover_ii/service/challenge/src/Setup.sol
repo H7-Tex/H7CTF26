@@ -97,7 +97,8 @@ contract Setup {
         token.transfer(bot, BOT_SUPPLY);
     }
 
-    // called by entrypoint after generating the bot key and sig
+    // called by entrypoint after generating the bot key and sig; admin-only so players can't
+    // overwrite the published delegation and grief D2 for everyone
     function setBotSig(
         address _bot,
         address _delegatee,
@@ -107,6 +108,7 @@ contract Setup {
         bytes32 r,
         bytes32 s
     ) external {
+        require(msg.sender == admin, "only admin");
         botAccount = _bot;
         botDelegatee = _delegatee;
         botDelegateNonce = nonce;

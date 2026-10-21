@@ -107,9 +107,10 @@ After reset the vault is empty (totalShares = 0, totalAssets = 0) so D4 is live 
 
 ## Unintended bug notes
 
-- `setBotSig` has no access control (anyone can overwrite the published sig). Intended: this is how
-  an attacker could grief D2 by nulling the sig. Mitigation: only the sig publisher (entrypoint/admin)
-  calls it; at event time this is a non-issue since teams can read the sig from the chain anyway.
+- `setBotSig` is admin-only (the entrypoint holds the admin key). Open access would let any player
+  wipe the published sig and close D2 for everyone -- that is griefing outside the Doors-and-Locks
+  mechanic, which the contract bans. Players can read the sig directly from on-chain storage without
+  needing the /koth/info endpoint.
 - The Timelock `delay=0` means operations execute in the same block. This is intentional (D5 design).
 - `transferOwner` was added to Governor so Setup can configure it. A team could call transferOwner
   if they could convince Governor's `owner` to do it -- but owner is the arena admin (SYS_KEY),
