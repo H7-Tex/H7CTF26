@@ -478,5 +478,7 @@ async def exploit_glob_scope(task: ExploitCheckerTaskMessage, db: ChainDB):
         raise MumbleException("DOCKYARD-EXP3-07: flag not in secrets")
 
 
+app = checker.app
+
 if __name__ == "__main__":
     checker.run()
