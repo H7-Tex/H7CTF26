@@ -137,6 +137,62 @@ WantedBy=multi-user.target
 SVC
 systemctl daemon-reload; systemctl enable deployer
 
+# node_exporter: prod system metrics visible to own team's workbench on port 9100
+NODE_EXP_VER=1.8.2
+curl -fsSL "https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXP_VER}/node_exporter-${NODE_EXP_VER}.linux-amd64.tar.gz" \
+  -o /tmp/ne.tar.gz && tar xzf /tmp/ne.tar.gz -C /usr/local/bin/ \
+  --strip-components=1 "node_exporter-${NODE_EXP_VER}.linux-amd64/node_exporter" 2>/dev/null || true
+cat > /etc/systemd/system/node_exporter.service <<'NE'
+[Unit]
+Description=Prometheus node_exporter
+[Service]
+ExecStart=/usr/local/bin/node_exporter --web.listen-address=0.0.0.0:9100
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target
+NE
+
+# log stream: serve Docker container logs + deployer log via HTTP on port 9101 (read-only)
+# teams can: curl http://10.60.T.2:9101/logs/<service> to tail their own container logs
+cat > /srv/deployer/logserver.py <<'LOGS'
+#!/usr/bin/env python3
+import subprocess, threading
+from flask import Flask, Response, stream_with_context
+app = Flask(__name__)
+
+@app.route("/logs/<service>")
+def stream_logs(service):
+    if not service.replace("-","").replace("_","").isalnum():
+        return "invalid", 400
+    def gen():
+        with subprocess.Popen(["docker","logs","--tail","200","-f",service],
+                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as p:
+            for line in p.stdout:
+                yield line
+    return Response(stream_with_context(gen()), mimetype="text/plain")
+
+@app.route("/logs")
+def list_logs():
+    out = subprocess.run(["docker","ps","--format","{{.Names}}"],
+                         capture_output=True, text=True).stdout
+    return out or "no containers running\n", 200, {"Content-Type": "text/plain"}
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=9101)
+LOGS
+cat > /etc/systemd/system/logserver.service <<'LS'
+[Unit]
+Description=H7CTF prod log stream
+After=docker.service
+[Service]
+ExecStart=/usr/bin/python3 /srv/deployer/logserver.py
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target
+LS
+
+systemctl daemon-reload; systemctl enable node_exporter logserver
+
 # swapfile
 fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
 echo '/swapfile none swap sw 0 0' >> /etc/fstab

@@ -50,9 +50,32 @@ services:
     restart: unless-stopped
 TC
 
-# S4DFarm (exploit runner)
+# S4DFarm exploit runner: pre-configured for H7CTF finals
+# - submitter: Anvil TCP 10.60.200.10:4141
+# - attack-info: Anvil HTTP (Finals-3 supplies exact endpoint path)
+# - flag regex: H7CTF\{[A-Z2-7]{32}\}
+# - team numbers 1-15 + NOP(16); team T prod IP = 10.60.T.2
 mkdir -p /srv/farm
 git clone --depth=1 https://github.com/enowars/S4DFarm /srv/farm 2>/dev/null || true
+cat > /srv/farm/client/config.json <<'FARMCFG'
+{
+  "server": "http://10.60.200.10",
+  "flag_regex": "H7CTF\\{[A-Z2-7]{32}\\}",
+  "flag_submit_tcp": "10.60.200.10:4141",
+  "attack_info": "http://10.60.200.10/api/v1/attack-info",
+  "teams": 16,
+  "team_ip_template": "10.60.{team_id}.2",
+  "nop_team_id": 16
+}
+FARMCFG
+# farm server config (submits flags to TCP line and shows results in browser on :5001)
+cat > /srv/farm/server/config.json <<'SRVCFG'
+{
+  "submit_flag_url": "tcp://10.60.200.10:4141",
+  "flag_format": "H7CTF{[A-Z2-7]{32}}",
+  "teams": 16
+}
+SRVCFG
 
 # chrony NTP
 echo "server 169.254.169.123 iburst prefer" >> /etc/chrony/chrony.conf

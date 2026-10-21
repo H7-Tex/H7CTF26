@@ -33,7 +33,8 @@ table inet h7 {
   # hills: .2=GridWatch II, .3=Hostile Takeover II, .4=Harbor Master (each on a dedicated VM)
   set hills     { type ipv4_addr; flags interval; elements = { 10.60.210.0/24 } }
   set teamsrc   { type ipv4_addr; flags interval; elements = { 10.61.1.0-10.61.$N.255, 10.80.1.0-10.80.$N.255 } }
-  set svc_ports { type inet_service; flags interval; elements = { 80, 1337, 5000-5099, 7000, 8000-8099 } }
+  # svc_ports: ports teams attack on prod (services on 7000-7007 + deployer hooks)
+  set svc_ports { type inet_service; flags interval; elements = { 80, 1337, 5000-5099, 7000-7007, 8000-8099 } }
   map src2team  { type ipv4_addr : mark; flags interval; elements = { $(j "${s2t[@]}") } }
   set own_wb    { type ipv4_addr . ipv4_addr; flags interval; elements = { $(j "${owb[@]}") } }
   set own_prod  { type ipv4_addr . ipv4_addr; flags interval; elements = { $(j "${oprod[@]}") } }
@@ -84,7 +85,7 @@ table inet h7 {
     ct state established,related accept
 
     # shared services: Anvil, mirror, Gitea, checker gate
-    ip daddr 10.60.200.10 tcp dport { 80, 443, 1337 } accept              # Anvil (flag submit, scoreboard)
+    ip daddr 10.60.200.10 tcp dport { 80, 443, 1337, 4141 } accept        # Anvil (web, scoreboard, TCP flag submission :4141)
     ip daddr 10.60.202.10 tcp dport { 80, 3141, 3142, 4873, 5000, 8080, 9292 } accept  # mirror
     ip daddr 10.60.201.30 tcp dport 3000 accept                            # Gitea HTTP
     ip saddr @teamsrc ip daddr 10.60.201.30 tcp dport 2222 accept          # Gitea SSH (team push)
@@ -100,13 +101,13 @@ table inet h7 {
 
     # hills: teams can attack, prod blocked (prod already dropped above)
     ip saddr @teamsrc ip daddr @hills tcp dport { 80, 443, 8080, 9000-9099 } accept
-    ip saddr @hills ip daddr 10.60.200.10 tcp dport { 80, 443 } accept     # hills -> Anvil KOTH_VERIFY
+    ip saddr @hills ip daddr 10.60.200.10 tcp dport { 80, 443, 4141 } accept  # hills -> Anvil (KOTH_VERIFY + flag submit)
     ip saddr @hills ip daddr != 10.60.200.10 counter drop                  # hills can't reach anything else
 
     # own-team access
     ip saddr . ip daddr @own_wb accept                                     # laptop/wg -> own workbench
     ip saddr . ip daddr @own_prod tcp dport @svc_ports accept              # own team -> own prod services
-    ip saddr . ip daddr @own_prod tcp dport 9100 accept                    # own team -> prod read-only API
+    ip saddr . ip daddr @own_prod tcp dport { 9100, 9101 } accept          # own team -> prod: metrics :9100, log stream :9101
     ip saddr . ip daddr @ssh_ok tcp dport 22 accept                        # fallback A SSH
 
     # cross-team attacks
