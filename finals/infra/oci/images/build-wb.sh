@@ -52,9 +52,10 @@ TC
 
 # S4DFarm exploit runner: pre-configured for H7CTF finals
 # - submitter: Anvil TCP 10.60.200.10:4141
-# - attack-info: Anvil HTTP (Finals-3 supplies exact endpoint path)
+# - attack-info: /api/v1/arena/attack-info (EnoEngine shape: keys = vulnbox IPs e.g. "10.60.3.2")
 # - flag regex: H7CTF\{[A-Z2-7]{32}\}
 # - team numbers 1-15 + NOP(16); team T prod IP = 10.60.T.2
+# note: attack.json keys are IPs not integers; S4DFarm reads those directly as target IPs
 mkdir -p /srv/farm
 git clone --depth=1 https://github.com/enowars/S4DFarm /srv/farm 2>/dev/null || true
 cat > /srv/farm/client/config.json <<'FARMCFG'
@@ -62,7 +63,7 @@ cat > /srv/farm/client/config.json <<'FARMCFG'
   "server": "http://10.60.200.10",
   "flag_regex": "H7CTF\\{[A-Z2-7]{32}\\}",
   "flag_submit_tcp": "10.60.200.10:4141",
-  "attack_info": "http://10.60.200.10/api/v1/attack-info",
+  "attack_info": "http://10.60.200.10/api/v1/arena/attack-info",
   "teams": 16,
   "team_ip_template": "10.60.{team_id}.2",
   "nop_team_id": 16
