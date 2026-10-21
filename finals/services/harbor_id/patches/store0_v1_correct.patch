@@ -1,0 +1,13 @@
+--- a/portal/src/routes/sso.ts
++++ b/portal/src/routes/sso.ts
+@@ -40,8 +40,8 @@
+     const crews = Array.isArray(payload.crew) ? (payload.crew as string[]) : (payload.crew ? [payload.crew as string] : []);
+     const iss = payload.iss as string;
+ 
+-    // BUG V1: look up by email instead of (iss, sub)
+-    let portalUser = db.prepare('SELECT id FROM portal_users WHERE email = ?').get(email) as { id: string } | undefined;
++    // fixed: look up by (iss, sub) - the canonical OIDC identity pair
++    let portalUser = db.prepare('SELECT id FROM portal_users WHERE idp_iss = ? AND idp_sub = ?').get(iss, sub) as { id: string } | undefined;
+ 
+     if (!portalUser) {
+       const id = randomUUID();

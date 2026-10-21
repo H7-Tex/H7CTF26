@@ -1,0 +1,33 @@
+--- a/idp/src/routes/oidc.ts	2026-10-22 03:07:48.839640677 +0530
++++ b/idp/src/routes/oidc.ts	2026-10-22 03:26:45.987815285 +0530
+@@ -85,29 +85,19 @@
+       }
+     }
+ 
+-    // build real crew list
+-    const crews = db.prepare(
+-      'SELECT c.name FROM crews c JOIN crew_members cm ON cm.crew_id = c.id WHERE cm.user_id = ?'
+-    ).all(user.id) as { name: string }[];
+-    const crewNames = crews.map(c => c.name);
+-
+     // start with user's real claims
+     const claims: Record<string, unknown> = {
+       sub: user.id,
+       email: user.email,
+       email_verified: user.email_verified === 1,
+       username: user.username,
+-      crew: crewNames,
+       acr: 'urn:harbor:passkey'
+     };
+ 
+-    // BUG V2: for any requested claim not in USER_SOURCED_CLAIMS,
+-    // if a `value` is specified, echo it into the token.
+-    // this lets an attacker request `crew: {value: "Tug-7 Night"}` and get that crew in their token.
++    // filter: only allow value-constrained non-user claims
+     for (const [claimName, opts] of Object.entries(requestedClaims)) {
+       if (USER_SOURCED_CLAIMS.has(claimName)) continue;
+       if (opts?.value !== undefined) {
+-        // echo the requested value directly
+         claims[claimName] = opts.value;
+       }
+     }

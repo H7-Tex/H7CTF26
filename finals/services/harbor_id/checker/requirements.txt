@@ -1,0 +1,5 @@
+enochecker3==0.14.0
+httpx==0.28.1
+cryptography==43.0.3
+cbor2==5.6.5
+PyJWT==2.9.0

@@ -1,0 +1,19 @@
+--- a/idp/src/routes/oidc.ts
++++ b/idp/src/routes/oidc.ts
+@@ -101,15 +101,9 @@
+       acr: 'urn:harbor:passkey'
+     };
+ 
+-    // BUG V2: for any requested claim not in USER_SOURCED_CLAIMS,
+-    // if a `value` is specified, echo it into the token.
+-    // this lets an attacker request `crew: {value: "Tug-7 Night"}` and get that crew in their token.
+     for (const [claimName, opts] of Object.entries(requestedClaims)) {
+       if (USER_SOURCED_CLAIMS.has(claimName)) continue;
+-      if (opts?.value !== undefined) {
+-        // echo the requested value directly
+-        claims[claimName] = opts.value;
+-      }
++      // claims parameter is a filter/presence request; never echo value into the token
+     }
+ 
+     const idToken = await new SignJWT(claims)

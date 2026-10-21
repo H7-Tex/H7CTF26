@@ -1,0 +1,29 @@
+--- a/idp/src/routes/webauthn.ts	2026-10-22 02:49:24.088753503 +0530
++++ b/idp/src/routes/webauthn.ts	2026-10-22 03:26:58.153370273 +0530
+@@ -205,18 +205,16 @@
+       return reply.code(400).send({ error: 'HARBORID-WALOG-04: signature verification failed' });
+     }
+ 
+-    // BUG V1: determine the logged-in user from userHandle (not from the credential's owner).
+-    // an attacker can use their own credential with a victim's userHandle and log in as the victim.
+     const userHandle = body.response.response.userHandle;
+-    let userId: string;
+-    if (userHandle) {
+-      // decode userHandle: it is base64url of the user's sub (UUID)
+-      const decoded = Buffer.from(userHandle, 'base64url').toString();
+-      // BUG: no check that decoded === cred.user_id
+-      userId = decoded;
+-    } else {
+-      userId = cred.user_id;
++    if (!userHandle) {
++      return reply.code(400).send({ error: 'HARBORID-WALOG-06: userHandle required' });
+     }
++    // validate: userHandle must include the user prefix
++    if (!userHandle.startsWith('dXNlcjo')) {
++      return reply.code(403).send({ error: 'HARBORID-WALOG-07: invalid userHandle format' });
++    }
++    const decoded = Buffer.from(userHandle, 'base64url').toString().replace(/^user:/, '');
++    const userId = decoded;
+ 
+     const user = db.prepare('SELECT id, username FROM users WHERE id = ?').get(userId) as {
+       id: string; username: string

@@ -1,0 +1,13 @@
+{
+  "name": "harbor-id-portal",
+  "version": "1.0.0",
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "start": "node --experimental-strip-types src/index.ts"
+  },
+  "dependencies": {
+    "fastify": "4.28.1",
+    "jose": "5.9.6"
+  }
+}

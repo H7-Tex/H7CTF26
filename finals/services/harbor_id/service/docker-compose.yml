@@ -1,0 +1,35 @@
+services:
+  harbor-idp:
+    build: ./idp
+    ports:
+      - "7001:7001"
+    volumes:
+      - idp-data:/data
+    restart: unless-stopped
+    cpus: 0.6
+    mem_limit: 400m
+    environment:
+      DATA_DIR: /data
+      PORT: "7001"
+      IDP_ISSUER: "http://harbor-idp:7001"
+
+  harbor-portal:
+    build: ./portal
+    ports:
+      - "7011:7011"
+    volumes:
+      - portal-data:/data
+    restart: unless-stopped
+    cpus: 0.4
+    mem_limit: 300m
+    depends_on:
+      - harbor-idp
+    environment:
+      DATA_DIR: /data
+      PORT: "7011"
+      IDP_URL: "http://harbor-idp:7001"
+      IDP_ISSUER: "http://harbor-idp:7001"
+
+volumes:
+  idp-data:
+  portal-data:
