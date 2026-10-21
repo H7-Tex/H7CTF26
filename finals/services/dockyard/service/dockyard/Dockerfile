@@ -1,9 +1,8 @@
 FROM golang:1.22-bookworm AS builder
+RUN apt-get update && apt-get install -y --no-install-recommends gcc libc6-dev && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
-COPY go.mod go.sum ./
-RUN go mod download
 COPY . .
-RUN CGO_ENABLED=1 go build -o /dockyard ./cmd/dockyard
+RUN CGO_ENABLED=1 go build -mod=vendor -o /dockyard ./cmd/dockyard
 
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
