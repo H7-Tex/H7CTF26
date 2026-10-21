@@ -17,8 +17,8 @@ g -X POST "$GITEA_URL/api/v1/orgs" \
   -d '{"username":"h7ctf","full_name":"H7CTF Finals","visibility":"private"}' 2>/dev/null || true
 echo "org h7ctf: ok"
 
-# services list; finals-team owns the exact repo names
-SERVICES=(service1 service2 service3)  # placeholder - finals-3 fills this in
+# service list per Finals-3 (22 Oct 2026); hills (gridwatch_ii / hostile_takeover_ii / harbor_master) are NOT team repos
+SERVICES=(notebook harbor_id tidepay bollard berth_board dockyard tariff_studio pilot_line)
 
 seed_team() {
   local t=$1 tt; tt=$(printf %02d "$t")

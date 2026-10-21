@@ -7,8 +7,8 @@
 #   - hills subnet 10.60.210.0/24: team attacks allowed, prod blocked
 #   - staging secondary IPs (10.60.T.3): checker-only, teams blocked
 #
-# [TESTED] syntax-checked in a network namespace with nft -c on nftables 1.1.7.
-# [LIVE] run `nft -c -f /etc/nftables.d/h7.nft` as root on the real router before rehearsal.
+# [TESTED] nft -c exit 0, no errors: docker run --cap-add NET_ADMIN ubuntu:24.04, nftables 1.0.9 (22 Oct 2026).
+# [LIVE] run `bash gen-nft.sh 15 | nft -c -f /dev/stdin` as root on r1 before rehearsal.
 set -euo pipefail
 N=${1:-15}; NOP=$((N+1))
 
@@ -30,6 +30,7 @@ table inet h7 {
   set prod_stg  { type ipv4_addr; flags interval; elements = { 10.60.1.3-10.60.$NOP.3 } }
   set wb        { type ipv4_addr; flags interval; elements = { 10.61.1.2-10.61.$N.2 } }
   set boxes     { type ipv4_addr; flags interval; elements = { 10.60.1.2-10.60.$NOP.2, 10.61.1.2-10.61.$N.2 } }
+  # hills: .2=GridWatch II, .3=Hostile Takeover II, .4=Harbor Master (each on a dedicated VM)
   set hills     { type ipv4_addr; flags interval; elements = { 10.60.210.0/24 } }
   set teamsrc   { type ipv4_addr; flags interval; elements = { 10.61.1.0-10.61.$N.255, 10.80.1.0-10.80.$N.255 } }
   set svc_ports { type inet_service; flags interval; elements = { 80, 1337, 5000-5099, 7000, 8000-8099 } }

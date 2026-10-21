@@ -1,142 +1,129 @@
-# H7CTF'26 Finals - OCI provisioning plan (M2)
+# H7CTF'26 Finals - OCI provisioning plan (M2, rev 2)
 
-**Model C, ap-hyderabad-1, 45 h (rehearsal Fri 23 + event Sat 24 - Sun 25 Oct)**  
-Prepared by: Finals-P4-Infra · 22 Oct 2026  
-Route to: Finals-3 → Finals-2 → Abu for spend approval
+**Model C, ap-hyderabad-1, Finals-2 architecture approved (22 Oct 2026)**  
+Prepared by: Finals-P4-Infra. Reviewed: Finals-2. Awaiting Abu's spend go.
 
 ---
 
 ## 1. Instance inventory
 
-Pricing: E4 $0.025/OCPU-hr + $0.0015/GB-hr; A1 $0.01/OCPU-hr + $0.0015/GB-hr  
-Source: Oracle price-list API 2026-10-08 [DOC in recipe 06]
+Prices: E4 $0.025/OCPU-hr + $0.0015/GB-hr; A1 $0.01/OCPU-hr + $0.0015/GB-hr  
+Storage: $0.0255/GB-month storage + $0.017/GB-month VPU (Balanced, 10 VPU) = **$0.0425/GB-month**
 
-### 1a. Fixed infra VMs
+### 1a. Fixed infra VMs (run Thu midday -> Sun 20:00, ~78 h)
 
 | VM | Shape | OCPU | GB | $/hr | Boot GB | Notes |
 |---|---|---|---|---|---|---|
 | r1 | E4 | 4 | 16 | 0.124 | 50 | primary router, pcap, WireGuard |
 | r2 | E4 | 2 | 16 | 0.074 | 50 | standby router |
 | anvil | E4 | 4 | 16 | 0.124 | 150 | finals.h7tex.com, Postgres |
-| checker | E4 | 4 | 16 | 0.124 | 150 | tick engine + deploy gate API :8000 |
-| hill-gw | E4 | 2 | 16 | 0.074 | 150 | GridWatch KotH hill |
-| hill-ht | E4 | 2 | 16 | 0.074 | 150 | Hostile Takeover KotH hill |
+| checker | E4 | **8** | **32** | **0.248** | 150 | tick + Outbreak wave + gate pool |
+| hill-gw | E4 | 2 | 16 | 0.074 | 150 | GridWatch II |
+| hill-ht | E4 | 2 | 16 | 0.074 | 150 | Hostile Takeover II |
+| hill-hc | E4 | 2 | 16 | 0.074 | 150 | Harbor Master |
 | ops | A1 | 2 | 8 | 0.032 | 100 | reset API :8090, automation |
 | gitea | A1 | 2 | 8 | 0.032 | 100 | Gitea HTTP :3000 + SSH :2222 |
-| mirror | A1 | 4 | 16 | 0.064 | 100 | apt/pip/npm/docker offline mirror + DNS sink |
+| mirror | A1 | 4 | 16 | 0.064 | 100 | apt/pip/npm/docker offline mirror |
 
-Infra subtotal: **$0.722/hr** · E4 OCPUs used: 18 · A1 OCPUs used: 8
+Infra total: **$0.920/hr** · E4 OCPUs: 24 · A1 OCPUs: 8
 
-> Note vs recipe section 9: checker sized at 4/16 not 8/32 (saves $0.12/hr, risk: slow ticks
-> under load; can be upgraded before rehearsal if bench shows > 80% CPU). Anvil at 4/16 not
-> 4/32 (saves $0.06/hr; 16 GB is sufficient for 15 teams on Postgres). Ops/Gitea/mirror on A1
-> to stay well under the 100 E4 OCPU hard limit.
+### 1b. Team VMs (run Fri 08:00 -> Sun 14:00, ~54 h)
 
-### 1b. Team VMs (option A - recommended: 12 GB vulnbox)
+| VM group | Shape | OCPU | GB | Count | $/hr/box | $/hr total | Boot GB |
+|---|---|---|---|---|---|---|---|
+| prod vulnbox (15 teams + NOP) | E4 | 2 | 12 | 16 | 0.068 | 1.088 | 150 |
+| workbench (teams 1-15, x86) | E4 | 2 | 16 | 15 | 0.074 | 1.110 | 100 |
 
-| VM group | Shape | OCPU | GB | Count | $/hr/box | $/hr total |
-|---|---|---|---|---|---|---|
-| prod vulnbox (teams 1-15 + NOP) | E4 | 2 | 12 | 16 | 0.068 | 1.088 |
-| workbench (teams 1-15, x86 required) | E4 | 2 | 16 | 15 | 0.074 | 1.110 |
-
-Team subtotal (A): **$2.198/hr** · E4 OCPUs: 32 (prod) + 30 (wb) = 62
-
-### 1c. Team VMs (option B - alternative: 8 GB vulnbox)
-
-| VM group | Shape | OCPU | GB | Count | $/hr/box | $/hr total |
-|---|---|---|---|---|---|---|
-| prod vulnbox (teams 1-15 + NOP) | E4 | 2 | 8 | 16 | 0.062 | 0.992 |
-| workbench (teams 1-15, x86 required) | E4 | 2 | 16 | 15 | 0.074 | 1.110 |
-
-Team subtotal (B): **$2.102/hr** · E4 OCPUs: 62 (same as A, RAM-only diff)
+Team total: **$2.198/hr** · E4 OCPUs: 62
 
 ---
 
-## 2. Quota consumption
+## 2. Quota
 
-| Resource | Option A / B | Limit (verified M1) | Headroom |
+| Resource | Used | Limit (verified M1) | Headroom |
 |---|---|---|---|
-| E4 OCPUs | 80 | 100 | 20 |
-| A1 OCPUs | 8 | free tier unlimited | ample |
-| Custom images | 3 (base + prod + wb) | 25 | 22 |
-| VCN | 1 | 5 | 4 |
-| Reserved public IPs | 1 | 5 | 4 |
-| Block volumes | ~50 | 150 | 100 |
+| E4 OCPUs | 24 infra + 62 team = **86** | 100 | **14** |
+| A1 OCPUs | 8 | free unlimited | ample |
+| Custom images | 3 | 25 | 22 |
 
-All E4: 18 infra + 62 team = 80, confirmed within 100-OCPU limit.  
-Hills add 4 E4 OCPUs vs base model C; still safe.
+Note: checker upgrade 4->8 OCPU costs 4 E4 OCPUs, hill-hc costs 2 more = +6 vs v1. Still within limit.
 
 ---
 
-## 3. Cost table (45 h compute + 5 days storage)
+## 3. Cost breakdown
 
-Block volume rates: $0.0255/GB-month  
-Boot volumes by shape: r1/r2 50 GB, ops/gitea/mirror 100 GB, all others 150 GB  
-Data volumes: pcap 500 GB (on r1), Gitea repos 100 GB, mirror cache 300 GB
+### Compute
 
-| Line item | Option A (12 GB) | Option B (8 GB) |
-|---|---|---|
-| Infra compute (9 VMs × 45 h) | $32.49 | $32.49 |
-| Team compute - prod (16 × 45 h) | **$48.96** | $44.64 |
-| Team compute - wb (15 × 45 h) | $49.95 | $49.95 |
-| Boot volumes (5700 GB, 5 days) | $10.16 | $10.16 |
-| Data volumes (900 GB, 5 days) | $1.60 | $1.60 |
-| NAT egress (mirror warm-up ~120 GB) | $1.02 | $1.02 |
-| **Total** | **$144** | **$140** |
+| Line | Rate | Hours | Cost |
+|---|---|---|---|
+| Infra compute (10 VMs) | $0.920/hr | 78 | **$71.76** |
+| Team compute - prod 16x (12 GB) | $1.088/hr | 54 | **$58.75** |
+| Team compute - wb 15x (16 GB) | $1.110/hr | 54 | **$59.94** |
+| **Compute subtotal** | | | **$190.45** |
 
-Hourly all-in: option A $2.920/hr, option B $2.824/hr.  
-Each extra hour at full scale: ~$2.90 (A) / $2.82 (B).
+### Storage (provisioned from ~Thu midday; 5 days billed)
 
-> The recipe (section 9) quotes $201 for model C. Delta is explained by: A1 for ops/gitea/mirror
-> (-$18), checker 4/16 not 8/32 (-$5.6), anvil 4/16 not 4/32 (-$2.7), and our workbenches at
-> 2 OCPU not the recipe's 2/16 cross-check error (this plan uses 2/16 workbenches, same as
-> recipe). Net: our config is lighter on the ops layer.
+| Volume group | GB | $/GB-month | 5d cost |
+|---|---|---|---|
+| Router boots (2 x 50 GB) | 100 | 0.0425 | $0.71 |
+| Infra VM boots (8 x 100-150 GB) | 950 | 0.0425 | $6.74 |
+| Hill boots (3 x 150 GB) | 450 | 0.0425 | $3.19 |
+| Prod boots (16 x 150 GB) | 2400 | 0.0425 | $17.00 |
+| WB boots (15 x 100 GB) | 1500 | 0.0425 | $10.63 |
+| pcap volume (500 GB) | 500 | 0.0425 | $3.54 |
+| Gitea data (100 GB) + mirror cache (300 GB) | 400 | 0.0425 | $2.83 |
+| **Storage subtotal** | **6300 GB** | | **$44.64** |
 
----
+### Other
 
-## 4. Recommendation
-
-**Go with option A (12 GB vulnbox).**
-
-Reason: under concurrent load (one BuildKit build + staging promotion + checker inbound + one
-active exploit flood + OS overhead), the prod box memory budget is tight:
-
-| Consumer | Approx RSS |
+| Line | Cost |
 |---|---|
-| services (mem_limit sum across 3-5 containers) | 4.0 GB |
-| staging copy | 0.75 GB |
-| BuildKit daemon + one build layer cache | 2.5 GB |
-| OS + dockerd | 0.6 GB |
-| **8 GB budget** | 7.85 GB with zero headroom |
-| **12 GB budget** | 7.85 GB, **4.15 GB free** - survives flood bursts without OOM kills |
+| NAT egress (mirror warm-up ~120 GB @ $0.0085/GB) | $1.02 |
+| Budget alerts setup | $0 |
 
-Cost delta between options: **$4/45h**. This is not a trade-off worth making. Use 12 GB.
+### Grand total
 
-Option B is viable only if we confirm the exact service set and its mem_limit sum comes in under
-5.5 GB total. Final call belongs to Abu.
+| | Cost |
+|---|---|
+| Compute | $190.45 |
+| Storage | $44.64 |
+| Egress | $1.02 |
+| **Realistic total** | **~$236** |
+| **Hard cap** | **$250** |
 
----
-
-## 5. Teardown schedule
-
-- **Sun 25 Oct ~18:00 IST**: event ends. Snapshot `h7f-prod` and `h7f-wb` to custom images.
-- **Sun 25 Oct ~20:00 IST**: terminate all team VMs and infra VMs except ops.
-- **Export pcaps**: copy `/srv/pcap` on r1 to OCI Object Storage before terminating r1.
-- **Keep**: custom images (3), pcap export, Gitea repos backup.
-- **Mon 26 Oct**: terminate ops, delete all block volumes. Bill stops.
-
-Estimated total post-event cost (images + storage through teardown): < $5.
+Hourly burn at full scale: $3.12/hr (infra+team combined).
 
 ---
 
-## 6. Go/no-go gate
+## 4. Runbook additions (Finals-3 approved)
 
-This plan requires **Abu's explicit spend approval** before any instance is launched.
+**Team VM schedule:**
+- Do NOT stop any VM during the event. Power-offs require a new boot volume; that's a reset, not a stop.
+- Stop team VMs immediately after final scores are exported (~Sun 13:00), before teardown.
 
-Checklist for Abu / Finals-2:
-- [ ] 12 GB vulnbox approved (or override to 8 GB)  
-- [ ] $144 spend cap confirmed (or if running over $200 recipe estimate, confirm that too)
-- [ ] Checker at 4/16 OCPUs accepted (or upgrade to 8/16 before rehearsal: +$5.6 for 45 h)
-- [ ] Anvil at 4/16 OCPUs accepted (or upgrade to 4/32: +$2.7)
+**OCI budget alerts:** Set right after the compartment go:
+```
+oci budgets budget create -c $TENANCY \
+  --target-type COMPARTMENT --target-id $C \
+  --amount 250 --reset-period MONTHLY --display-name h7f-finals
+# Create alerts at $150, $200, $240 (email abu@h7tex.com)
+```
 
-Signal via Finals-3 with "go M3" to unblock provisioning.
+**Volume teardown order (Sun ~20:00):**
+1. Export pcaps from r1:/srv/pcap to Object Storage.
+2. Terminate all team VMs, then infra VMs.
+3. Terminate ops last (it runs the teardown script).
+4. Delete all block volumes after instances are TERMINATED (detach is automatic on terminate).
+5. Keep 3 custom images (h7f-base, h7f-prod, h7f-wb) until post-mortem is done.
+
+---
+
+## 5. Go/no-go checklist for Abu
+
+- [ ] 12 GB vulnbox, ~$236 realistic total (hard cap $250) approved
+- [ ] Checker at 8 OCPU / 32 GB approved
+- [ ] Service list (8 services: notebook/harbor_id/tidepay/bollard/berth_board/dockyard/tariff_studio/pilot_line) locked
+- [ ] Budget alert targets ($150/$200/$240) confirmed
+- [ ] Spend go signal: "go M3" via Finals-3 -> P4-Infra
+
+No write calls or instances launched until "go M3" received.

@@ -5,8 +5,11 @@
 set -euo pipefail
 source "$(dirname "$0")/lib.sh"
 
-[[ -n ${IMG_PROD:-} ]] || { echo "IMG_PROD not set (set H7F_IMG_PROD)"; exit 1; }
-[[ -n ${IMG_WB:-} ]] || { echo "IMG_WB not set (set H7F_IMG_WB)"; exit 1; }
+is_ocid() { [[ $1 =~ ^ocid1\.image\.oc1\. ]]; }
+[[ -n ${IMG_PROD:-} ]] || { echo "IMG_PROD not set (run images/build-prod.sh first, then export H7F_IMG_PROD=...)"; exit 1; }
+[[ -n ${IMG_WB:-} ]]   || { echo "IMG_WB not set (run images/build-wb.sh first, then export H7F_IMG_WB=...)";   exit 1; }
+is_ocid "$IMG_PROD" || { echo "IMG_PROD does not look like an OCI image OCID: $IMG_PROD"; exit 1; }
+is_ocid "$IMG_WB"   || { echo "IMG_WB does not look like an OCI image OCID: $IMG_WB";   exit 1; }
 
 NSG_GAME=$(inv_get nsg.nsg-game)
 
@@ -31,8 +34,9 @@ launch_prod() {
 launch_wb() {
   local t=$1 tt; tt=$(printf %02d "$t")
   local sn; sn=$(inv_get "subnet.w$tt")
+  # 9th arg = 100 GB boot (workbenches don't need 150 GB; saves ~$7 storage over 5 days)
   launch "wb-$tt" "$sn" "10.61.$t.2" 2 16 "$IMG_WB" "$NSG_GAME" \
-    "$(dirname "$0")/cloud-init/wb.yaml"
+    "$(dirname "$0")/cloud-init/wb.yaml" 100
   echo "wb-$tt: done"
 }
 

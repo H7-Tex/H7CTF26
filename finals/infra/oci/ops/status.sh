@@ -8,7 +8,7 @@ TOKEN=$(inv_get reset-token)
 OPS=10.60.200.5
 
 echo "=== infra VMs ==="
-for name in r1 r2 ops anvil checker gitea mirror hill-gw hill-ht; do
+for name in r1 r2 ops anvil checker gitea mirror hill-gw hill-ht hill-hc; do
   id=$(inv_get "vm.$name")
   [[ -z $id ]] && { echo "$name: not in inventory"; continue; }
   state=$(oci compute instance get --instance-id "$id" | q_data '."lifecycle-state"' 2>/dev/null || echo "ERR")

@@ -34,10 +34,10 @@ subnet() {
   echo "$id"
 }
 
-# launch a VM; idempotent on name
+# launch a VM; idempotent on name. optional 9th arg overrides boot volume size (default 150 GB).
 launch() {
-  local name=$1 subnet_id=$2 ip=$3 ocpus=$4 mem=$5 image=$6 nsg_id=$7 userdata=$8
-  shift 8
+  local name=$1 subnet_id=$2 ip=$3 ocpus=$4 mem=$5 image=$6 nsg_id=$7 userdata=$8 bootsz=${9:-150}
+  shift 9
   local id; id=$(inv_get "vm.$name")
   [[ -n $id ]] && { echo "$id"; return; }
   id=$(oci compute instance launch \
@@ -46,7 +46,7 @@ launch() {
         --shape-config "{\"ocpus\":$ocpus,\"memoryInGBs\":$mem}" \
         --subnet-id "$subnet_id" --private-ip "$ip" \
         --assign-public-ip false --nsg-ids "[\"$nsg_id\"]" \
-        --image-id "$image" --boot-volume-size-in-gbs 150 \
+        --image-id "$image" --boot-volume-size-in-gbs "$bootsz" \
         --display-name "$name" --hostname-label "$name" \
         --user-data-file "$userdata" \
         --ssh-authorized-keys-file "$SCRIPT_DIR/keys/orga.pub" \

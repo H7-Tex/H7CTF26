@@ -20,10 +20,10 @@ launch anvil \
   4 16 "$IMG_UBUNTU" "$NSG_INFRA" \
   "$(dirname "$0")/cloud-init/anvil.yaml"
 
-# --- checker runner ---
+# --- checker runner (8/32: runs tick scripts, Outbreak wave, gate pool concurrently) ---
 launch checker \
   "$(inv_get subnet.core)" 10.60.201.20 \
-  4 16 "$IMG_UBUNTU" "$NSG_INFRA" \
+  8 32 "$IMG_UBUNTU" "$NSG_INFRA" \
   "$(dirname "$0")/cloud-init/checker.yaml"
 
 # --- Gitea (A1) ---
@@ -38,9 +38,9 @@ launch_a1 mirror \
   4 16 "$IMG_UBUNTU" "$NSG_INFRA" \
   "$(dirname "$0")/cloud-init/mirror.yaml"
 
-# --- KotH hill VMs (GridWatch II on .2, Hostile Takeover II on .3) ---
-# hills have NSG_GAME rules: reachable from any 10.60.0.0/15 address
-# router enforces that only team ranges can attack; prod boxes cannot (see gen-nft.sh)
+# --- KotH hill VMs: each hill is a dedicated VM; never co-hosted ---
+# hill-gw: GridWatch II (.2), hill-ht: Hostile Takeover II (.3), hill-hc: Harbor Master (.4)
+# Hills have NSG_GAME rules: reachable from 10.60.0.0/15; router gates team-only access.
 launch hill-gw \
   "$(inv_get subnet.hills)" 10.60.210.2 \
   2 16 "$IMG_UBUNTU" "$NSG_GAME" \
@@ -48,6 +48,11 @@ launch hill-gw \
 
 launch hill-ht \
   "$(inv_get subnet.hills)" 10.60.210.3 \
+  2 16 "$IMG_UBUNTU" "$NSG_GAME" \
+  "$(dirname "$0")/cloud-init/hill.yaml"
+
+launch hill-hc \
+  "$(inv_get subnet.hills)" 10.60.210.4 \
   2 16 "$IMG_UBUNTU" "$NSG_GAME" \
   "$(dirname "$0")/cloud-init/hill.yaml"
 
