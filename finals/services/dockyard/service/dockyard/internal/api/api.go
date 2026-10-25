@@ -61,7 +61,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("POST /log/keys", s.authMid(s.handleLogRegisterKey))
 	mux.HandleFunc("POST /log/attest", s.authMid(s.handleLogAttest))
 
-	mux.HandleFunc("GET /v2/", s.handleV2Root)
+	mux.HandleFunc("GET /v2/{$}", s.handleV2Root)
 	mux.HandleFunc("GET /v2/_catalog", s.handleCatalog)
 	mux.HandleFunc("/v2/", s.handleV2)
 
