@@ -12,6 +12,12 @@ services:
       DATA_DIR: /data
       PORT: "7001"
       IDP_ISSUER: "http://harbor-idp:7001"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7001/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
 
   harbor-portal:
     build: ./portal
@@ -23,7 +29,8 @@ services:
     cpus: 0.4
     mem_limit: 300m
     depends_on:
-      - harbor-idp
+      harbor-idp:
+        condition: service_healthy
     environment:
       DATA_DIR: /data
       PORT: "7011"

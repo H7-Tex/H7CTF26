@@ -195,9 +195,8 @@ async def _sso(portal: str, id_token: str, c: httpx.AsyncClient) -> str:
 
 # ── store 0: crew handover notes ─────────────────────────────────────────────
 
-@checker.putflag(0)
-async def putflag_notes(task: PutflagCheckerTaskMessage, client: httpx.AsyncClient,
-                         db: ChainDB) -> str:
+async def _putflag_notes_impl(task: PutflagCheckerTaskMessage, client: httpx.AsyncClient,
+                               db: ChainDB) -> str:
     idp, portal = _idp(task.address), _portal(task.address)
     try:
         # user A: will post the flag note
@@ -246,9 +245,14 @@ async def putflag_notes(task: PutflagCheckerTaskMessage, client: httpx.AsyncClie
         raise OfflineException(f"HARBORID-NET-01: IdP unreachable: {e}")
 
 
-@checker.getflag(0)
-async def getflag_notes(task: GetflagCheckerTaskMessage, client: httpx.AsyncClient,
-                         db: ChainDB) -> None:
+@checker.putflag(0)
+async def putflag_notes(task: PutflagCheckerTaskMessage, client: httpx.AsyncClient,
+                         db: ChainDB) -> str:
+    return await _putflag_notes_impl(task, client, db)
+
+
+async def _getflag_notes_impl(task: GetflagCheckerTaskMessage, client: httpx.AsyncClient,
+                               db: ChainDB) -> None:
     idp, portal = _idp(task.address), _portal(task.address)
     try:
         state = await db.get("store0")
@@ -277,11 +281,16 @@ async def getflag_notes(task: GetflagCheckerTaskMessage, client: httpx.AsyncClie
         raise OfflineException(f"HARBORID-NET-01: service unreachable: {e}")
 
 
+@checker.getflag(0)
+async def getflag_notes(task: GetflagCheckerTaskMessage, client: httpx.AsyncClient,
+                         db: ChainDB) -> None:
+    return await _getflag_notes_impl(task, client, db)
+
+
 # ── store 1: break-glass note ────────────────────────────────────────────────
 
-@checker.putflag(1)
-async def putflag_breakglass(task: PutflagCheckerTaskMessage, client: httpx.AsyncClient,
-                              db: ChainDB) -> str:
+async def _putflag_breakglass_impl(task: PutflagCheckerTaskMessage, client: httpx.AsyncClient,
+                                    db: ChainDB) -> str:
     idp = _idp(task.address)
     try:
         uname, email, bt = await _register_user(idp, client, break_glass=task.flag)
@@ -294,9 +303,14 @@ async def putflag_breakglass(task: PutflagCheckerTaskMessage, client: httpx.Asyn
         raise OfflineException(f"HARBORID-NET-01: IdP unreachable: {e}")
 
 
-@checker.getflag(1)
-async def getflag_breakglass(task: GetflagCheckerTaskMessage, client: httpx.AsyncClient,
-                              db: ChainDB) -> None:
+@checker.putflag(1)
+async def putflag_breakglass(task: PutflagCheckerTaskMessage, client: httpx.AsyncClient,
+                              db: ChainDB) -> str:
+    return await _putflag_breakglass_impl(task, client, db)
+
+
+async def _getflag_breakglass_impl(task: GetflagCheckerTaskMessage, client: httpx.AsyncClient,
+                                    db: ChainDB) -> None:
     idp = _idp(task.address)
     try:
         state = await db.get("store1")
@@ -317,7 +331,13 @@ async def getflag_breakglass(task: GetflagCheckerTaskMessage, client: httpx.Asyn
             raise MumbleException("HARBORID-ACCT-02: break_glass_note missing or wrong")
 
     except (httpx.ConnectError, httpx.TimeoutException) as e:
-        raise OfflineException(f"HARBORID-NET-01: IdP unreachable: {e}")
+        raise OfflineException(f"HARBORID-NET-01: service unreachable: {e}")
+
+
+@checker.getflag(1)
+async def getflag_breakglass(task: GetflagCheckerTaskMessage, client: httpx.AsyncClient,
+                              db: ChainDB) -> None:
+    return await _getflag_breakglass_impl(task, client, db)
 
 
 # ── store 2: crew notes alias (for claims-echo exploit testing) ───────────────
@@ -325,13 +345,13 @@ async def getflag_breakglass(task: GetflagCheckerTaskMessage, client: httpx.Asyn
 @checker.putflag(2)
 async def putflag_notes2(task: PutflagCheckerTaskMessage, client: httpx.AsyncClient,
                           db: ChainDB) -> str:
-    return await putflag_notes(task, client, db)
+    return await _putflag_notes_impl(task, client, db)
 
 
 @checker.getflag(2)
 async def getflag_notes2(task: GetflagCheckerTaskMessage, client: httpx.AsyncClient,
                           db: ChainDB) -> None:
-    return await getflag_notes(task, client, db)
+    return await _getflag_notes_impl(task, client, db)
 
 
 # ── store 3: break-glass alias (for ceremony-hijack exploit testing) ──────────
@@ -339,13 +359,13 @@ async def getflag_notes2(task: GetflagCheckerTaskMessage, client: httpx.AsyncCli
 @checker.putflag(3)
 async def putflag_breakglass3(task: PutflagCheckerTaskMessage, client: httpx.AsyncClient,
                                db: ChainDB) -> str:
-    return await putflag_breakglass(task, client, db)
+    return await _putflag_breakglass_impl(task, client, db)
 
 
 @checker.getflag(3)
 async def getflag_breakglass3(task: GetflagCheckerTaskMessage, client: httpx.AsyncClient,
                                db: ChainDB) -> None:
-    return await getflag_breakglass(task, client, db)
+    return await _getflag_breakglass_impl(task, client, db)
 
 
 # ── noise ─────────────────────────────────────────────────────────────────────

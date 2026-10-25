@@ -49,8 +49,8 @@ export function parseAttestationObject(attObjB64: string): {
   coseKey: Map<number, Uint8Array>;
   credId: Buffer;
 } {
-  const attObj = cborDecode(Buffer.from(attObjB64, 'base64url')) as Map<string, unknown>;
-  const authData = Buffer.from(attObj.get('authData') as Uint8Array);
+  const attObj = cborDecode(Buffer.from(attObjB64, 'base64url')) as Record<string, unknown>;
+  const authData = Buffer.from(attObj['authData'] as Uint8Array);
 
   // authData: rpIdHash(32) + flags(1) + signCount(4) + AAGUID(16) + credIdLen(2) + credId(N) + coseKey
   if (authData.length < 55) throw new Error('HARBORID-AUTH-01: authenticatorData too short');
