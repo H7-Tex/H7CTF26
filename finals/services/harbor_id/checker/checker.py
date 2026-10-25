@@ -93,10 +93,17 @@ def _mumble_on_http(r: httpx.Response, code: str) -> None:
 async def _register_user(idp: str, c: httpx.AsyncClient,
                           break_glass: str = "") -> tuple[str, str, str]:
     """register user at IdP; returns (username, email, bootstrap_token)."""
-    uname, email = _uname(), ""
+    uname = _uname()
     email = _email(uname)
-    r = await c.post(f"{idp}/register",
-                     json={"username": uname, "email": email, "break_glass_note": break_glass})
+    for attempt in range(3):
+        try:
+            r = await c.post(f"{idp}/register",
+                             json={"username": uname, "email": email, "break_glass_note": break_glass})
+            break
+        except (httpx.ConnectError, httpx.TimeoutException) as e:
+            if attempt == 2:
+                raise OfflineException(f"HARBORID-NET-01: IdP unreachable: {e}")
+            await asyncio.sleep(2)
     if r.status_code != 201:
         raise MumbleException(f"HARBORID-REG-01: registration rejected {r.status_code}")
     data = r.json()
