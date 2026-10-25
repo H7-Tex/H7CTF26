@@ -182,20 +182,27 @@ No authentication required. Use to discover victim blob digests for Store A V1.
 
 A competitive king-of-the-hill variant on Dockyard.
 
-**Arena**: a single shared `harbor/throne` repository. All teams have push
-access. The current throne holder is whoever last pushed to `harbor/throne:king`.
+**Arena**: a single shared `harbor/throne` repository. The crown is a manifest
+annotation `h7.crown=<HMAC>` on `harbor/throne:latest`. The harbor-master
+sidecar (port 8085) resolves the HMAC to a team tag via the engine.
 
-**Scoring**: holding `harbor/throne:king` at tick time earns 1 point per tick.
-To take the throne, push a manifest with a valid layer containing your team flag.
+**Scoring**: `/koth/status` (unauthenticated) returns the current holder and
+timestamp. Holding the throne at tick time earns points. Each round the engine
+calls `POST /koth/reset` (Bearer token) to clear the crown.
 
-**Exploit angle**: use the blob mount bug (Store A V1) to cheaply push to
-`harbor/throne:king` without uploading a full layer - just mount any blob and
-craft a manifest pointing to it.
+**Doors**: four authz bugs (D1-D4) in the embedded registry, each toggled by
+`VULN_Dn` env vars. D1 = comma scope (shared with V2), D2 = webhook secrets
+(shared with V1), D3/D4 = manifest PUT auth bypass and case-variant repo name
+(hill-only).
 
-**Defense**: patch Store A V1 to block unauthorized mounts. Teams that patch
-correctly must upload a real layer to push, adding cost to throne changes.
+**Exploit angle**: use the blob mount bug (V1) or comma scope (V2) to cheaply
+push a crown manifest to `harbor/throne:latest` without owning the harbor
+namespace.
 
-See `../hills/harbor-master/` for the hill engine and config.
+**Defense**: patch the relevant door. D3 and D4 are hill-only and require
+separate patches from the AD service patches.
+
+See `../hills/harbor-master/` for the hill engine, exploits, and config.
 
 ---
 
@@ -226,3 +233,52 @@ WATCH=$(curl -s -XPOST http://localhost:7005/api/repos/alice/myrepo/watches \
 curl -s http://localhost:7005/api/repos/alice/myrepo/watches/$WATCH/deliveries \
   -H "Authorization: Bearer $TOK" | jq '.[0].rendered'
 ```
+
+---
+
+## Adversarial validation (Codex, 2026-10-25)
+
+Codex ran against the live service at `localhost:7005` with a victim account pre-loaded
+(private repo + `DEPLOY_KEY` secret). All four intended bugs were found independently and
+confirmed exploitable. Combined exploit: `exploits/steal_both.py`.
+
+Live output (run manually after Codex wrote the exploit, sandbox blocks sockets):
+
+```
+[+] attacker account: u94659de
+[+] cross-repo mount: HTTP 201
+[+] mounted blob pull: HTTP 200: H7CTF{fake_flag_for_codex_adv_test_877e009433d00af6}
+[+] comma-scope direct pull: HTTP 200: H7CTF{fake_flag_for_codex_adv_test_877e009433d00af6}
+[+] victim secrets: HTTP 200: {"DEPLOY_KEY": "DEPLOY_KEY_63b402784d2cee0c"}
+```
+
+### Vulnerabilities
+
+| Vulnerability | Root cause | Affected store |
+|---|---|---|
+| Cross-repository blob mount | `registry.Mount` checks only global digest existence, not pull permission on source repo | flag blob |
+| Comma-scope differential | token service issues one access claim with a comma in the name; `CheckAccess` splits on comma granting access to both repos | flag blob |
+| Webhook template over-exposure | `fireWatch` renders templates with `RepoView{Secrets: secrets}` — any watcher reads all secrets | `DEPLOY_KEY` |
+| Fine-token namespace-prefix bypass | `handleCreateFineToken` checks `HasPrefix(pattern, user)` without `/`, so `u94659de` can request scope `secrets:read:u94659de5/*` | `DEPLOY_KEY` |
+
+### Minimal patches (one line each)
+
+```diff
+// 01 - cross-repo mount: require pull auth on source
++if fromRepo != "" && !registry.BlobLinkedToRepo(s.DB, fromRepo, mountDigest) {
+     http.Error(w, ..., http.StatusUnauthorized); return }
+
+// 03 - comma scope: reject comma in repository name
+-granted := strings.Split(a.Name, ",")
++granted := []string{a.Name}
+
+// 02 - webhook secrets: nil out secrets in template view
+-Secrets: secrets,
++Secrets: nil,
+
+// 04 - glob scope: require namespace separator
+-if !strings.HasPrefix(pattern, user) {
++if !strings.HasPrefix(pattern, user+"/") {
+```
+
+No unintended bugs found. The four correct patches map 1:1 to the exploits above.
