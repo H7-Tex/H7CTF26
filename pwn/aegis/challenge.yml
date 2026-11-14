@@ -1,0 +1,27 @@
+name: Aegis Gateway
+author: abu
+category: pwn
+difficulty: hard
+description: |
+  SS-14's Aegis Gateway is the diagnostic console field crews use to log in and upload probe data from the feeder units. The 2023 firmware shipped with the era's hardening switched on.
+
+  The clearance code sits on the box. Take control of the console and read it.
+sub_description: |
+  A networked binary, shipped with its matching libc. Get remote code execution and read the flag.
+points: 450
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+handout:
+  - path: challenge/aegis-gateway.zip
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/aegis-gateway
+  cpu_limit: "0.5"
+  memory_limit: 256Mi
+  exposed_ports:
+    - { port: 9999, protocol: tcp }
+  instance_timeout: 3600
+  max_extensions: 4
+tags: [pwn, binary-exploitation]
