@@ -1,0 +1,28 @@
+name: Fool's Gold
+author: abu
+category: blockchain
+difficulty: easy
+description: |
+  crosscollateral is a multi-asset bank on sui: deposit any listed asset, then redeem it later for any other at the bank's posted prices. it holds a real reserve for its honest users.
+
+  you're funded with a bag of a near-worthless listed token. leave with the bank's sui.
+sub_description: |
+  turn a bag of a worthless listed token into the bank's sui reserve.
+points: 100
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+provide:
+  - path: challenge/sources/bank.move
+  - path: challenge/sources/cheap.move
+  - path: challenge/Move.toml
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/cross_collateral
+  cpu_limit: "1"
+  memory_limit: 1Gi
+  exposed_ports:
+    - { port: 1337, protocol: tcp }
+  instance_timeout: 1800
+  max_extensions: 2

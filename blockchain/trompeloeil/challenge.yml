@@ -1,0 +1,30 @@
+name: Trompe-l'œil
+author: abu
+category: blockchain
+difficulty: hard
+description: |
+  MirrorLend lets you borrow against your Mirror LP tokens, and it holds a real reserve for its lenders. On paper, every figure reconciles.
+
+  A good trompe-l'oeil only has to hold for as long as the eye is on it. The reserve won't notice you leaving.
+sub_description: |
+  the books reconcile to the penny, right up until they don't. walk off with the lender's reserve.
+points: 1000
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+provide:
+  - path: challenge/src/Setup.sol
+  - path: challenge/src/Pool.sol
+  - path: challenge/src/MirrorLend.sol
+  - path: challenge/src/Token.sol
+  - path: challenge/src/IERC20.sol
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/mirror_pool
+  cpu_limit: "0.5"
+  memory_limit: 512Mi
+  exposed_ports:
+    - { port: 1337, protocol: http }
+  instance_timeout: 1800
+  max_extensions: 2

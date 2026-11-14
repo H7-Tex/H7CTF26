@@ -1,6 +1,6 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'h7ctf26/evm-harness:latest', '_evm_harness']
+    args: ['build', '-t', 'h7ctf26/evm-harness:latest', 'harness']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', '${_AR}/evm-genesis:latest', 'genesis/challenge']
 images:

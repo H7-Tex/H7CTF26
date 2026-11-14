@@ -1,7 +1,7 @@
 id: sealed
 title: "Sealed"
 category: cloud
-author: h7tex
+author: abu
 difficulty: insane
 points: 500
 
@@ -56,4 +56,4 @@ notes: |
   DEPLOY GATED on the sysbox pool (Finals' spike - sysctl isolation fix needed).
   Build is validated locally on sealed-k3s (rancher/k3s:v1.31.5-k3s1 in Docker).
   ingress-nginx pinned to v1.11.4 (patched >= 1.11.5).
-  See DEPLOY.md for exact setup steps.
+  See README.md for setup steps.

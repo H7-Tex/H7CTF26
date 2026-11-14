@@ -1,4 +1,4 @@
-# Argus host reconciler — one in-cluster instance. Watches Anvil instance
+# Argus host reconciler: one in-cluster instance. Watches Anvil instance
 # namespaces labeled with the argus challenge id, reads INSTANCE_ID/INTERNAL_TOKEN
 # from the app pod + FLAG from the flag-holder pod, and provisions the per-namespace
 # broker + Secret/argus-protected + RBAC + apiserver-egress NetworkPolicy.

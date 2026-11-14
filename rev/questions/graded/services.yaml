@@ -1,0 +1,30 @@
+build_context: rev/questions
+scoring_mode: graded
+base_points: 1000
+difficulty: insane
+
+services:
+  - name: portal
+    image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/twenty-questions-portal
+    public: true
+    ports: [{ port: 1337, protocol: tcp }]
+    env: { GRADER: "http://grader:9000", PORT: "1337" }
+  - name: grader
+    image: asia-south1-docker.pkg.dev/project-c36a8ca6-dbc7-4a90-9d2/anvil/h7ctf26/twenty-questions-grader
+    public: false
+    egress: true
+    ports: [{ port: 9000, protocol: tcp, internal: true }]
+    env:
+      GRADER_SECRET: "${GRADER_SECRET}"
+      GRADER_URL: "${GRADER_URL}"
+      ANVIL_TEAM_ID: "${ANVIL_TEAM_ID}"
+      INSTANCE_ID: "${INSTANCE_ID}"
+      CHALLENGE_SLUG: "twenty-questions"
+      GRADER_PORT: "9000"
+      FLAG: "${FLAG}"
+      TQ_MODE: "live"
+      TQ_SEALER: "/tq/sealer"
+      TQ_WIN_BASE: "0x4baac0"
+      TQ_CONFESS: "0x403019"
+      TQ_BEST_KNOWN: "285"
+      TQ_INTERROGATOR: "/tq/interrogator"

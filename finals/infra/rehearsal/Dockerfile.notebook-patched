@@ -1,9 +1,0 @@
-# notebook-team4: store0_correct.patch applied.
-# rehearsal.sh generates notebook-team4-app.py before building.
-FROM python:3.12-slim
-WORKDIR /app
-RUN mkdir /data && chown 1000:1000 /data
-COPY notebook-team4-app.py app.py
-USER 1000
-EXPOSE 7000
-CMD ["python3", "-u", "app.py"]

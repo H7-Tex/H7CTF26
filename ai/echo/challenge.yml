@@ -1,0 +1,44 @@
+name: Echo Chamber
+author: abu
+category: ai
+difficulty: medium
+
+description: |
+  Atlas Incident Intelligence is an incident-research platform that escalates an incident only once it's convinced. One incident is open, and its final report issues only when Atlas is fully convinced.
+
+  Get Atlas to produce that report.
+sub_description: |
+  Get Atlas to produce the final report it issues only once fully convinced.
+points: 250
+
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/echo_chamber        # required by the importer; superseded by the service below at launch
+  cpu_limit: "1.0"
+  memory_limit: 512Mi
+  instance_timeout: 1800
+  max_extensions: 2
+  # single public container, but declared as a service so it gets egress (to reach
+  # the H7 Qwen service) and static env - the single-image path grants neither.
+  services:
+    - name: echo-chamber
+      image: h7ctf26/echo_chamber
+      public: true
+      egress: true
+      cpu_limit: "1.0"
+      memory_limit: 512Mi
+      ports:
+        - port: 8080
+          protocol: http
+      env:
+        DATA_DIR: /data
+        # H7 Qwen service (also reachable at qwen.abu.rocks - same tunnel/account).
+        QWEN_BASE_URL: https://qwen.h7tex.com
+        QWEN_MODEL: Qwen2.5-Coder-7B-Instruct
+        QWEN_TIMEOUT_SECONDS: "60"
+        FLAG: "${FLAG}"

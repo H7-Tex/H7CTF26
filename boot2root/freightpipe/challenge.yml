@@ -17,7 +17,7 @@ flags:
 deploy:
   # ONE sysbox pod runs the whole docker-compose stack (nested unprivileged Docker). Finals builds the
   # pod image that runs `docker compose up` internally. Needs runc+sysbox (NOT gVisor) - the stage-4
-  # trusted-repo step runs privileged. See DEPLOY.md for the full deploy contract.
+  # trusted-repo step runs privileged. See README.md.
   resource_type: docker
   instancing: on_demand
   image: h7ctf26/freightpipe            # sysbox pod image (compose-in-pod); built by Finals

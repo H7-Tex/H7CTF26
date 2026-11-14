@@ -1,5 +1,5 @@
 ---
-# flag1 — discoverable by cluster recon with the player SA.
+# flag1 - discoverable by cluster recon with the player SA.
 # Player can list/get configmaps in ingress-nginx → finds the webhook + flag.
 apiVersion: v1
 kind: ConfigMap
@@ -13,7 +13,7 @@ data:
   flag: "H7CTF{unauthenticated_webhook_attack_surface}"
 
 ---
-# nginx controller ConfigMap — fix: no include trick, just client_body_in_file_only
+# nginx controller ConfigMap - fix: no include trick, just client_body_in_file_only
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -24,7 +24,7 @@ data:
   http-snippet: "client_body_in_file_only on;"
 
 ---
-# flag2 — readable only from inside the controller pod (via RCE payload)
+# flag2 - readable only from inside the controller pod (via RCE payload)
 # Mounted at /run/secrets/sealed/flag in the controller container
 apiVersion: v1
 kind: Secret
@@ -36,7 +36,7 @@ stringData:
   flag: "H7CTF{rce_as_controller_service_account}"
 
 ---
-# flag3 — cross-namespace secret; readable via controller SA's cluster-wide list-secrets
+# flag3 - cross-namespace secret; readable via controller SA's cluster-wide list-secrets
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -50,4 +50,4 @@ metadata:
 type: Opaque
 stringData:
   flag: "H7CTF{cluster_wide_secret_theft_complete}"
-  note: "ingress-nginx SA has secrets:list cluster-wide — every secret in every namespace"
+  note: "ingress-nginx SA has secrets:list cluster-wide, every secret in every namespace"

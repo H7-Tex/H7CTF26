@@ -1,42 +1,40 @@
-# Webhook
+# Owner's Draw
 
-`crypto` / `medium` / on-demand per-team instance (docker, HTTP), dynamic flag.
+**Category:** crypto  **Difficulty:** medium  **Author:** abu
 
-A merchant webhook receiver that authenticates webhooks with
-`X-Signature = SHA256(secret || body)`. Because SHA-256 is a Merkle-Damgard hash,
-that construction is length-extendable: from one captured `(body, sig)` a player
-forges a valid signature for `body || glue || "&role=owner"` without the secret
-(the secret length is unknown, so it is brute-forced over a small range). A
-`role=owner` webhook triggers the owner payout (the flag). The `/v2` endpoint uses
-HMAC-SHA256 and is not extendable, i.e. the built-in "this is the fix" decoy.
+> OrionPay does exactly what it's told, provided the paperwork looks right. The owner's draw is the one payout nobody else is supposed to touch. You walked away with a single genuine slip and a lot of curiosity.
+>
+> The rest is between you and the accountant.
 
-Real basis: hash length-extension against `H(secret||message)` MACs (the classic
-Flickr API signature bug and its many descendants).
+Per-team HTTP instance on port 8080: `GET /sample`, `POST /webhook`, `POST /v2/webhook`.
 
-## Delivery
-Per-team live instance. Fresh random secret (random length) per team; the flag
-(`$FLAG`, injected) is returned by `POST /webhook` only for a valid signature on a
-`role=owner` body.
+## Solution
 
-## Files
-- `challenge.yml` : definition (dynamic flag, on-demand docker, http:8080).
-- `challenge/app.py` : the receiver (SHA-256 v1, HMAC v2 decoy, `/sample`). stdlib only.
-- `challenge/Dockerfile` : the instance image (`h7ctf26/webhook`).
-- `solution/solve.py` : reference solver (self-contained SHA-256 with resumable
-  state for the length extension; brute the secret length; forge). No `hashpumpy`.
-- `writeup/README.md` : full explanation.
+`/sample` hands over one captured webhook: a body ending in `&role=guest` and its `X-Signature`. The index page says how that signature is made: `SHA256(secret || body)`. A body with `role=owner` pays out.
 
-## Local test (no Docker needed)
+`SHA256(secret || body)` is the textbook length extension setup. SHA-256 is Merkle-Damgard, so the digest is the internal state after the padded input. Resume from that state and you can compute
+
+```
+SHA256(secret || body || glue || "&role=owner")
+```
+
+without knowing the secret, where `glue` is the SHA-256 padding for `secret || body`. The only thing missing is the secret length, which goes into the padding, so just try them all (the solver sweeps 1-40; the real one is 10-20 bytes).
+
+For each length, send the raw `body || glue || &role=owner` with the forged signature to `/webhook`. The right length verifies. The server takes the last value for a repeated key, so `role=owner` wins, and the glue bytes just end up as junk inside the previous parameter's value.
+
+`/v2/webhook` uses HMAC-SHA256, which doesn't extend. It's the fixed version and a dead end.
+
+`hashpumpy` or `hash_extender` do this in one call. The reference solver has its own resumable SHA-256 so it only needs the stdlib.
+
+```
+python3 solution/solve.py http://<instance>/
+```
+
+Local:
+
 ```
 FLAG='H7CTF{test}' PORT=8080 python3 challenge/app.py &
-python3 solution/solve.py http://127.0.0.1:8080     # -> forges role=owner, prints the flag
+python3 solution/solve.py http://127.0.0.1:8080
 ```
-The solver's SHA-256 + length-extension was checked against `hashlib` over 400
-random cases; the full forge path passes 6/6 across random secret lengths.
 
-## Fairness / anti-agent notes
-- Per-team dynamic flag; per-team random secret and secret length.
-- The classic mistake framed as a real product: `SHA256(secret||body)` MAC vs the
-  correct HMAC (`/v2`), so the fix is visible and the bug is the point.
-- The secret length is the only search, over a small range (about 40); no guessing.
-- Standard signature verification server-side; the difficulty is the crypto.
+Flag is dynamic, per team.

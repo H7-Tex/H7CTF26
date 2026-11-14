@@ -7,7 +7,7 @@ fn check(key: &[u8]) -> bool {
     use std::hint::black_box;
     key.len() == 16 && key.iter().enumerate().all(|(i, &c)| {
         // black_box barriers stop the optimizer from const-folding the whole transform into a
-        // direct `c == <license byte>` comparison — the player must actually reverse + invert it.
+        // direct `c == <license byte>` comparison; the player must actually reverse + invert it.
         let xk = black_box(XK[i]);
         let rot = black_box(ROT[i]);
         let ya = black_box(YA[i]);

@@ -26,7 +26,7 @@ def kubectl(*args: str, input_json: dict | None = None) -> dict:
     command = ["kubectl", *args]
     raw = json.dumps(input_json, separators=(",", ":")).encode() if input_json is not None else None
     result = subprocess.run(command, input=raw, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, check=True)
-    # `kubectl apply` prints plain text ("x/y created"), not JSON — only the `get -o json`
+    # `kubectl apply` prints plain text ("x/y created"), not JSON; only the `get -o json`
     # calls return JSON. Tolerate non-JSON so the apply loop doesn't die on the first item.
     if not result.stdout:
         return {}

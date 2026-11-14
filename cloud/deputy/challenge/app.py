@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """
-Deputy — a small, faithful simulated AWS control plane for a cross-account trust / IAM privesc chain.
+Deputy - a small, faithful simulated AWS control plane for a cross-account trust / IAM privesc chain.
 
 Players point real `awscli --endpoint-url http://host:port` (and Pacu) at it. We speak enough of the
 IAM/STS query protocol (form-in, XML-out), the Lambda REST-JSON protocol, and S3 path-style GET/list to
 drive the intended chain and to reject the near-miss paths.
 
-We do NOT verify SigV4 signatures (like LocalStack) — we only parse the Credential= access-key-id out
+We do NOT verify SigV4 signatures (like LocalStack) - we only parse the Credential= access-key-id out
 of the Authorization header to identify the caller, and the credential scope's service to route. This
 is an explicitly isolated per-team emulator, not an auth boundary; the secret/signature are irrelevant.
 
 Two accounts:
-  111111111111  "ours"     — analyst (start) + ci-runner-role
-  999999999999  "DeputyCorp" (the partner) — partner-admin-role + partner-secure-role
+  111111111111  "ours"     - analyst (start) + ci-runner-role
+  999999999999  "DeputyCorp" (the partner) - partner-admin-role + partner-secure-role
 The analyst's own-account IAM enumeration cannot see the partner account's roles (as in real AWS), so
-the ExternalId that gates the crown role is NOT discoverable at recon — only via the stage-3 loot.
+the ExternalId that gates the crown role is NOT discoverable at recon - only via the stage-3 loot.
 
 Kill chain (4 flags):
   1. recon        list buckets -> read own scratch bucket; read own inline policy               -> FLAG1
@@ -127,7 +127,7 @@ S3 = {
         "partner-config.json": json.dumps(
             {"partner": "DeputyCorp", "secure_role": f"arn:aws:iam::{PARTNER}:role/partner-secure-role",
              "external_id": EXTERNAL_ID,
-             "note": "partner-secure-role is our HARDENED role — callers must pass this ExternalId."},
+             "note": "partner-secure-role is our HARDENED role; callers must pass this ExternalId."},
             indent=2),
     },
     "deputy-crown-vault": {"flag": f"{FLAG4}\n"},

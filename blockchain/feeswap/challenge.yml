@@ -1,0 +1,27 @@
+name: Fee Swap
+author: abu
+category: blockchain
+difficulty: medium
+description: |
+  feeswap is a tiny two-asset pool: send it token A, get token B back. a clean 1:1 desk with a healthy B reserve it's sure it can always cover.
+
+  you're holding token A. walk out with the pool's entire B reserve.
+sub_description: |
+  a 1:1 swap desk with a reserve it thinks it can always cover. drain it.
+points: 250
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+provide:
+  - path: challenge/program/src/lib.rs
+  - path: challenge/program/Cargo.toml
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/fee_swap
+  cpu_limit: "1"
+  memory_limit: 1Gi
+  exposed_ports:
+    - { port: 1337, protocol: tcp }
+  instance_timeout: 1800
+  max_extensions: 2

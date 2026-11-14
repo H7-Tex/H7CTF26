@@ -1,0 +1,27 @@
+name: Perp Guard
+author: abu
+category: blockchain
+difficulty: hard
+description: |
+  perpguard is a solana lending market: post collateral, open positions, borrow.
+
+  you're a borrower who plans to default, and your collateral is about to be marked down. end up underwater on a loan no keeper can ever claw back.
+sub_description: |
+  leave yourself underwater on a loan no keeper can ever liquidate.
+points: 500
+flags:
+  - type: dynamic
+    dynamic_flag_prefix: "H7CTF{"
+provide:
+  - path: challenge/program/src/lib.rs
+  - path: challenge/program/Cargo.toml
+deploy:
+  resource_type: docker
+  instancing: on_demand
+  image: h7ctf26/perp_guard
+  cpu_limit: "1"
+  memory_limit: 1Gi
+  exposed_ports:
+    - { port: 1337, protocol: tcp }
+  instance_timeout: 1800
+  max_extensions: 2

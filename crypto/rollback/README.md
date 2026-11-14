@@ -1,51 +1,38 @@
-# Rollback
+# Take Two
 
-`crypto` / `hard` / on-demand per-team instance (docker, HTTP), dynamic flag.
+**Category:** crypto  **Difficulty:** hard  **Author:** abu
 
-An LMS/WOTS+ hash-based firmware signer (RFC 8554 in spirit). Hash-based signatures
-are stateful: each one-time WOTS+ leaf must sign exactly once. A maintenance
-"rollback" endpoint resets the signing counter, so a leaf can be reused. Across
-enough reused signatures on the same leaf, each Winternitz chain position leaks its
-value at the lowest signed digit (usually the raw secret at digit 0), which lets you
-forge a WOTS+ signature for a chosen backdoored firmware. The Merkle auth path is
-unchanged, so the forgery verifies against the device root and the device boots it.
+> Helios firmware boots only with the notary's blessing, and the notary blesses only the builds it trusts. The one you have in mind will never make that list.
+>
+> Lucky for you, it is not above a second take.
 
-Real basis: the operational footgun of stateful hash-based signatures (LMS/XMSS
-one-time-key reuse; NIST SP 800-208 warns about exactly counter reuse).
+Players get `challenge/lms.py` and a per-team HTTP instance on port 8080: `GET /root`, `POST /sign {firmware}`, `POST /rollback`, `POST /deploy {firmware, sig}`.
 
-## Delivery
-Per-team live instance. Fresh random LMS key per team. The signer refuses to
-notarize a build containing the backdoor marker, so you must forge; the device
-returns the flag (`$FLAG`, injected) when it boots a verifying backdoored build.
+## Solution
 
-## Endpoints
-- `GET /root` : the device trust anchor (Merkle root).
-- `POST /sign {firmware}` : notarize a benign build (backdoored builds refused). Advances the counter.
-- `POST /rollback` : resets the signing counter (the bug).
-- `POST /deploy {firmware, sig}` : boots anything that verifies against the root.
+`lms.py` is an LMS-style scheme: WOTS+ one-time keys (w=16) as leaves of a Merkle tree, and the device trusts the root. `/sign` signs with the current leaf and moves the counter forward. It refuses any build containing `BACKDOOR`. `/deploy` boots anything that verifies.
 
-## Files
-- `challenge.yml` : definition (dynamic flag, on-demand docker, http:8080, provides `lms.py`).
-- `challenge/lms.py` : the signing scheme (WOTS+ over a Merkle tree). Shipped to players.
-- `challenge/app.py` : the notary + device service.
-- `challenge/Dockerfile` : the instance image (`h7ctf26/rollback`). stdlib only.
-- `solution/solve.py` : reference solver (reuse leaf 0, recover key, forge, deploy).
-- `writeup/README.md` : full explanation.
+The one rule of stateful hash-based signatures is that a leaf signs once. `/rollback` resets the counter to 0. That's the bug.
 
-## Local test (no Docker needed)
+Why reuse matters: WOTS+ signs each base-16 digit `d_i` of the hash as `H^{d_i}(sk_i)`. One signature can't be pushed to another message because the checksum digits move the opposite way and you can't walk a hash chain backwards. With many signatures from the same leaf, though, we just keep the lowest digit we've seen at every position:
+
+```
+known_i = H^{min_i}(sk_i)
+```
+
+Any target digit `c_i >= min_i` can then be signed as `H^{c_i - min_i}(known_i)`. After around 150 rollback+sign rounds on different benign builds, almost every position has hit digit 0, which means we hold `sk_i` itself.
+
+Then build a firmware with the `BACKDOOR` marker, grind a nonce in it until every hash digit is at least `min_i` (usually the first try), chain each `known_i` forward, and attach leaf 0's auth path from any of the collected signatures. The leaf hasn't moved, so it still verifies against the root. `/deploy` boots it and returns the flag.
+
+```
+python3 solution/solve.py http://<instance>/
+```
+
+Local:
+
 ```
 FLAG='H7CTF{test}' PORT=8080 python3 challenge/app.py &
-python3 solution/solve.py http://127.0.0.1:8080      # -> forges a backdoored build, prints the flag
+python3 solution/solve.py http://127.0.0.1:8080
 ```
-De-risked: the scheme's sign/verify round-trips and rejects tampering; the reuse
-forgery is feasible (about 160 reused signatures recover nearly every chain
-position, then a single grind forges). Full path validated 3/3 across random
-instances. The container is built/verified by the importer (Cloud Build).
 
-## Fairness / anti-agent notes
-- Per-team dynamic flag; per-team random LMS key.
-- The scheme (`lms.py`) is shipped: the difficulty is recognizing that the counter
-  reset re-enables one-time-key reuse and doing the WOTS+ forgery, not reversing a harness.
-- Feasible by construction (many reuses -> chain positions recovered), not a lucky grind.
-- Realistic PQC: this is the documented operational failure mode of stateful
-  hash-based signatures, not a contrived bug.
+Two signatures from one leaf are not enough at these parameters; the rollback letting you do it over and over is what makes it work. Flag is dynamic, per team.

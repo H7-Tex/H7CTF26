@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Sparrow Freight "prod" — the production host for the prod-app service.
+# Sparrow Freight "prod" - the production host for the prod-app service.
 #
 # It runs the current prod-app:latest as a managed sibling container and serves it
 # to the world (reverse-proxy on the exposed port). Redeploys happen ONLY via a
@@ -7,7 +7,7 @@
 # WEBHOOK_SECRET). Legit deploys come from the pipeline; an attacker who has looted
 # WEBHOOK_SECRET (from the CI build env) can forge one and ship a backdoored :latest.
 #
-# The deployed container is UNPRIVILEGED and gets no docker socket — the only thing
+# The deployed container is UNPRIVILEGED and gets no docker socket - the only thing
 # it receives that the attacker didn't already have is the production runtime config
 # injected here (FLAG3 + a token with write access to the prod-app repo, the stage-4
 # pivot). That's the point of reaching prod.
