@@ -1,10 +1,4 @@
-# H7CTF 2026
-
-Qualifier challenges from H7CTF 2026, run by team H7Tex at SRMIST. Source, handouts, solves and writeups, all in one place.
-
-everything here is by `abu` unless tagged otherwise.
-
-#### **Challenges**
+`H7CTF 2026`
 
 - **ai**
   - [Argus](ai/argus), [Model Package Autopsy](ai/autopsy), [Adapter Cartel](ai/cartel), [Echo Chamber](ai/echo)
@@ -37,27 +31,10 @@ everything here is by `abu` unless tagged otherwise.
 - **web**
   - [Formwork](web/formwork), [Schrödinger Package](web/schrodinger), [Zombie Worker](web/zombie)
 
-quick fun fact: folder names don't always match the challenge name (`crypto/webhook` is Owner's Draw, `pwn/vault` is Safe Space). we kept the short slugs, the README in each folder has the real name.
-
-#### **Layout**
-
 each challenge is `<category>/<slug>/`
-
-```
-README.md       description + writeup
-challenge.yml   CTFd metadata and flag
-challenge/      source, real flag inside
-handout/        what players downloaded (download-only ones may skip it)
-solution/       solve script
-```
 
 remote ones have a `Dockerfile` or `docker-compose.yml` at the top, so spinning one up is just
 
 ```
 cd web/formwork && docker build -t formwork . && docker run --rm -p 8080:8080 formwork
 ```
-
-#### Post Credits
-
-- how we ran last year's infra: [H7CTF 2025 Infrastructure](https://www.abu.rocks/docs/dev/h7ctf25-infrastructure/)
-- more writeups over at [abu.rocks/docs](https://www.abu.rocks/docs/)
